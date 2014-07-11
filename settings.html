@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="main.css" />
+	<script src="jquery.min.js"></script>
+	<script src="settings.js"></script>
+</head>
+<body>
+<div id="overlay"></div>
+<div id="content" class="main">
+	<div id="main">
+		<div id="loading"></div>
+		<h1>
+			<img id="tlogo" src="img/yt_logo.png">
+			<span id="ttitle">Notifications Settings</span>
+		</h1>
+		<h1 id="statusc" style="display:none">
+			<span id="statust"></span>
+		</h1>
+		<h1>
+			<div class="ui-navbar">
+				<table class="tnav" border="0">
+					<th class="nav-btn nbtn1">Newest Uploads</th>
+					<th class="nav-btn nav-btnr nbtn2">Edit Settings</th>
+				</table>
+			</div>
+		</h1>
+		<div id="sl1">
+			<ul class="channellist1">
+			</ul>
+		</div>
+		<div id="sl2">
+			<ul class="channellist2"></ul>
+			<h1 class="addm">
+				<button id="add_more" class="bbutton hbutton">
+					<span class="bbutton_n">Add Channel</span>
+				</button>
+			</h1>
+			<h1>
+				<span>Edit Channel Listing Name:</span>
+				<input type="text" class="uinput2 cNameinp">
+				<button class="bbutton cbtn cNamebtn">
+					<span class="bbutton_n">Save</span>
+				</button>
+			</h1>
+			<h1>
+				<span>Refresh Intervals (in minutes):</span>
+				<input type="number" placeholder="Default: 2" class="uinput2 rIntervInp">
+				<button class="bbutton cbtn rInterv">
+					<span class="bbutton_n">Save</span>
+				</button>
+			</h1>
+			<h1>
+				<span>Enable Animations:</span>
+				<input type="checkbox" class="uinputCb animateInp">
+				<div class="iblock ttsDiv">
+					<span class="cboxSp">Enable Text-to-Speech:</span>
+					<input type="checkbox" class="uinputCb ttsInp">
+					<select class="ttsSelect">
+						<option value="0">Google US</option>
+						<option value="1">Google UK Male</option>
+						<option value="2">Google UK Female</option>
+					</select>
+				</div>
+			</h1>
+			<h1>
+				<span>Import Channels:</span>
+				<input type="text" class="uinput2 importInp">
+				<button class="bbutton cbtn importBtn">
+					<span class="bbutton_n">Save</span>
+				</button>
+			</h1>
+			<h1>
+				<span>Export Channels:</span>
+				<input type="text" placeholder="No channels found" class="uinput2 exportInp">
+			</h1>
+			<h1 class="rall">
+				<button id="refresh_all" class="gbutton hbutton">
+					<span class="bbutton_n">Manual Refresh</span>
+				</button>
+			</h1>
+		</div>
+	</div>
+</div>
+<span id="version">Version 0.01</span>
+</body>
+</html>
