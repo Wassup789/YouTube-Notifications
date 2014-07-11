@@ -1,22 +1,21 @@
-# Youtube Notifications
-----------
-
+# Youtube Notifications #
 
 Get updates from your favorite Youtubers using this Chrome Extension. This extension uses the YouTube Data API Version 2.0 for it's data.
 
 This code is licensed under the MIT License
 
 ## About
-----------
+
 ### Icons
-Coming Soon
+[![Icon 16](https://raw.githubusercontent.com/Wassup789/Youtube-Notifications/master/img/16.png)](https://raw.githubusercontent.com/Wassup789/Youtube-Notifications/master/img/16.png)
+[![Icon 48](https://raw.githubusercontent.com/Wassup789/Youtube-Notifications/master/img/48.png)](https://raw.githubusercontent.com/Wassup789/Youtube-Notifications/master/img/48.png)
+[![Icon 128](https://raw.githubusercontent.com/Wassup789/Youtube-Notifications/master/img/128.png)](https://raw.githubusercontent.com/Wassup789/Youtube-Notifications/master/img/128.png)
 
 ### Permissions
  - notifications
  - \*://\*.youtube.com/\*
 
 ## Downloads
-----------
 
 
 **Latest Stable Release:**
@@ -35,11 +34,9 @@ Coming Soon
  - [Download Here via Google Drive][Dld_Archive]
 
 ## To-Do
-----------
  * Allow subscriber export from Youtube channel
 
 ## Options
------
 
 ### Import/Export Channel JSON
 The import and export channels is formatted in JSON and can be transferred to other computers
@@ -61,8 +58,7 @@ The import and export channels is formatted in JSON and can be transferred to ot
 ```
 
 ## Changelog
-----------
-See CHANGELOG.md
+[See CHANGELOG.md][CLog.md]
 
 
   [Dld_Latest_GD]: https://drive.google.com/open?id=0B_WfQfUn7IraaDVlU2lyZVdNSEk&authuser=0
@@ -70,3 +66,5 @@ See CHANGELOG.md
   [Dld_Beta_GD]: https://drive.google.com/file/d/0B_WfQfUn7IracmNDY2xkQ3hHZkE/edit?usp=sharing
   [Dld_Beta_DB]: https://dl.dropboxusercontent.com/u/14210090/Youtube%20Notifications/beta/Youtube_Notifications_v1.0.9.crx
   [Dld_Archive]: https://drive.google.com/folderview?id=0B_WfQfUn7IracnBjX205T3V6NlE&usp=sharing
+  
+  [CLog.md]: https://github.com/Wassup789/Youtube-Notifications/blob/master/CHANGELOG.md
