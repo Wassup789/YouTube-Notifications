@@ -113,7 +113,7 @@ $(document).ready(function(){
 				ytStatus = false;
 			}
 		});
-		if(ytStatus == false){
+		if(!ytStatus){
 			wyn.log(1, "Could not connect to YouTube API Servers");
 			localStorage.setItem("serverStatus", false);
 			if(check == 1){
@@ -166,8 +166,8 @@ $(document).ready(function(){
 			}
 		}
 		
-		var channel = "http://gdata.youtube.com/feeds/api/users/" + cname + "/uploads?v=2";
-		var channel2 = "http://gdata.youtube.com/feeds/api/users/" + cname + "?v=2";
+		var channel = "http://gdata.youtube.com/feeds/api/users/" + cname + "?v=2";
+		var channel2 = "http://gdata.youtube.com/feeds/api/users/" + cname + "/uploads?v=2";
 
 		String.prototype.trunc = String.prototype.trunc ||
 	      function(n){
@@ -196,7 +196,7 @@ $(document).ready(function(){
 			async: false,
 			type: "GET",
 			dataType: "text",
-			url: channel2,
+			url: channel,
 			success: function(data){
 					var lurl = data.split("<media:thumbnail url='")[1].split("'/>")[0];
 					var curl = data.split("<link rel='alternate' type='text/html' href='")[1].split("'/>")[0];
@@ -209,8 +209,9 @@ $(document).ready(function(){
 			}
 		});
 		
-		if(channelStatus == false){
-			setVariable("ytStatus", cnum, false);
+		if(!channelStatus){
+			if(JSON.parse(localStorage.getItem("ytReleases"))[cnum] > 0)
+				setVariable("ytStatus", cnum, false);
 			wyn.log(1, "Channel: \"" + cname + "\" does not exist or connection cannot be made");
 			return;
 		}else
@@ -219,7 +220,7 @@ $(document).ready(function(){
 		$.ajax({
 			async: false,
 			type: "GET",
-			url: channel,
+			url: channel2,
 			success: function(data) {
 			   	data = xmlToJson(data).feed;
 			   	var video = ({
@@ -380,7 +381,7 @@ $(document).ready(function(){
 	function updateSettings(setting, var1){
 		var state;
 		setVariable("channels", setting, var1);
-		setVariable("ytReleases", setting, String(Date.now()));
+		setVariable("ytReleases", setting, "0");
 		
 		chrome.extension.sendMessage({browsing: "refreshPage"});
 		

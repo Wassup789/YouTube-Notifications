@@ -344,7 +344,7 @@ $(document).ready(function(){
 	});
 	
 	function editInterv(){
-		if(isInt($(".rIntervInp").val()) && $(".rIntervInp").val() != "" && parseInt($(".rIntervInp").val()) > 0){
+		if(isInt($(".rIntervInp").val()) && $(".rIntervInp").val() != "" && parseInt($(".rIntervInp").val()) > 1){
 			setTimeout(function(){
 				chrome.extension.sendMessage({browsing: "editSettings2", name: "refreshInterval", setting: parseInt($(".rIntervInp").val())}, function(callback){
 					console.log(callback);
