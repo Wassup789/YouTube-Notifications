@@ -35,7 +35,7 @@ $(document).ready(function(){
 		chrome.extension.sendMessage({browsing: "setSettings"},  function(callback) {
 			console.log(callback);
 			if(callback.serverStatus == "false"){
-				setError("ERROR: Connection could not be made with Youtube API Servers. Refresh?", -1, true);
+				setError("ERROR: Connection could not be made with YouTube API Servers. Refresh?", -1, true);
 				$("#overlay").fadeIn("slow");
 				chrome.extension.sendMessage({browsing: "checkAllYoutube"}, function(callback){
 					console.log(callback);
