@@ -14,7 +14,7 @@ $(document).ready(function(){
 		if (request.browsing == "updateSettings")
 			sendResponse(updateSettings(request.setting, request.var1));
 		if (request.browsing == "checkAllYoutube")
-			sendResponse(checkAllYoutubers(0));
+			sendResponse(checkAllYoutubeUsers(0));
 		if (request.browsing == "checkYoutube")
 			sendResponse(checkYoutube(request.var1));
 		if (request.browsing == "editChannels")
@@ -90,15 +90,15 @@ $(document).ready(function(){
 	}
 
 	function refresh(){
-		wyn.log(0, "Initializing YouTube channel check");
-		checkAllYoutubers(0);
-		wyn.log(0, "Ended YouTube channel check");
+		wyn.log(0, "Initializing Youtube channel check");
+		checkAllYoutubeUsers(0);
+		wyn.log(0, "Ended Youtube channel check");
 		//MS*S*M
 		var rI = JSON.parse(localStorage.getItem("settings"));
 		setTimeout(function(){refresh();},1000*60*rI["refreshInterval"]);
 	}
 
-	function checkAllYoutubers(check){
+	function checkAllYoutubeUsers(check){
 		var ytCheck = "http://gdata.youtube.com";
 		var ytStatus = false;
 		$.ajax({
@@ -114,7 +114,7 @@ $(document).ready(function(){
 			}
 		});
 		if(!ytStatus){
-			wyn.log(1, "Could not connect to YouTube API Servers");
+			wyn.log(1, "Could not connect to Youtube API Servers");
 			localStorage.setItem("serverStatus", false);
 			if(check == 1){
 				chrome.extension.sendMessage({browsing: "refreshPage"}, function(callback){});
@@ -246,7 +246,7 @@ $(document).ready(function(){
 				setVariable("ytViews", cnum, video.views);
 				setVariable("ytTitles", cnum, video.title);
 				
-				wyn.log(0, "Checking YouTuber: " + video.name);
+				wyn.log(0, "Checking Youtube User: " + video.name);
 				
 			    if(video.timestamp > ytReleasea[cnum]) {					
 					if(video.views == "301")
@@ -279,7 +279,7 @@ $(document).ready(function(){
 					localStorage.setItem("badgeCount", ++bc);
 					bc = localStorage.getItem("badgeCount");
 					updateBadge({colour:'#e12a27', text:"" + bc});
-					wyn.log(0, "Found new YouTube video for " + video.name, "green");
+					wyn.log(0, "Found new Youtube video for " + video.name, "green");
 				}
 			},
 			error: function(XMLHttpRequest, textStatus, errorThrown){
@@ -411,7 +411,7 @@ $(document).ready(function(){
 		state = "Variable channels has changed.";
 		setVariable("settings", "cName", cName, false);
 		state = "Variable settings has changed.";
-		checkAllYoutubers(1);
+		checkAllYoutubeUsers(1);
 		return({response: state});
 	}
 	

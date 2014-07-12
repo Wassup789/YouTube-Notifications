@@ -4,7 +4,7 @@
       "scripts": [ "jquery.min.js", "background.js" ]
   },
   "name": "Youtube Notifications (beta)",
-  "description": "Get notifications when selected Youtubers upload a new video.",
+  "description": "Get notifications when selected Youtube users upload a new video.",
   "version": "1.0.9.0",
   "permissions": [ "notifications", "*://*.youtube.com/*"],
   "browser_action": {
