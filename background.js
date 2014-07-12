@@ -58,16 +58,18 @@ $(document).ready(function(){
 		localStorage.setItem("badgeCount", 0);
 	if(localStorage.getItem("settings") == null)
 		localStorage.setItem("settings", JSON.stringify(settings));
-
-	if(JSON.parse(localStorage.getItem("settings"))["cName"] == null)
+	
+	var settingsa = JSON.parse(localStorage.getItem("settings"));
+	
+	if(settingsa["cName"] == null)
 		setVariable("settings", "cName", "Main", false);
-	if(JSON.parse(localStorage.getItem("settings"))["refreshInterval"] == null)
+	if(settingsa["refreshInterval"] == null)
 		setVariable("settings", "refreshInterval", 2, false);
-	if(JSON.parse(localStorage.getItem("settings"))["animations"] == null)
+	if(settingsa["animations"] == null)
 		setVariable("settings", "animations", true, false);
-	if(JSON.parse(localStorage.getItem("settings"))["tts"] == null)
+	if(settingsa["tts"] == null)
 		setVariable("settings", "tts", false, false);
-	if(JSON.parse(localStorage.getItem("settings"))["ttsVoice"] == null)
+	if(settingsa["ttsVoice"] == null)
 		setVariable("settings", "ttsVoice", 0, false);
 	
 	function setSettings(){
