@@ -37,6 +37,7 @@ This code is licensed under the MIT License
 
 ## To-Do
  * Allow subscriber export from Youtube channel
+ * Fix TTS voice issue
 
 ## Options
 
