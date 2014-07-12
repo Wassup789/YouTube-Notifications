@@ -101,6 +101,11 @@ $(document).ready(function(){
 	function checkAllYoutubeUsers(check){
 		var ytCheck = "http://gdata.youtube.com";
 		var ytStatus = false;
+		
+		if(JSON.parse(localStorage.getItem("channels")).length >= 30 && JSON.parse(localStorage.getItem("settings"))["refreshInterval"] < 5){
+			setVariable("settings", "refreshInterval", 5, false);
+		}
+		
 		$.ajax({
 			async: false,
 			type: "GET",

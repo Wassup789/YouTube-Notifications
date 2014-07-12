@@ -31,6 +31,7 @@ $(document).ready(function(){
 			sendResponse(refreshPage());
 		}
 	});
+	var cNum;
 	function getSlide1(){
 		chrome.extension.sendMessage({browsing: "setSettings"},  function(callback) {
 			console.log(callback);
@@ -42,6 +43,7 @@ $(document).ready(function(){
 				});
 			}
 			var channelsa = JSON.parse(callback.channels);
+			cNum = channelsa.length;
 			var namesa = JSON.parse(callback.ytNames);
 			var logosa = JSON.parse(callback.ytLogos);
 			var channelurlsa = JSON.parse(callback.ytChannelUrls);
@@ -133,6 +135,7 @@ $(document).ready(function(){
 		chrome.extension.sendMessage({browsing: "setSettings"},  function(callback) {
 			console.log(callback);
 			var channelsa = JSON.parse(callback.channels);
+			cNum = channelsa.length;
 			var namesa = JSON.parse(callback.ytNames);
 			var logosa = JSON.parse(callback.ytLogos);
 			var channelurlsa = JSON.parse(callback.ytChannelUrls);
@@ -144,7 +147,13 @@ $(document).ready(function(){
 			var animations = settings["animations"];
 			var tts = settings["tts"];
 			var ttsVoice = settings["ttsVoice"];
-			$(".rIntervInp").val(refreshInterval);
+			if(channelsa.length >= 30 && refreshInterval < 5){
+				chrome.extension.sendMessage({browsing: "editSettings2", name: "refreshInterval", setting: 5}, function(callback){
+					console.log(callback);
+				});
+				$(".rIntervInp").val(5);
+			}else
+				$(".rIntervInp").val(refreshInterval);
 			$(".cNameinp").val(cNamea);
 			$(".animateInp").prop("checked", animations);
 			$(".ttsInp").prop("checked", tts);
@@ -345,12 +354,16 @@ $(document).ready(function(){
 	
 	function editInterv(){
 		if(isInt($(".rIntervInp").val()) && $(".rIntervInp").val() != "" && parseInt($(".rIntervInp").val()) > 1){
-			setTimeout(function(){
-				chrome.extension.sendMessage({browsing: "editSettings2", name: "refreshInterval", setting: parseInt($(".rIntervInp").val())}, function(callback){
-					console.log(callback);
-				});
-			}, aLoadTime);
-			setSuccess("Saved!", 2000);
+			if(cNum >= 30)
+				setError("Invalid refresh interval, has to be greater than 4.");
+			else{
+				setTimeout(function(){
+					chrome.extension.sendMessage({browsing: "editSettings2", name: "refreshInterval", setting: parseInt($(".rIntervInp").val())}, function(callback){
+						console.log(callback);
+					});
+				}, aLoadTime);
+				setSuccess("Saved!", 2000);
+			}
 		}else
 			setError("Invalid refresh interval.");
 	}
