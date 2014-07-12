@@ -283,8 +283,9 @@ $(document).ready(function(){
 					</div>\
 				</li>');
 		if(animate){
-			$(".newchann").slideDown();
-			$(".addm").slideUp();
+			$(".addm").css("margin-top", "-60px");
+			$(".addm").fadeOut();
+			$(".newchann").fadeIn();;
 		}else{
 			$(".newchann").show();
 			$(".addm").hide();
