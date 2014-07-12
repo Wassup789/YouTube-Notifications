@@ -27,7 +27,7 @@ This code is licensed under the MIT License
 **Latest Beta Release:**
 *Note: The beta release will not receive stable updates.*
 
- - **Version 1.0.9.0** -  07-11-2014 22:58
+ - **Version 1.0.9.0** -  07-12-2014 12:27
  - [Download Here via Google Drive][Dld_Beta_GD]
  - [Direct Link via Dropbox][Dld_Beta_DB]
 
