@@ -181,7 +181,7 @@ $(document).ready(function(){
 							<img src="" style="background-color:#FFF" width="50px" height="50px">\
 							<span class="utitle uts1">' + channels + '</span>\
 						</a>\
-						<input type="text" placeholder="Channel ID" value="' + encodeHTML(channels) + '" class="uinput">\
+						<input type="text" placeholder="Channel ID or URL" value="' + encodeHTML(channels) + '" class="uinput">\
 						<button class="bbutton cnumber brad1" setting="' + i + '">\
 							<span class="bbutton_n">Save</span>\
 						</button>\
@@ -198,7 +198,7 @@ $(document).ready(function(){
 							<img src="' + logos + '" width="50px" height="50px">\
 							<span class="utitle uts1">' + names + '</span>\
 						</a>\
-						<input type="text" placeholder="Channel ID" value="' + encodeHTML(channels) + '" class="uinput">\
+						<input type="text" placeholder="Channel ID or URL" value="' + encodeHTML(channels) + '" class="uinput">\
 						<button class="bbutton cnumber brad1" setting="' + i + '">\
 							<span class="bbutton_n">Save</span>\
 						</button>\
@@ -276,7 +276,7 @@ $(document).ready(function(){
 				<li class="channeld newchann" style="display: none;">\
 					<div class="content">\
 						<span class="utitle">New Channel</span>\
-						<input type="text" placeholder="Channel ID" class="uinput">\
+						<input type="text" placeholder="Channel ID or URL" class="uinput">\
 						<button class="bbutton cnumber cbtn nchanb" setting="' + number + '">\
 							<span class="bbutton_n">Save</span>\
 						</button>\

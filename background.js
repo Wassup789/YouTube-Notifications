@@ -125,9 +125,8 @@ $(document).ready(function(){
 			localStorage.setItem("serverStatus", true);
 			var channelsa = JSON.parse(localStorage.getItem("channels"));
 			for(var i = 0; i < Object.keys(channelsa).length; i++){
-				if(channelsa[i] != null){
+				if(channelsa[i] != null)
 					checkYoutube(i, channelsa[i]);
-				}
 			}
 			if(check == 1){
 				chrome.extension.sendMessage({browsing: "refreshPage"}, function(callback){});
@@ -151,7 +150,22 @@ $(document).ready(function(){
 			var channelsa = JSON.parse(localStorage.getItem("channels"));
 			cname = channelsa[cnum];
 		}
-		var channelStatus = false;
+		
+		if(cname.indexOf(".com/") > -1){
+			if(cname.split(".com/")[1].split("/").length < 1){
+				setVariable("ytStatus", cnum, false);
+				wyn.log(1, "Channel: \"" + cname + "\" does not exist or connection cannot be made");
+				return;
+			}else{
+				cname = cname.split(".com/")[1];
+				if(cname.indexOf("channel/") > -1)
+					cname = cname.split("channel/")[1].split("/")[0];
+				else if(cname.indexOf("user/") > -1)
+					cname = cname.split("user/")[1].split("/")[0];
+				setVariable("channels", cnum, cname);
+			}
+		}
+		
 		var channel = "http://gdata.youtube.com/feeds/api/users/" + cname + "/uploads?v=2";
 		var channel2 = "http://gdata.youtube.com/feeds/api/users/" + cname + "?v=2";
 
@@ -175,6 +189,8 @@ $(document).ready(function(){
 			}
 			return time;
 		}
+		
+		var channelStatus;
 		
 		$.ajax({
 			async: false,
