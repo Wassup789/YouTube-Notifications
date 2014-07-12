@@ -61,7 +61,7 @@ The import and export channels is formatted in JSON and can be transferred to ot
 ```
 
 ### Screenshots
-[![Screemshot 1](http://i.imgur.com/wlbw6vx.png)](http://i.imgur.com/wlbw6vx.png)
+[![Screenshot 1](http://i.imgur.com/iwlq9vA.png)](http://i.imgur.com/iwlq9vA.png)
 [![Screenshot 2](http://i.imgur.com/0E0QeA8.png)](http://i.imgur.com/0E0QeA8.png)
 [![Screenshot 3](http://i.imgur.com/H08EfDR.png)](http://i.imgur.com/H08EfDR.png)
 
