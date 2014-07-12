@@ -17,7 +17,11 @@ $(document).ready(function(){
 		getSlide1();
 	}
 	
-	$("#version").html("Version " + manifest.version + "<br/>by Wassup789");
+	var beta = true;
+	if(beta)
+		$("#version").html("Version " + manifest.version + " beta<br/>by Wassup789");
+	else
+		$("#version").html("Version " + manifest.version + "<br/>by Wassup789");
 	
 	var bc = localStorage.getItem("badgeCount");
 	localStorage.setItem("badgeCount", 0);
