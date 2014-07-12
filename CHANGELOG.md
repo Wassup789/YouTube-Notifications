@@ -9,6 +9,7 @@ Changelog
  * More quick transitions
  * Increased input sizes
  * Alignment changes
+ * Fixed channel does not exist appearing in random occasions
  * Changed "New Channel" button animation
  * Added total channels to both pages
  * Added channel listing names
