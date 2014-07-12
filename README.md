@@ -20,12 +20,14 @@ This code is licensed under the MIT License
 
 **Latest Stable Release:**
 
+ - **Last Stable Release:** 02-14-2014 21:41
  - [Download Here via Google Drive][Dld_Latest_GD]
  - [Direct Link via Dropbox][Dld_Latest_DB]
 
 **Latest Beta Release:**
 *Note: The beta release will not receive stable updates.*
 
+ - **Last Beta Release:** 07-11-2014 15:26
  - [Download Here via Google Drive][Dld_Beta_GD]
  - [Direct Link via Dropbox][Dld_Beta_DB]
 
