@@ -47,7 +47,7 @@ The import and export channels is formatted in JSON and can be transferred to ot
 *Note: Only available in v1.0.9.0 and higher*
 
 #### Format
-```json
+```
 [
     "channel1",
     "channel2",
@@ -59,6 +59,11 @@ The import and export channels is formatted in JSON and can be transferred to ot
     "extensionVersion"
 ]
 ```
+
+### Screenshots
+[![Screemshot 1](http://i.imgur.com/wlbw6vx.png)](http://i.imgur.com/wlbw6vx.png)
+[![Screenshot 2](http://i.imgur.com/0E0QeA8.png)](http://i.imgur.com/0E0QeA8.png)
+[![Screenshot 3](http://i.imgur.com/H08EfDR.png)](http://i.imgur.com/H08EfDR.png)
 
 ## Changelog
 [See CHANGELOG.md][CLog.md]
