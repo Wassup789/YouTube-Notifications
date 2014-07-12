@@ -1,6 +1,6 @@
-# Youtube Notifications #
+# YouTube Notifications #
 
-Get updates from your favorite Youtubers using this Chrome Extension. This extension uses the YouTube Data API Version 2.0 for it's data.
+Get updates from your favorite YouTube users using this Chrome Extension. This extension uses the YouTube Data API Version 2.0 for it's data.
 
 This code is licensed under the MIT License
 
@@ -36,7 +36,7 @@ This code is licensed under the MIT License
  - [Download Here via Google Drive][Dld_Archive]
 
 ## To-Do
- * Allow subscriber export from Youtube channel
+ * Allow subscriber export from YouTube channel
  * Fix TTS voice issue
 
 ## Options
