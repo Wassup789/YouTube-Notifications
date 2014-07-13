@@ -20,14 +20,14 @@ This code is licensed under the MIT License
 
 **Latest Stable Release:**
 
- - **Version 1.0.8.0** - 02-14-2014 21:41
+ - **Version 1.0.9.0** - 07-12-2014 17:44
  - [Download Here via Google Drive][Dld_Latest_GD]
  - [Direct Link via Dropbox][Dld_Latest_DB]
 
 **Latest Beta Release:**
 *Note: The beta release will not receive stable updates.*
 
- - **Version 1.0.9.0** -  07-12-2014 12:27
+ - **Version 1.0.9.0** -  07-11-2014 22:58
  - [Download Here via Google Drive][Dld_Beta_GD]
  - [Direct Link via Dropbox][Dld_Beta_DB]
 
@@ -69,8 +69,8 @@ The import and export channels is formatted in JSON and can be transferred to ot
 [See CHANGELOG.md][CLog.md]
 
 
-  [Dld_Latest_GD]: https://drive.google.com/open?id=0B_WfQfUn7IraaDVlU2lyZVdNSEk&authuser=0
-  [Dld_Latest_DB]: https://dl.dropboxusercontent.com/u/14210090/Youtube%20Notifications/Youtube_Notifications_v1.0.8.crx
+  [Dld_Latest_GD]: https://drive.google.com/file/d/0B_WfQfUn7IradkVqWnZUbU5GZUE/edit?usp=sharing
+  [Dld_Latest_DB]: https://dl.dropboxusercontent.com/u/14210090/Youtube%20Notifications/Youtube_Notifications_v1.0.9.0.crx
   [Dld_Beta_GD]: https://drive.google.com/file/d/0B_WfQfUn7IraaWl2UXlhbFYyS3c/edit?usp=sharing
   [Dld_Beta_DB]: https://dl.dropboxusercontent.com/u/14210090/Youtube%20Notifications/beta/Youtube_Notifications_v1.0.9.0_beta.crx
   [Dld_Archive]: https://drive.google.com/folderview?id=0B_WfQfUn7IracnBjX205T3V6NlE&usp=sharing
