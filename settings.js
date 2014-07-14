@@ -393,11 +393,10 @@ $(document).ready(function(){
 	}
 	
 	function isJSON(str) {
-		try {
+		try
 			JSON.parse(str);
-		} catch (e) {
+		catch (e)
 			return false;
-		}
 		return true;
 	}
 	
@@ -459,14 +458,6 @@ $(document).ready(function(){
 			console.log(callback);
 		});
 		setSuccess("Saved!", 2000);
-	}
-	
-	function removeJSONNull(obj){
-		var isArray = obj instanceof Array;
-		for (var k in obj){
-			if (obj[k]===null) isArray ? obj.splice(k,1) : delete obj[k];
-			else if (typeof obj[k]=="object") removeJSONNull(obj[k]);
-		}
 	}
 	
 	var statusTS = 0;
