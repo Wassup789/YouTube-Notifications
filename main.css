@@ -353,14 +353,14 @@ a .vpub{color:#838383;}
 	margin-left: 15px;
 }
 .ttsSelect {
-	width: 150px;
+	width: 144px;
 	margin-left: 10px;
 }
 .iblock {
 	display: inline-block;
 }
 .ttsDiv {
-	margin-left: 30px;
+	margin-left: 36px;
 }
 .nav-active:hover, .nav-active:active, .nav-active:focus{background: -webkit-linear-gradient(top, #e22b27 0%,#c2191e 100%);}
 label,input,button,select,textarea{font-size:13px;font-weight:normal;line-height:18px;}

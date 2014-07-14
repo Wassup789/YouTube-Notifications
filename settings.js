@@ -613,45 +613,43 @@ $(document).ready(function(){
 		var monthNames = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
 		var prefix = "",
 			dateMonth = date.getMonth()+1;
-		if(dateMonth.length < 2){
+		if(dateMonth.length < 2)
 			prefix = "0";
-		}
-		if (interval > 1) {
+		
+		if (interval > 1)
 			return prefix + (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
-		}
+		
 		interval = Math.floor(seconds / 2592000);
-		if (interval > 1) {
+		if (interval > 1)
 			return prefix + (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
-		}
+		
 		interval = Math.floor(seconds / 86400);
-		if (interval > 1) {
-			return prefix + (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
-		}
+		if (interval > 1) 
+			return interval + " days";
+		
 		interval = Math.floor(seconds / 3600);
-		if (interval > 1) {
-			if(interval > 23){
+		if (interval > 1){
+			if(interval > 23)
 				return "1 day";
-			}else{
+			else
 				return interval + " hours";
-			}
 		}
+		
 		interval = Math.floor(seconds / 60);
 		if (interval > 1) {
-			if(interval > 59){
+			if(interval > 59)
 				return "1 hour";
-			}else{
+			else
 				return interval + " minutes";
-			}
 		}
+		
 		interval = Math.floor(seconds);
 		if (interval > 1) {
-			if(interval > 59){
+			if(interval > 59)
 				return "1 minute";
-			}else{
+			else
 				return interval + " seconds";
-			}
-		}else{
+		}else
 			return interval + " second";
-		}
 	}
 });
