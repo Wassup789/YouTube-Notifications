@@ -6,6 +6,10 @@ $(document).ready(function(){
 	var manifest = chrome.runtime.getManifest();
 	var ns = new Audio("sound/notification.mp3");
 	
+	chrome.notifications.onClicked.addListener(ntClicked);
+	chrome.notifications.onButtonClicked.addListener(ntBClicked);
+	chrome.notifications.onClosed.addListener(ntCClicked);
+	
 	chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 		if (request.browsing == "setSettings")
 			sendResponse(setSettings());
@@ -291,7 +295,7 @@ $(document).ready(function(){
 	}
 
 	function notify(ntID, options){
-		chrome.notifications.create(ntID, options, function createCallback(){
+		chrome.notifications.create(ntID, options, function(){
 			var bc = localStorage.getItem("badgeCount");
 			localStorage.setItem("badgeCount", ++bc);
 			bc = localStorage.getItem("badgeCount");
@@ -324,7 +328,7 @@ $(document).ready(function(){
 		}
 		wyn.log(0, "User clicked on notification; NTID: " + ntID);
 		wyn.log(0, "Sending user to " + ytLinka[ntID.split("-")[4]]);
-		chrome.notifications.clear(ntID, function(wasCleared){});
+		chrome.notifications.clear(ntID);
 	}
 	
 	function ntBClicked(ntID, btnID){
@@ -475,12 +479,10 @@ $(document).ready(function(){
 	function updateBadge(options) {
 		var t = options.text,
 			c = options.color||options.colour;
-		if(t !== undefined){
+		if(t !== undefined)
 			chrome.browserAction.setBadgeText({text: (t||'')});
-		}
-		if(c !== undefined) {
+		if(c !== undefined)
 			chrome.browserAction.setBadgeBackgroundColor({color: c});
-		}
 	}
 	
 	function remBadge() {
@@ -506,15 +508,13 @@ $(document).ready(function(){
 	
 	function createTab(urL) {
 		var numTabs = 0;
-		chrome.windows.getAll(function(data){numTabs = data.length})
-		if(numTabs > 0)
-			chrome.tabs.create({url: urL});
-		else
-			chrome.windows.create({url: urL});
+		chrome.windows.getAll(function(data){
+			numTabs = data.length;
+			if(numTabs > 0)
+				chrome.tabs.create({url: urL});
+			else
+				chrome.windows.create({url: urL});
+		});
 	}
-	
-	chrome.notifications.onClicked.addListener(ntClicked);
-	chrome.notifications.onButtonClicked.addListener(ntBClicked);
-	chrome.notifications.onClosed.addListener(ntCClicked);
 	refresh();
 });
