@@ -393,10 +393,11 @@ $(document).ready(function(){
 	}
 	
 	function isJSON(str) {
-		try
+		try{
 			JSON.parse(str);
-		catch (e)
+		}catch (e){
 			return false;
+		}
 		return true;
 	}
 	
