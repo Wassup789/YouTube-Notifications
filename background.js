@@ -1,7 +1,7 @@
 var wyn = {};
 $(document).ready(function(){
-	var logger = window["console"]["log"];
-	//window["console"]["log"] = function(){};
+	var logger = window.console.log;
+	//window.console.log = function(){};
 	
 	var manifest = chrome.runtime.getManifest();
 	var ns = new Audio("sound/notification.mp3");
@@ -177,22 +177,22 @@ $(document).ready(function(){
 		var channel2 = "https://gdata.youtube.com/feeds/api/users/" + cname + "/uploads?v=2&alt=json";
 
 		String.prototype.trunc = String.prototype.trunc ||
-	      function(n){
-	          return this.length>n ? this.substr(0,n-1)+'...' : this;
-	      };
+			function(n){
+				return this.length>n ? this.substr(0,n-1)+'...' : this;
+			};
 
 		String.prototype.toHHMMSS = function () {
 			var sec_num = parseInt(this, 10);
-			var hours   = Math.floor(sec_num / 3600);
+			var hours = Math.floor(sec_num / 3600);
 			var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
 			var seconds = sec_num - (hours * 3600) - (minutes * 60);
-			if (hours   < 10) {hours   = "0"+hours;}
+			if (hours < 10) {hours = "0"+hours;}
 			if (minutes < 10) {minutes = "0"+minutes;}
 			if (seconds < 10) {seconds = "0"+seconds;}
 			if (hours == 0){
-				var time    = minutes+':'+seconds;
+				var time = minutes+':'+seconds;
 			}else{
-				var time    = hours+':'+minutes+':'+seconds;
+				var time = hours+':'+minutes+':'+seconds;
 			}
 			return time;
 		}
@@ -230,18 +230,18 @@ $(document).ready(function(){
 			type: "GET",
 			url: channel2,
 			success: function(data) {
-			   	var video = ({
-			   		url: 			data.feed.entry[0].media$group.media$player.url,
-			   		description: 	data.feed.entry[0].media$group.media$description.$t.substring(0,100).replace(/(\r\n|\n|\r)/gm," "),
-			   		timestamp: 		new Date(Date.parse(data.feed.entry[0].published.$t)).getTime(),
-			   		title: 			data.feed.entry[0].title.$t,
-			   		image: 			data.feed.entry[0].media$group.media$thumbnail[2].url.replace("https://", "http://"),
-			   		name: 			data.feed.entry[0].author[0].name.$t,
-			   		views: 			data.feed.entry[0].yt$statistics.viewCount,
-			   		seconds: 		data.feed.entry[0].media$group.yt$duration.seconds,
-			   		likes: 			data.feed.entry[0].yt$rating.numLikes,
-			   		dislikes: 		data.feed.entry[0].yt$rating.numDislikes,
-			   	});
+				var video = ({
+					url: 			data.feed.entry[0].media$group.media$player.url,
+					description: 	data.feed.entry[0].media$group.media$description.$t.substring(0,100).replace(/(\r\n|\n|\r)/gm," "),
+					timestamp: 		new Date(Date.parse(data.feed.entry[0].published.$t)).getTime(),
+					title: 			data.feed.entry[0].title.$t,
+					image: 			data.feed.entry[0].media$group.media$thumbnail[2].url.replace("https://", "http://"),
+					name: 			data.feed.entry[0].author[0].name.$t,
+					views: 			data.feed.entry[0].yt$statistics.viewCount,
+					seconds: 		data.feed.entry[0].media$group.yt$duration.seconds,
+					likes: 			data.feed.entry[0].yt$rating.numLikes,
+					dislikes: 		data.feed.entry[0].yt$rating.numDislikes
+				});
 
 				var ytReleasea = JSON.parse(localStorage.getItem("ytReleases"));
 				
@@ -254,7 +254,7 @@ $(document).ready(function(){
 				
 				wyn.log(0, "Checking YouTube User: " + video.name);
 				
-			    if(video.timestamp > ytReleasea[cnum]) {					
+				if(video.timestamp > ytReleasea[cnum]) {					
 					if(video.views == "301")
 						video.views = "301+";
 					video.likes = parseInt(video.likes);
@@ -264,7 +264,7 @@ $(document).ready(function(){
 					if((likesa + dislikesa) > 100)
 						dislikesa--;
 					
- 				    var options = {
+					var options = {
 						type: "image",
 						priority: 0,
 						title: video.title + " by " + video.name,
@@ -386,7 +386,7 @@ $(document).ready(function(){
 	
 	Array.prototype.clean = function(deleteValue) {
 		for (var i = 0; i < this.length; i++) {
-			if (this[i] == deleteValue) {         
+			if (this[i] == deleteValue) {
 			this.splice(i, 1);
 			i--;
 			}
