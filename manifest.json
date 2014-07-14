@@ -6,7 +6,7 @@
   "name": "YouTube Notifications (beta)",
   "description": "Get notifications when selected YouTube users upload a new video.",
   "version": "1.0.9.1",
-  "permissions": [ "notifications", "*://*.youtube.com/*"],
+  "permissions": [ "notifications", "*://*.youtube.com/*", "*://*.ytimg.com/*"],
   "browser_action": {
     "default_icon": "img/48.png",
     "default_popup": "settings.html"

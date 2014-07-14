@@ -173,8 +173,8 @@ $(document).ready(function(){
 			}
 		}
 		
-		var channel = "http://gdata.youtube.com/feeds/api/users/" + cname + "?v=2";
-		var channel2 = "http://gdata.youtube.com/feeds/api/users/" + cname + "/uploads?v=2";
+		var channel = "https://gdata.youtube.com/feeds/api/users/" + cname + "?v=2&alt=json";
+		var channel2 = "https://gdata.youtube.com/feeds/api/users/" + cname + "/uploads?v=2&alt=json";
 
 		String.prototype.trunc = String.prototype.trunc ||
 	      function(n){
@@ -205,11 +205,12 @@ $(document).ready(function(){
 			dataType: "text",
 			url: channel,
 			success: function(data){
-					var lurl = data.split("<media:thumbnail url='")[1].split("'/>")[0];
-					var curl = data.split("<link rel='alternate' type='text/html' href='")[1].split("'/>")[0];
-					setVariable("ytLogos", cnum, lurl);
-					setVariable("ytChannelUrls", cnum, curl);
-					channelStatus = true;
+				data = JSON.parse(data);
+				var lurl = data.entry.media$thumbnail.url;
+				var curl = data.entry.link[0].href
+				setVariable("ytLogos", cnum, lurl);
+				setVariable("ytChannelUrls", cnum, curl);
+				channelStatus = true;
 			},
 			error: function(XMLHttpRequest, textStatus, errorThrown) {
 				channelStatus = false;
@@ -229,19 +230,18 @@ $(document).ready(function(){
 			type: "GET",
 			url: channel2,
 			success: function(data) {
-			   	data = xmlToJson(data).feed;
+			   	//data = xmlToJson(data).feed;
 			   	var video = ({
-			   		url: 			data.entry[0].link[0]["@attributes"].href, 
-			   		id: 			data.entry[0].link[0]["@attributes"].href.match(/.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#\&\?]*).*/)[1], 
-			   		timestamp: 		new Date(Date.parse(data.entry[0].published["#text"])).getTime(), 
-			   		title: 			data.entry[0].title["#text"], 
-			   		description: 	data.entry[0]["media:group"]["media:description"]["#text"].trunc(100,true), 
-			   		image: 			"http://img.youtube.com/vi/"+data.entry[0].link[0]["@attributes"].href.match(/.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#\&\?]*).*/)[1]+"/hqdefault.jpg",
-			   		name: 			data.author.name["#text"],
-			   		views: 			findObj(data, "viewCount"),
-			   		seconds: 		findObj(data, "seconds"),
-			   		likes: 			findObj(data, "numLikes"),
-			   		dislikes: 		findObj(data, "numDislikes"),
+			   		url: 			data.feed.entry[0].media$group.media$player.url,
+			   		description: 	data.feed.entry[0].media$group.media$description.$t.substring(0,100).replace(/(\r\n|\n|\r)/gm," "),
+			   		timestamp: 		new Date(Date.parse(data.feed.entry[0].published.$t)).getTime(),
+			   		title: 			data.feed.entry[0].title.$t,
+			   		image: 			data.feed.entry[0].media$group.media$thumbnail[2].url.replace("https://", "http://"),
+			   		name: 			data.feed.entry[0].author[0].name.$t,
+			   		views: 			data.feed.entry[0].yt$statistics.viewCount,
+			   		seconds: 		data.feed.entry[0].media$group.yt$duration.seconds,
+			   		likes: 			data.feed.entry[0].yt$rating.numLikes,
+			   		dislikes: 		data.feed.entry[0].yt$rating.numDislikes,
 			   	});
 
 				var ytReleasea = JSON.parse(localStorage.getItem("ytReleases"));
@@ -267,7 +267,7 @@ $(document).ready(function(){
 					
  				    var options = {
 						type: "image",
-						priority: 1,
+						priority: 0,
 						title: video.title + " by " + video.name,
 						message: video.description,
 						imageUrl: video.image,
@@ -279,13 +279,9 @@ $(document).ready(function(){
 						}, {
 							title: "Close"
 						}]
-					}
+					};
  					var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + cnum;
  					notify(ntID, options);
-					var bc = localStorage.getItem("badgeCount");
-					localStorage.setItem("badgeCount", ++bc);
-					bc = localStorage.getItem("badgeCount");
-					updateBadge({colour:'#e12a27', text:"" + bc});
 					wyn.log(0, "Found new YouTube video for " + video.name, "green");
 				}
 			},
@@ -297,13 +293,17 @@ $(document).ready(function(){
 
 	function notify(ntID, options){
 		chrome.notifications.create(ntID, options, function createCallback(){
+			var bc = localStorage.getItem("badgeCount");
+			localStorage.setItem("badgeCount", ++bc);
+			bc = localStorage.getItem("badgeCount");
+			updateBadge({colour:'#e12a27', text:"" + bc});
+			
 			ns.volume = 0.6;
 			ns.play();
 			if(JSON.parse(localStorage.getItem("settings"))["tts"]){
 				var voice = JSON.parse(localStorage.getItem("settings"))["ttsVoice"];
 				var message = new SpeechSynthesisUtterance();
 				message.voice = speechSynthesis.getVoices()[voice];
-				console.log(speechSynthesis.getVoices());
 				message.text = options.title;
 				speechSynthesis.speak(message);
 			}
@@ -451,17 +451,6 @@ $(document).ready(function(){
 		return({response: state});
 	}
 	
-	function findObj(object, name) {
-		if (name in object) return object[name];
-		for (key in object) {
-			if ((typeof (object[key])) == 'object') {
-				var t = findObj(object[key], name);
-				if (t) return t;
-			}
-		}
-		return null;
-	}
-	
 	function setVariable(item, num, var1, clean){
 		if (typeof clean === 'undefined')
 			clean = true;
@@ -478,7 +467,7 @@ $(document).ready(function(){
 			var yt = JSON.parse(localStorage.getItem(settings));
 			yt[cnum] = cont;
 			localStorage.setItem(settings, JSON.stringify(yt));
-			return("Changed variable:\"" + settings + "\" for User #" + cnum + " to: \"" + cont + "\".");
+			return("Changed variable: \"" + settings + "\" for User #" + cnum + " to: \"" + cont + "\".");
 		}else{
 			return("Usage: changeVariable(setting, user#, content);.");
 		}
