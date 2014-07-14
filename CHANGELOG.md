@@ -1,6 +1,10 @@
 Changelog
 =====
-## v1.0.9.0 (BETA)
+## v1.0.9.1 (BETA)
+ * Requires new permission to access ytimg.com for video images
+ * Swapped request URLs from XML to JSON
+ * Removed unreliable JSON search
+## v1.0.9.0 (07-12-2014)
  * First major overhaul
  * Added source code to GitHub
    * No history of past versions

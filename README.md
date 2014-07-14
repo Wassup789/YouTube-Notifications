@@ -14,6 +14,7 @@ This code is licensed under the MIT License
 ### Permissions
  - notifications
  - \*://\*.youtube.com/\*
+ - \*://\*.ytimg.com/\*
 
 ## Downloads
 
@@ -38,6 +39,7 @@ This code is licensed under the MIT License
 ## To-Do
  * Allow subscriber export from YouTube channel
  * Fix TTS voice issue
+ * Migrate from YouTube Data API v2 to v3
 
 ## Options
 
