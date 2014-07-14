@@ -230,7 +230,6 @@ $(document).ready(function(){
 			type: "GET",
 			url: channel2,
 			success: function(data) {
-			   	//data = xmlToJson(data).feed;
 			   	var video = ({
 			   		url: 			data.feed.entry[0].media$group.media$player.url,
 			   		description: 	data.feed.entry[0].media$group.media$description.$t.substring(0,100).replace(/(\r\n|\n|\r)/gm," "),
@@ -312,7 +311,7 @@ $(document).ready(function(){
 
 	function ntClicked(ntID){
 		var ytLinka = JSON.parse(localStorage.getItem("ytLinks"));
-		chrome.tabs.create({url: ytLinka[ntID.split("-")[4]]});
+		createTab(ytLinka[ntID.split("-")[4]]);
 		var bc = localStorage.getItem("badgeCount");
 		if(bc > 1){
 			bc--;
@@ -331,7 +330,7 @@ $(document).ready(function(){
 	function ntBClicked(ntID, btnID){
 		if(btnID == 0){
 			var ytLinka = JSON.parse(localStorage.getItem("ytLinks"));
-			chrome.tabs.create({url: ytLinka[ntID.split("-")[4]]});
+			createTab(ytLinka[ntID.split("-")[4]]);
 			remBadge();
 			wyn.log(0, "User clicked on \"Watch Video\" button; NTID: " + ntID);
 			wyn.log(0, "Sending user to " + ytLinka[ntID.split("-")[4]]);
@@ -347,43 +346,6 @@ $(document).ready(function(){
 			wyn.log(0, "User clicked on \"X\" button; NTID: " + ntID);
 		}else{}
 	}
-	
-	function xmlToJson(xml) {
-		
-		var obj = {};
-
-		if (xml.nodeType == 1) {
-			// do attributes
-			if (xml.attributes.length > 0) {
-			obj["@attributes"] = {};
-				for (var j = 0; j < xml.attributes.length; j++) {
-					var attribute = xml.attributes.item(j);
-					obj["@attributes"][attribute.nodeName] = attribute.value;
-				}
-			}
-		} else if (xml.nodeType == 3) {
-			obj = xml.nodeValue;
-		}
-
-		// do children
-		if (xml.hasChildNodes()) {
-			for(var i = 0; i < xml.childNodes.length; i++) {
-				var item = xml.childNodes.item(i);
-				var nodeName = item.nodeName;
-				if (typeof(obj[nodeName]) == "undefined") {
-					obj[nodeName] = xmlToJson(item);
-				} else {
-					if (typeof(obj[nodeName].push) == "undefined") {
-						var old = obj[nodeName];
-						obj[nodeName] = [];
-						obj[nodeName].push(old);
-					}
-					obj[nodeName].push(xmlToJson(item));
-				}
-			}
-		}
-		return obj;
-	};
 
 	function updateSettings(setting, var1){
 		var state;
@@ -540,6 +502,15 @@ $(document).ready(function(){
 		for(var i = 0; i < len; i++)
 			text += charset.charAt(Math.floor(Math.random() * charset.length));
 		return text;
+	}
+	
+	function createTab(urL) {
+		var numTabs = 0;
+		chrome.windows.getAll(function(data){numTabs = data.length})
+		if(numTabs > 0)
+			chrome.tabs.create({url: urL});
+		else
+			chrome.windows.create({url: urL});
 	}
 	
 	chrome.notifications.onClicked.addListener(ntClicked);
