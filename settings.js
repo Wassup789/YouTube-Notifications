@@ -610,9 +610,9 @@ $(document).ready(function(){
 	function timeSince(date) {
 		var seconds = Math.floor((new Date() - date) / 1000);
 		var interval = Math.floor(seconds / 31536000);
-		var monthNames = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
 		var prefix = "",
 			dateMonth = date.getMonth()+1;
+		
 		if(dateMonth.length < 2)
 			prefix = "0";
 		
