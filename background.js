@@ -1,7 +1,7 @@
 var wyn = {};
 $(document).ready(function(){
 	var logger = window.console.log;
-	//window.console.log = function(){};
+	window.console.log = function(){};
 	
 	var manifest = chrome.runtime.getManifest();
 	var ns = new Audio("sound/notification.mp3");

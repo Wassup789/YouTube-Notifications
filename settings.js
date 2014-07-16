@@ -1,6 +1,6 @@
 $(document).ready(function(){
 	var logger = window.console.log;
-	//window.console.log = function(){};
+	window.console.log = function(){};
 	
 	$('#content').css('height', $('#main').height());
 	var manifest = chrome.runtime.getManifest();
@@ -17,7 +17,7 @@ $(document).ready(function(){
 		getSlide1();
 	}
 	
-	var beta = true;
+	var beta = false;
 	if(beta)
 		$("#version").html("Version " + manifest.version + " beta<br/>by Wassup789");
 	else

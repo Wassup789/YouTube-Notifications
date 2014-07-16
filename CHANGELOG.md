@@ -1,9 +1,11 @@
 Changelog
 =====
-## v1.0.9.1 (BETA)
+## v1.0.9.1 (07-15-2014)
+ * Major connection error fixed
  * Requires new permission to access ytimg.com for video images
  * Swapped request URLs from XML to JSON
  * Removed unreliable JSON search
+ * TTS abbreviation fix
  * Fixed notification click
 
 ## v1.0.9.0 (07-12-2014)
