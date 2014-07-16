@@ -105,23 +105,25 @@ $(document).ready(function(){
 	}
 
 	function checkAllYoutubeUsers(check){
-		var ytCheck = "http://gdata.youtube.com";
+		var ytCheck = "https://gdata.youtube.com/feeds/";
 		var ytStatus = false;
 		
-		if(JSON.parse(localStorage.getItem("channels")).length >= 30 && JSON.parse(localStorage.getItem("settings"))["refreshInterval"] < 5){
+		if(JSON.parse(localStorage.getItem("channels")).length >= 30 && JSON.parse(localStorage.getItem("settings"))["refreshInterval"] < 5)
 			setVariable("settings", "refreshInterval", 5, false);
-		}
 		
 		$.ajax({
 			async: false,
-			type: "GET",
+			type: "POST",
 			dataType: "text",
 			url: ytCheck,
 			success: function(data) {
 				ytStatus = true;
 			},
 			error: function(XMLHttpRequest, textStatus, errorThrown) {
-				ytStatus = false;
+				if(XMLHttpRequest.status == 400)
+					ytStatus = true;
+				else
+					ytStatus = false;
 			}
 		});
 		if(!ytStatus){
@@ -307,6 +309,11 @@ $(document).ready(function(){
 				var voice = JSON.parse(localStorage.getItem("settings"))["ttsVoice"];
 				var message = new SpeechSynthesisUtterance();
 				message.voice = speechSynthesis.getVoices()[voice];
+				var sList =  ["\\bEp\\b", "\\b\Ep.\b", "\\bPt\\b", "\\bPt.\\b"];
+				var sList2 = ["Episode", "Episode", "Part", "Part"];
+				for(var i = 0; i > sList.length; i++)
+					options.title.replace(new RegExp(sList[i], "g"), sList2[i]);
+				options.title = options.title
 				message.text = options.title;
 				speechSynthesis.speak(message);
 			}
