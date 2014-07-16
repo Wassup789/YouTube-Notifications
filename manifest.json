@@ -3,9 +3,9 @@
   "background": {
       "scripts": [ "jquery.min.js", "background.js" ]
   },
-  "name": "YouTube Notifications",
+  "name": "YouTube Notifications (beta)",
   "description": "Get notifications when selected YouTube users upload a new video.",
-  "version": "1.0.9.1",
+  "version": "1.0.9.2",
   "permissions": [ "notifications", "*://*.youtube.com/*", "*://*.ytimg.com/*"],
   "browser_action": {
     "default_icon": "img/48.png",
