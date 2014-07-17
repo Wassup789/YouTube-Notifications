@@ -1,7 +1,7 @@
 var wyn = {};
 $(document).ready(function(){
 	var logger = window.console.log;
-	window.console.log = function(){};
+	//window.console.log = function(){};
 	
 	var manifest = chrome.runtime.getManifest();
 	var ns = new Audio("sound/notification.mp3");
@@ -105,7 +105,7 @@ $(document).ready(function(){
 	}
 
 	function checkAllYoutubeUsers(check){
-		var ytCheck = "https://gdata.youtube.com/feeds/";
+		var ytCheck = "https://gdata.youtube.com/feeds/api/users/YouTube?v=2";
 		var ytStatus = false;
 		
 		if(JSON.parse(localStorage.getItem("channels")).length >= 30 && JSON.parse(localStorage.getItem("settings"))["refreshInterval"] < 5)
@@ -113,7 +113,7 @@ $(document).ready(function(){
 		
 		$.ajax({
 			async: false,
-			type: "POST",
+			type: "GET",
 			dataType: "text",
 			url: ytCheck,
 			success: function(data) {
@@ -309,11 +309,10 @@ $(document).ready(function(){
 				var voice = JSON.parse(localStorage.getItem("settings"))["ttsVoice"];
 				var message = new SpeechSynthesisUtterance();
 				message.voice = speechSynthesis.getVoices()[voice];
-				var sList =  ["\\bEp\\b", "\\b\Ep.\b", "\\bPt\\b", "\\bPt.\\b"];
+				var sList =  ["\\bEp\\b", "\\bEp.\\b", "\\bPt\\b", "\\bPt.\\b"];
 				var sList2 = ["Episode", "Episode", "Part", "Part"];
-				for(var i = 0; i > sList.length; i++)
-					options.title.replace(new RegExp(sList[i], "g"), sList2[i]);
-				options.title = options.title
+				for(var i = 0; i < sList.length; i++)
+					options.title = options.title.replace(new RegExp(sList[i], "g"), sList2[i]);
 				message.text = options.title;
 				speechSynthesis.speak(message);
 			}

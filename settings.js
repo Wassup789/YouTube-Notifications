@@ -1,6 +1,6 @@
 $(document).ready(function(){
 	var logger = window.console.log;
-	window.console.log = function(){};
+	//window.console.log = function(){};
 	
 	$('#content').css('height', $('#main').height());
 	var manifest = chrome.runtime.getManifest();
