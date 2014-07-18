@@ -242,7 +242,7 @@ $(document).ready(function(){
 	});
 		
 	$(document).on("click", "a", function(){
-		if($(this).attr("href") != "" || $(this).attr("href") != null)
+		if($(this).attr("href") != null)
 			chrome.tabs.create({url: $(this).attr("href")});
 	});
 	
