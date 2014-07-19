@@ -64,12 +64,19 @@ The import and export channels is formatted in JSON and can be transferred to ot
 
 ### Screenshots
 **Options - Page 1**
+
 [![Screenshot 1](http://i.imgur.com/iwlq9vA.png)](http://i.imgur.com/iwlq9vA.png)
+
 **Options - Page 2**
+
 [![Screenshot 2](http://i.imgur.com/wlbw6vx.png)](http://i.imgur.com/wlbw6vx.png)
+
 **Options - Page 2 - Bottom**
+
 [![Screenshot 3](http://i.imgur.com/wy5Glxa.png)](http://i.imgur.com/wy5Glxa.png)
+
 **Example Notification**
+
 [![Screenshot 4](http://i.imgur.com/H08EfDR.png)](http://i.imgur.com/H08EfDR.png)
 
 ## Changelog
