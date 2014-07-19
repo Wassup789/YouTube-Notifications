@@ -17,23 +17,22 @@ $(document).ready(function(){
 		getSlide1();
 	}
 	
-	var beta = false;
+	var beta = true;
 	if(beta)
 		$("#version").html("Version " + manifest.version + " beta<br/>by Wassup789");
 	else
 		$("#version").html("Version " + manifest.version + "<br/>by Wassup789");
-	
+		
 	var bc = localStorage.getItem("badgeCount");
 	localStorage.setItem("badgeCount", 0);
 	updateBadge({colour:'#e12a27', text:""});
 	chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-		if (request.browsing == "refreshPage"){
+		if (request.browsing == "refreshPage")
 			sendResponse(refreshPage());
-		}
 	});
 	var cNum;
 	function getSlide1(){
-		chrome.extension.sendMessage({browsing: "setSettings"},  function(callback) {
+		chrome.extension.sendMessage({browsing: "setSettings"},  function(callback){
 			console.log(callback);
 			if(callback.serverStatus == "false"){
 				setError("ERROR: Connection could not be made with YouTube API Servers. Refresh?", -1, true);
@@ -122,9 +121,9 @@ $(document).ready(function(){
 			switchSlide(0);
 		});
 	}
-	Array.prototype.clean = function(deleteValue) {
-		for (var i = 0; i < this.length; i++) {
-			if (this[i] == deleteValue) {         
+	Array.prototype.clean = function(deleteValue){
+		for (var i = 0; i < this.length; i++){
+			if (this[i] == deleteValue){         
 			this.splice(i, 1);
 			i--;
 			}
@@ -132,7 +131,7 @@ $(document).ready(function(){
 		return this;
 	};
 	function getSlide2(){
-		chrome.extension.sendMessage({browsing: "setSettings"},  function(callback) {
+		chrome.extension.sendMessage({browsing: "setSettings"},  function(callback){
 			console.log(callback);
 			var channelsa = JSON.parse(callback.channels);
 			cNum = channelsa.length;
@@ -147,6 +146,8 @@ $(document).ready(function(){
 			var animations = settings["animations"];
 			var tts = settings["tts"];
 			var ttsVoice = settings["ttsVoice"];
+			var notifications = settings["notifications"];
+			var nVol = settings["nVol"];
 			if(channelsa.length >= 30 && refreshInterval < 5){
 				chrome.extension.sendMessage({browsing: "editSettings2", name: "refreshInterval", setting: 5}, function(callback){
 					console.log(callback);
@@ -162,6 +163,10 @@ $(document).ready(function(){
 			else
 				$(".ttsSelect").hide();
 			$(".ttsSelect").val(ttsVoice);
+			$(".notifyInp").prop("checked", notifications);
+			
+			var volSlider = $(".nVolInp").slider({ range: "min", min: 0, max: 100, value: (nVol * 100), change: changeVolSlider});
+			volSlider.slider("float");
 			
 			var channelsa2 = JSON.parse(JSON.stringify(channelsa));
 			channelsa2[channelsa2.length] = cNamea;
@@ -169,10 +174,10 @@ $(document).ready(function(){
 			channelsa2 = channelsa2.clean();
 			if(channelsa2.length > 2){
 				$(".exportInp").val(JSON.stringify(channelsa2));
-				$(".exportInp").on("click", function () {
+				$(".exportInp").on("click", function (){
 					$(this).select();
 				});
-				$(".exportInp").on("input", function() { 
+				$(".exportInp").on("input", function(){ 
 					$(".exportInp").val(JSON.stringify(channelsa2));
 				});
 			}
@@ -233,11 +238,11 @@ $(document).ready(function(){
 			switchSlide(1);
 		});
 	}
-	$(document).on("click", ".cnumber", function(){	
+	$(document).on("click", ".cnumber", function(){
 		sendSettings($(this));
 	});
 	
-	$(document).on("click", ".cnumber2", function(){	
+	$(document).on("click", ".cnumber2", function(){
 		remSettings($(this));
 	});
 		
@@ -315,7 +320,7 @@ $(document).ready(function(){
 		refreshPage();
 	});
 
-	$(document).on("keypress", ".uinput", function(e) {
+	$(document).on("keypress", ".uinput", function(e){
 		if(e.which == 13)
 			sendSettings($(this).parent().children(".cnumber"));
 	});
@@ -345,7 +350,7 @@ $(document).ready(function(){
 		editInterv();
 	});
 	
-	$(document).on("keypress", ".rIntervInp", function(e) {
+	$(document).on("keypress", ".rIntervInp", function(e){
 		if(e.which == 13)
 			editInterv();
 	});
@@ -366,7 +371,7 @@ $(document).ready(function(){
 			setError("Invalid refresh interval.");
 	}
 	
-	function isInt(value) {
+	function isInt(value){
 		return !isNaN(value) && parseInt(Number(value)) == value;
 	}
 	
@@ -374,7 +379,7 @@ $(document).ready(function(){
 		importChannel();
 	});
 	
-	$(document).on("keypress", ".importInp", function(e) {
+	$(document).on("keypress", ".importInp", function(e){
 		if(e.which == 13)
 			importChannel();
 	});
@@ -390,7 +395,7 @@ $(document).ready(function(){
 			setError("Invalid channel import text entered.");
 	}
 	
-	function isJSON(str) {
+	function isJSON(str){
 		try{
 			JSON.parse(str);
 		}catch (e){
@@ -403,7 +408,7 @@ $(document).ready(function(){
 		editCname();
 	});
 	
-	$(document).on("keypress", ".cNameinp", function(e) {
+	$(document).on("keypress", ".cNameinp", function(e){
 		if(e.which == 13)
 			editCname();
 	});
@@ -459,11 +464,31 @@ $(document).ready(function(){
 		setSuccess("Saved!", 2000);
 	}
 	
+	$(document).on("change", ".notifyInp", function(){	
+		editNotifications();
+	});
+	
+	function editNotifications(){
+		chrome.extension.sendMessage({browsing: "editSettings2", name: "notifications", setting: $(".notifyInp").prop("checked")}, function(callback){
+			console.log(callback);
+		});
+		setSuccess("Saved!", 2000);
+	}
+	
+	function changeVolSlider(){
+		chrome.extension.sendMessage({browsing: "editSettings2", name: "nVol", setting: (parseInt($(".nVolInp").slider("value")) / 100)}, function(callback){
+			setSuccess("Saved!", 2000);
+		});
+	}
+	$(document).on("click", ".nVolBtn", function(){
+		chrome.extension.sendMessage({browsing: "testNotifyVol"});
+	});
+	
 	var statusTS = 0;
 	
 	function setError(message, timeout, refresh){
-		if (typeof timeout === 'undefined') { timeout = 3500; }
-		if (typeof refresh === 'undefined') { refresh = false; }
+		if (typeof timeout === 'undefined'){ timeout = 3500; }
+		if (typeof refresh === 'undefined'){ refresh = false; }
 		statusTS = Date.now();
 		var statusTS2 = Date.now();
 		$("#statusc").hide();
@@ -496,8 +521,8 @@ $(document).ready(function(){
 	}
 
 	function setSuccess(message, timeout, refresh){
-		if (typeof timeout === 'undefined') { timeout = 3500; }
-		if (typeof refresh === 'undefined') { refresh = false; }
+		if (typeof timeout === 'undefined'){ timeout = 3500; }
+		if (typeof refresh === 'undefined'){ refresh = false; }
 		statusTS = Date.now();
 		var statusTS2 = Date.now();
 		$("#statusc").hide();
@@ -590,22 +615,22 @@ $(document).ready(function(){
 				$('#content').css('height', parseInt($("#sl2").css("top").replace("px", "")) + $("#sl2").height());
 		}
 	}
-	function updateBadge(options) {
+	function updateBadge(options){
 		var t = options.text,
 			c = options.color||options.colour;
 		if(t !== undefined){
 			chrome.browserAction.setBadgeText({text: (t||'')});
 		}
-		if(c !== undefined) {
+		if(c !== undefined){
 			chrome.browserAction.setBadgeBackgroundColor({color: c});
 		}
 	}
 	
-	function encodeHTML(s) {
+	function encodeHTML(s){
 		return s.split('&').join('&amp;').split('<').join('&lt;').split('"').join('&quot;').split("'").join('&#39;');
 	}
 	
-	function timeSince(date) {
+	function timeSince(date){
 		var seconds = Math.floor((new Date() - date) / 1000);
 		var interval = Math.floor(seconds / 31536000);
 		var prefix = "",
@@ -634,7 +659,7 @@ $(document).ready(function(){
 		}
 		
 		interval = Math.floor(seconds / 60);
-		if (interval > 1) {
+		if (interval > 1){
 			if(interval > 59)
 				return "1 hour";
 			else
@@ -642,7 +667,7 @@ $(document).ready(function(){
 		}
 		
 		interval = Math.floor(seconds);
-		if (interval > 1) {
+		if (interval > 1){
 			if(interval > 59)
 				return "1 minute";
 			else

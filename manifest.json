@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "background": {
-      "scripts": [ "jquery.min.js", "background.js" ]
+      "scripts": [ "js/jquery.min.js", "js/background.js" ]
   },
   "name": "YouTube Notifications (beta)",
   "description": "Get notifications when selected YouTube users upload a new video.",

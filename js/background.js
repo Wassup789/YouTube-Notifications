@@ -25,6 +25,8 @@ $(document).ready(function(){
 			sendResponse(editChannels(request.setting));
 		if (request.browsing == "editSettings2")
 			sendResponse(editSettings2(request.name, request.setting, false));
+		if (request.browsing == "testNotifyVol")
+			sendResponse(testNotifyVol());
 	});
 
 	var temp = [];
@@ -75,6 +77,10 @@ $(document).ready(function(){
 		setVariable("settings", "tts", false, false);
 	if(settingsa["ttsVoice"] == null)
 		setVariable("settings", "ttsVoice", 0, false);
+	if(settingsa["notifications"] == null)
+		setVariable("settings", "notifications", true, false);
+	if(settingsa["nVol"] == null)
+		setVariable("settings", "nVol", 1, false);
 	
 	function setSettings(){
 		return({
@@ -286,8 +292,8 @@ $(document).ready(function(){
 						}]
 					};
  					var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + cnum;
- 					notify(ntID, options);
 					wyn.log(0, "Found new YouTube video for " + video.name, "green");
+					notify(ntID, options);
 				}
 			},
 			error: function(XMLHttpRequest, textStatus, errorThrown){
@@ -297,26 +303,29 @@ $(document).ready(function(){
 	}
 
 	function notify(ntID, options){
-		chrome.notifications.create(ntID, options, function(){
-			var bc = localStorage.getItem("badgeCount");
-			localStorage.setItem("badgeCount", ++bc);
-			bc = localStorage.getItem("badgeCount");
-			updateBadge({colour:'#e12a27', text:"" + bc});
-			
-			ns.volume = 0.6;
-			ns.play();
-			if(JSON.parse(localStorage.getItem("settings"))["tts"]){
-				var voice = JSON.parse(localStorage.getItem("settings"))["ttsVoice"];
-				var message = new SpeechSynthesisUtterance();
-				message.voice = speechSynthesis.getVoices()[voice];
-				var sList =  ["\\bEp\\b", "\\bEp.\\b", "\\bPt\\b", "\\bPt.\\b"];
-				var sList2 = ["Episode", "Episode", "Part", "Part"];
-				for(var i = 0; i < sList.length; i++)
-					options.title = options.title.replace(new RegExp(sList[i], "g"), sList2[i]);
-				message.text = options.title;
-				speechSynthesis.speak(message);
-			}
-		});
+		if(JSON.parse(localStorage.getItem("settings"))["notifications"]){
+			chrome.notifications.create(ntID, options, function(){
+				var bc = localStorage.getItem("badgeCount");
+				localStorage.setItem("badgeCount", ++bc);
+				bc = localStorage.getItem("badgeCount");
+				updateBadge({colour:'#e12a27', text:"" + bc});
+				
+				ns.volume = JSON.parse(localStorage.getItem("settings"))["nVol"];
+				ns.play();
+				if(JSON.parse(localStorage.getItem("settings"))["tts"]){
+					var voice = JSON.parse(localStorage.getItem("settings"))["ttsVoice"];
+					var message = new SpeechSynthesisUtterance();
+					message.voice = speechSynthesis.getVoices()[voice];
+					var sList =  ["\\bEp\\b", "\\bEp.\\b", "\\bPt\\b", "\\bPt.\\b"];
+					var sList2 = ["Episode", "Episode", "Part", "Part"];
+					for(var i = 0; i < sList.length; i++)
+						options.title = options.title.replace(new RegExp(sList[i], "g"), sList2[i]);
+					message.text = options.title;
+					speechSynthesis.speak(message);
+				}
+			});
+		}else
+			wyn.log(0, "Could not notify user, notifications disabled", "green");
 	}
 
 	function ntClicked(ntID){
@@ -432,6 +441,11 @@ $(document).ready(function(){
 			a.clean();
 		}
 		localStorage.setItem(item, JSON.stringify(a));
+	}
+	
+	function testNotifyVol(){
+		ns.volume = JSON.parse(localStorage.getItem("settings"))["nVol"];
+		ns.play();
 	}
 	
 	wyn.changeVariable = function(settings, cnum, cont){

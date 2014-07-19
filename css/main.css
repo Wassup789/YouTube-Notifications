@@ -246,7 +246,7 @@ a .vpub{color:#838383;}
 	-webkit-box-shadow: 0 1px 0 rgba(0,0,0,.15);
 }
 #loading {
-	background: url(img/loader.png);
+	background: url(../img/loader.png);
 	width: 170px;
 	height: 170px;
 	position: fixed;
@@ -361,6 +361,21 @@ a .vpub{color:#838383;}
 }
 .ttsDiv {
 	margin-left: 36px;
+}
+.nsDiv {
+	margin-left: 28px;
+}
+.nVolInp {
+	width: 115px;
+	margin: -31px 0 0 155px;
+}
+.nVolInp .ui-slider-range {
+	background: #36FF76;
+}
+.nVolInp .ui-state-hover {
+	border: 1px solid #09FB1C!important;
+	background: #C2FFC4 !important;
+	color: #34C705!important;
 }
 .nav-active:hover, .nav-active:active, .nav-active:focus{background: -webkit-linear-gradient(top, #e22b27 0%,#c2191e 100%);}
 label,input,button,select,textarea{font-size:13px;font-weight:normal;line-height:18px;}
