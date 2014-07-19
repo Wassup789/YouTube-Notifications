@@ -158,12 +158,18 @@ $(document).ready(function(){
 			$(".cNameinp").val(cNamea);
 			$(".animateInp").prop("checked", animations);
 			$(".ttsInp").prop("checked", tts);
+			$(".ttsSelect").val(ttsVoice);
+			$(".notifyInp").prop("checked", notifications);
+			
 			if($(".ttsInp").prop("checked"))
 				$(".ttsSelect").show();
 			else
 				$(".ttsSelect").hide();
-			$(".ttsSelect").val(ttsVoice);
-			$(".notifyInp").prop("checked", notifications);
+			
+			if($(".notifyInp").prop("checked"))
+				$(".nVolCont").show();
+			else
+				$(".nVolCont").hide();
 			
 			var volSlider = $(".nVolInp").slider({ range: "min", min: 0, max: 100, value: (nVol * 100), change: changeVolSlider});
 			volSlider.slider("float");
@@ -466,6 +472,10 @@ $(document).ready(function(){
 	
 	$(document).on("change", ".notifyInp", function(){	
 		editNotifications();
+		if($(".notifyInp").prop("checked"))
+			$(".nVolCont").show();
+		else
+			$(".nVolCont").hide();
 	});
 	
 	function editNotifications(){
