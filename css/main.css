@@ -377,6 +377,11 @@ a .vpub{color:#838383;}
 	background: #C2FFC4 !important;
 	color: #34C705!important;
 }
+.mainLab {
+	display: initial;
+	font-size: 14px;
+	font-weight: bold;
+}
 .nav-active:hover, .nav-active:active, .nav-active:focus{background: -webkit-linear-gradient(top, #e22b27 0%,#c2191e 100%);}
 label,input,button,select,textarea{font-size:13px;font-weight:normal;line-height:18px;}
 input,button,select,textarea{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;}
