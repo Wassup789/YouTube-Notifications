@@ -379,6 +379,7 @@ a .vpub{color:#838383;}
 }
 .mainLab {
 	display: initial;
+	cursor: pointer;
 	font-size: 14px;
 	font-weight: bold;
 }
