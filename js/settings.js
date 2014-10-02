@@ -27,8 +27,17 @@ $(document).ready(function(){
 	localStorage.setItem("badgeCount", 0);
 	updateBadge({colour:'#e12a27', text:""});
 	chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-		if (request.browsing == "refreshPage")
-			sendResponse(refreshPage());
+		switch (request.browsing) {
+			case "refreshPage":
+				sendResponse(refreshPage());
+				break;
+			case "refreshStart":
+				sendResponse(addLoading());
+				break;
+			case "refreshEnd":
+				sendResponse(remLoading());
+				break;
+		}
 	});
 	var cNum;
 	function getSlide1(){

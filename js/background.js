@@ -11,22 +11,32 @@ $(document).ready(function(){
 	chrome.notifications.onClosed.addListener(ntCClicked);
 	
 	chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-		if (request.browsing == "setSettings")
-			sendResponse(setSettings());
-		if (request.browsing == "removeSettings")
-			sendResponse(removeSettings(request.setting));
-		if (request.browsing == "updateSettings")
-			sendResponse(updateSettings(request.setting, request.var1));
-		if (request.browsing == "checkAllYoutube")
-			sendResponse(checkAllYoutubeUsers(0));
-		if (request.browsing == "checkYoutube")
-			sendResponse(checkYoutube(request.var1));
-		if (request.browsing == "editChannels")
-			sendResponse(editChannels(request.setting));
-		if (request.browsing == "editSettings2")
-			sendResponse(editSettings2(request.name, request.setting, false));
-		if (request.browsing == "testNotifyVol")
-			sendResponse(testNotifyVol());
+		switch (request.browsing) {
+			case "setSettings":
+				sendResponse(setSettings());
+				break;
+			case "removeSettings":
+				sendResponse(removeSettings(request.setting));
+				break;
+			case "updateSettings":
+				sendResponse(updateSettings(request.setting, request.var1));
+				break;
+			case "checkAllYoutube":
+				sendResponse(checkAllYoutubeUsers(0));
+				break;
+			case "checkYoutube":
+				sendResponse(checkYoutube(request.var1));
+				break;
+			case "editChannels":
+				sendResponse(editChannels(request.setting));
+				break;
+			case "editSettings2":
+				sendResponse(editSettings2(request.name, request.setting, false));
+				break;
+			case "testNotifyVol":
+				sendResponse(testNotifyVol());
+				break;
+		}
 	});
 
 	var temp = [];
@@ -135,21 +145,21 @@ $(document).ready(function(){
 		if(!ytStatus){
 			wyn.log(1, "Could not connect to YouTube API Servers");
 			localStorage.setItem("serverStatus", false);
-			if(check == 1){
+			if(check == 1)
 				chrome.extension.sendMessage({browsing: "refreshPage"}, function(callback){});
-			}
 			return;
 		}else{
 			wyn.log(0, "Connection success");
 			localStorage.setItem("serverStatus", true);
+			chrome.extension.sendMessage({browsing: "refreshStart"}, function(callback){});
 			var channelsa = JSON.parse(localStorage.getItem("channels"));
 			for(var i = 0; i < Object.keys(channelsa).length; i++){
 				if(channelsa[i] != null)
 					checkYoutube(i, channelsa[i]);
 			}
-			if(check == 1){
+			chrome.extension.sendMessage({browsing: "refreshEnd"}, function(callback){});
+			if(check == 1)
 				chrome.extension.sendMessage({browsing: "refreshPage"}, function(callback){});
-			}
 		}
 	}
 	
