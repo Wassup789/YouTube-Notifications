@@ -81,7 +81,7 @@ li .content {
 	line-height: 27px;
 	height: 50px;
 }
-img {margin-top: -12px;max-width: 67px;}
+img {margin-top: -12px;max-width: 67px;-webkit-user-drag: none;}
 
 #sl1, #sl2 {
 	position: absolute;
@@ -269,6 +269,7 @@ a .vpub{color:#838383;}
 }
 #ttitle {
 	margin-left: 75px;
+	cursor: default;
 }
 #tcredit , .ctotal{float:right;color:#919191!important;}
 #tcredit a{color:#686868!important;}

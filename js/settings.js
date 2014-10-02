@@ -171,7 +171,11 @@ $(document).ready(function(){
 			else
 				$(".nVolCont").hide();
 			
-			var volSlider = $(".nVolInp").slider({ range: "min", min: 0, max: 100, value: (nVol * 100), change: changeVolSlider});
+			$(".nVolInp").slider();
+			if($(".nVolInp").slider("value") / 100 != nVol)
+				var volSlider = $(".nVolInp").slider({ range: "min", min: 0, max: 100, value: (nVol * 100), change: changeVolSlider});
+			else
+				var volSlider = $(".nVolInp").slider({ range: "min", min: 0, max: 100, change: changeVolSlider});
 			volSlider.slider("float");
 			
 			var channelsa2 = JSON.parse(JSON.stringify(channelsa));
