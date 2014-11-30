@@ -33,8 +33,8 @@ $(document).ready(function(){
 			case "editSettings2":
 				sendResponse(editSettings2(request.name, request.setting, false));
 				break;
-			case "testNotifyVol":
-				sendResponse(testNotifyVol());
+			case "testNotify":
+				sendResponse(wyn.testNotify());
 				break;
 		}
 	});
@@ -453,9 +453,40 @@ $(document).ready(function(){
 		localStorage.setItem(item, JSON.stringify(a));
 	}
 	
-	function testNotifyVol(){
-		ns.volume = JSON.parse(localStorage.getItem("settings"))["nVol"];
-		ns.play();
+	wyn.testNotify = function(){
+		var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5);
+		var options = {
+			type: "image",
+			priority: 0,
+			title: "Video by Youtube Creator",
+			message: "Insert Description Here",
+			imageUrl: "img/null.gif",
+			iconUrl: "img/icon_yt.png",
+			contextMessage: "12:34 | 5,678 views | 90% likes | 10% dislikes",
+			buttons: [{
+				title: "Watch Video",
+				iconUrl: "img/icon_play2.png"
+			}, {
+				title: "Close"
+			}]
+		};
+		
+		chrome.notifications.create(ntID, options, function(){			
+			ns.volume = JSON.parse(localStorage.getItem("settings"))["nVol"];
+			ns.play();
+			
+			if(JSON.parse(localStorage.getItem("settings"))["tts"]){
+				var voice = JSON.parse(localStorage.getItem("settings"))["ttsVoice"];
+				var message = new SpeechSynthesisUtterance();
+				message.voice = speechSynthesis.getVoices()[voice];
+				var sList =  ["\\bEp\\b", "\\bEp.\\b", "\\bPt\\b", "\\bPt.\\b"];
+				var sList2 = ["Episode", "Episode", "Part", "Part"];
+				for(var i = 0; i < sList.length; i++)
+					options.title = options.title.replace(new RegExp(sList[i], "g"), sList2[i]);
+				message.text = options.title;
+				speechSynthesis.speak(message);
+			}
+		});
 	}
 	
 	wyn.changeVariable = function(settings, cnum, cont){

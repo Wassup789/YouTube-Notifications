@@ -504,7 +504,7 @@ $(document).ready(function(){
 		});
 	}
 	$(document).on("click", ".nVolBtn", function(){
-		chrome.extension.sendMessage({browsing: "testNotifyVol"});
+		chrome.extension.sendMessage({browsing: "testNotify"});
 	});
 	
 	var statusTS = 0;
