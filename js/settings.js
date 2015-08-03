@@ -17,11 +17,7 @@ $(document).ready(function(){
 		getSlide1();
 	}
 	
-	var beta = true;
-	if(beta)
-		$("#version").html("Version " + manifest.version + " beta<br/>by Wassup789");
-	else
-		$("#version").html("Version " + manifest.version + "<br/>by Wassup789");
+	$("#version").html("Version " + manifest.version + "<br/>by Wassup789");
 		
 	var bc = localStorage.getItem("badgeCount");
 	localStorage.setItem("badgeCount", 0);
@@ -39,6 +35,9 @@ $(document).ready(function(){
 				break;
 		}
 	});
+	
+	launchSpeechSynthesis();
+	
 	var cNum;
 	function getSlide1(){
 		chrome.extension.sendMessage({browsing: "setSettings"},  function(callback){
@@ -83,11 +82,11 @@ $(document).ready(function(){
 					var ytVTitle = yttitlesa[i];
 					var ytVLink = ytlinksa[i];
 					var newVideo = "";
-					//MS*S*M*H
-					if(ytVReleaseT + 1000*60*60*1 > Date.now()){
+					//S*M*H
+					if(parseInt(ytVReleaseT) + (1000*60*60*1) > Date.now()){
 						newVideo = "style=\"background-color: #54E954!important;\"";
 					}
-					var date = new Date(parseInt(ytVReleaseT));
+					var date = new Date(parseInt(ytVReleaseT)*1000);
 					date = timeSince(date);
 					if(date.indexOf("/") != -1){
 						date = "on " + date;
@@ -697,5 +696,18 @@ $(document).ready(function(){
 				return interval + " seconds";
 		}else
 			return interval + " second";
+	}
+	
+	function launchSpeechSynthesis(){
+		var speechSynthesisList = window.speechSynthesis.getVoices();
+		if(speechSynthesisList.length < 1){
+			setTimeout(function(){
+				launchSpeechSynthesis();
+			},100);
+		}else{
+			for(var i = 0; i < speechSynthesisList.length; i++){
+				$(".ttsSelect").append($("<option></option>").attr("value", i).text(speechSynthesisList[i].name));
+			}
+		}
 	}
 });

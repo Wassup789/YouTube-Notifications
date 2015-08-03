@@ -1,5 +1,7 @@
 var wyn = {};
 $(document).ready(function(){
+	$.ajaxSetup({async:false});
+	
 	var logger = window.console.log;
 	//window.console.log = function(){};
 	
@@ -43,7 +45,7 @@ $(document).ready(function(){
 	
 	var settings = {
 		"cName": "Main",
-		"refreshInterval": 2,
+		"refreshInterval": 10,
 		"animations": true,
 		"tts": false
 	};
@@ -68,6 +70,8 @@ $(document).ready(function(){
 		localStorage.setItem("ytTitles", JSON.stringify(temp));
 	if(localStorage.getItem("ytStatus") == null)
 		localStorage.setItem("ytStatus", JSON.stringify(temp));
+	if(localStorage.getItem("ytId") == null)
+		localStorage.setItem("ytId", JSON.stringify(temp));
 	if(localStorage.getItem("serverStatus") == null)
 		localStorage.setItem("serverStatus", true);
 	if(localStorage.getItem("badgeCount") == null)
@@ -105,6 +109,7 @@ $(document).ready(function(){
 			ytChannelUrls : localStorage.getItem("ytChannelUrls"),
 			ytTitles : localStorage.getItem("ytTitles"),
 			ytStatus : localStorage.getItem("ytStatus"),
+			ytId : localStorage.getItem("ytId"),
 			serverStatus : localStorage.getItem("serverStatus"),
 			settings : localStorage.getItem("settings"),
 			version : manifest.version
@@ -121,19 +126,21 @@ $(document).ready(function(){
 	}
 
 	function checkAllYoutubeUsers(check){
-		var ytCheck = "https://gdata.youtube.com/feeds/api/users/YouTube?v=2";
+		var ytCheck = "https://data.wassup789.ml/youtubenotifications/testserver.php";
 		var ytStatus = false;
 		
 		if(JSON.parse(localStorage.getItem("channels")).length >= 30 && JSON.parse(localStorage.getItem("settings"))["refreshInterval"] < 5)
 			setVariable("settings", "refreshInterval", 5, false);
 		
 		$.ajax({
-			async: false,
 			type: "GET",
-			dataType: "text",
+			dataType: "json",
 			url: ytCheck,
 			success: function(data) {
-				ytStatus = true;
+				if(data.status == "success")
+					ytStatus = true;
+				else
+					ytStatus = false;
 			},
 			error: function(XMLHttpRequest, textStatus, errorThrown) {
 				if(XMLHttpRequest.status == 400)
@@ -153,10 +160,11 @@ $(document).ready(function(){
 			localStorage.setItem("serverStatus", true);
 			chrome.extension.sendMessage({browsing: "refreshStart"}, function(callback){});
 			var channelsa = JSON.parse(localStorage.getItem("channels"));
-			for(var i = 0; i < Object.keys(channelsa).length; i++){
+			/*for(var i = 0; i < Object.keys(channelsa).length; i++){
 				if(channelsa[i] != null)
 					checkYoutube(i, channelsa[i]);
-			}
+			}*/
+			checkYoutubeBatch(channelsa);
 			chrome.extension.sendMessage({browsing: "refreshEnd"}, function(callback){});
 			if(check == 1)
 				chrome.extension.sendMessage({browsing: "refreshPage"}, function(callback){});
@@ -172,6 +180,105 @@ $(document).ready(function(){
 			str[1] = str[1].replace(/(\d{3})/g, '$1 ');
 		}
 		return str.join('.');
+	}
+	
+	function checkYoutubeBatch(channelList){
+		var sendArr = [];
+		for(var i = 0; i < channelList.length; i++){
+			var channelID,
+				channelName;
+			
+			var channelId = JSON.parse(localStorage.getItem("ytId"))[i];
+			if(typeof channelId === "undefined"){
+			
+				var channel = "https://data.wassup789.ml/youtubenotifications/getchannel.php?query=" + encodeURIComponent(channelList[i]);
+				$.ajax({
+					type: "GET",
+					dataType: "json",
+					url: channel,
+					success: function(data){
+						var lurl = data.data.thumbnail;
+						var curl = "https://www.youtube.com/channel/" + data.data.id;
+						channelID = data.data.id;
+						channelName = data.data.name;
+						setVariable("ytLogos", i, lurl);
+						setVariable("ytChannelUrls", i, curl);
+						setVariable("ytNames", i, data.data.name);
+						setVariable("ytId", i, data.data.id);
+					}
+				});
+			}else
+				channelID = channelId
+			sendArr[i] = {id: channelID};
+		}
+			
+		var channel2 = "https://data.wassup789.ml/youtubenotifications/getlist.php?query=" + encodeURIComponent(btoa(JSON.stringify(sendArr)));
+		
+		$.ajax({
+			type: "GET",
+			dataType: "json",
+			url: channel2,
+			success: function(data) {
+				for(var i = 0; i < data.data.length; i++){
+					var channelId = JSON.parse(localStorage.getItem("ytId"))[i],
+						channelName = JSON.parse(localStorage.getItem("ytNames"))[i];
+					var video = ({
+						url:			"https://www.youtube.com/watch?v=" + data.data[i].videoId,
+						description:	data.data[i].description.substring(0,100).replace(/(\r\n|\n|\r)/gm," "),
+						timestamp:		data.data[i].timestamp,
+						title:			data.data[i].title,
+						image:			data.data[i].thumbnail.replace("https://", "http://"),
+						views:			data.data[i].views,
+						duration:		data.data[i].duration,
+						likes:			data.data[i].likes,
+						dislikes:		data.data[i].dislikes
+					});
+
+					var ytReleasea = JSON.parse(localStorage.getItem("ytReleases"));
+					
+					setVariable("ytImg", i, video.image);
+					setVariable("ytReleases", i, video.timestamp);
+					setVariable("ytLinks", i, video.url);
+					setVariable("ytViews", i, video.views);
+					setVariable("ytTitles", i, video.title);
+					
+					wyn.log(0, "Checking YouTube User: " + channelName);
+					
+					if(video.timestamp > ytReleasea[i]) {					
+						if(video.views == "301")
+							video.views = "301+";
+						video.likes = parseInt(video.likes);
+						video.dislikes = parseInt(video.dislikes);
+						var likesa = Math.round((video.likes / (video.likes + video.dislikes)) * 100);
+						var dislikesa = Math.round((video.dislikes / (video.likes + video.dislikes)) * 100);
+						if((likesa + dislikesa) > 100)
+							dislikesa--;
+						
+						var options = {
+							type: "image",
+							priority: 0,
+							title: video.title + " by " + channelName,
+							message: video.description,
+							imageUrl: video.image,
+							iconUrl: "img/icon_yt.png",
+							contextMessage: video.duration + " | "+ addCommas(video.views) + " views | " + likesa + "% likes | " + dislikesa + "% dislikes",
+							buttons: [{
+								title: "Watch Video",
+								iconUrl: "img/icon_play2.png"
+							}, {
+								title: "Dismiss"
+							}]
+						};
+						var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + i;
+						wyn.log(0, "Found new YouTube video for " + channelName, "green");
+						notify(ntID, options);
+					}
+				}
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown){
+				wyn.log(2, textStatus + " ; " + errorThrown.message);
+			}
+		});
 	}
 	
 	function checkYoutube(cnum, cname){
@@ -195,14 +302,6 @@ $(document).ready(function(){
 			}
 		}
 		
-		var channel = "https://gdata.youtube.com/feeds/api/users/" + cname + "?v=2&alt=json";
-		var channel2 = "https://gdata.youtube.com/feeds/api/users/" + cname + "/uploads?v=2&alt=json";
-
-		String.prototype.trunc = String.prototype.trunc ||
-			function(n){
-				return this.length>n ? this.substr(0,n-1)+'...' : this;
-			};
-
 		String.prototype.toHHMMSS = function () {
 			var sec_num = parseInt(this, 10);
 			var hours = Math.floor(sec_num / 3600);
@@ -219,25 +318,36 @@ $(document).ready(function(){
 			return time;
 		}
 		
-		var channelStatus;
+		var channelStatus,
+			channelID,
+			channelName;
 		
-		$.ajax({
-			async: false,
-			type: "GET",
-			dataType: "text",
-			url: channel,
-			success: function(data){
-				data = JSON.parse(data);
-				var lurl = data.entry.media$thumbnail.url;
-				var curl = data.entry.link[0].href
-				setVariable("ytLogos", cnum, lurl);
-				setVariable("ytChannelUrls", cnum, curl);
-				channelStatus = true;
-			},
-			error: function(XMLHttpRequest, textStatus, errorThrown) {
-				channelStatus = false;
-			}
-		});
+		var channelId = localStorage.getItem("ytId")[cnum];
+		if(typeof channelId === "undefined"){
+		
+			var channel = "https://data.wassup789.ml/youtubenotifications/getchannel.php?query=" + encodeURIComponent(cname);
+			$.ajax({
+				type: "GET",
+				dataType: "json",
+				url: channel,
+				success: function(data){
+					var lurl = data.data.thumbnail;
+					var curl = "https://www.youtube.com/channel/" + data.data.id;
+					channelID = data.data.id;
+					channelName = data.data.name;
+					setVariable("ytLogos", cnum, lurl);
+					setVariable("ytChannelUrls", cnum, curl);
+					setVariable("ytNames", cnum, data.data.name);
+					channelStatus = true;
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+					channelStatus = false;
+				}
+			});
+		}else{
+			channelID = channelId
+			channelName = localStorage.getItem("ytNames")[cnum]
+		}
 		
 		if(!channelStatus){
 			if(JSON.parse(localStorage.getItem("ytReleases"))[cnum] > 0)
@@ -247,40 +357,43 @@ $(document).ready(function(){
 		}else
 			setVariable("ytStatus", cnum, true);
 		
+		var channel2 = "https://data.wassup789.ml/youtubenotifications/getlist.php?query=" + encodeURIComponent(btoa(JSON.stringify([{id: channelID, videoId: 0}])));
+		
 		$.ajax({
-			async: false,
 			type: "GET",
+			dataType: "json",
 			url: channel2,
 			success: function(data) {
+				data.data = data.data[0];
 				var video = ({
-					url: 			data.feed.entry[0].media$group.media$player.url,
-					description: 	data.feed.entry[0].media$group.media$description.$t.substring(0,100).replace(/(\r\n|\n|\r)/gm," "),
-					timestamp: 		new Date(Date.parse(data.feed.entry[0].published.$t)).getTime(),
-					title: 			data.feed.entry[0].title.$t,
-					image: 			data.feed.entry[0].media$group.media$thumbnail[2].url.replace("https://", "http://"),
-					name: 			data.feed.entry[0].author[0].name.$t,
-					views: 			data.feed.entry[0].yt$statistics.viewCount,
-					seconds: 		data.feed.entry[0].media$group.yt$duration.seconds,
-					likes: 			data.feed.entry[0].yt$rating.numLikes,
-					dislikes: 		data.feed.entry[0].yt$rating.numDislikes
+					url:			"https://www.youtube.com/watch?v=" + data.data.videoId,
+					description:	data.data.description.substring(0,100).replace(/(\r\n|\n|\r)/gm," "),
+					timestamp:		data.data.timestamp,
+					title:			data.data.title,
+					image:			data.data.thumbnail.replace("https://", "http://"),
+					views:			data.data.views,
+					duration:		data.data.duration,
+					likes:			data.data.likes,
+					dislikes:		data.data.dislikes
 				});
 
 				var ytReleasea = JSON.parse(localStorage.getItem("ytReleases"));
 				
-				setVariable("ytNames", cnum, video.name);
 				setVariable("ytImg", cnum, video.image);
 				setVariable("ytReleases", cnum, video.timestamp);
 				setVariable("ytLinks", cnum, video.url);
 				setVariable("ytViews", cnum, video.views);
 				setVariable("ytTitles", cnum, video.title);
 				
-				wyn.log(0, "Checking YouTube User: " + video.name);
+				wyn.log(0, "Checking YouTube User: " + channelName);
 				
 				if(video.timestamp > ytReleasea[cnum]) {					
 					if(video.views == "301")
 						video.views = "301+";
 					video.likes = parseInt(video.likes);
 					video.dislikes = parseInt(video.dislikes);
+					console.log("Likes: " + video.likes); 
+					console.log("Dislikes: " + video.dislikes); 
 					var likesa = Math.round((video.likes / (video.likes + video.dislikes)) * 100);
 					var dislikesa = Math.round((video.dislikes / (video.likes + video.dislikes)) * 100);
 					if((likesa + dislikesa) > 100)
@@ -289,20 +402,20 @@ $(document).ready(function(){
 					var options = {
 						type: "image",
 						priority: 0,
-						title: video.title + " by " + video.name,
+						title: video.title + " by " + channelName,
 						message: video.description,
 						imageUrl: video.image,
 						iconUrl: "img/icon_yt.png",
-						contextMessage: video.seconds.toHHMMSS() + " | "+ addCommas(video.views) + " views | " + likesa + "% likes | " + dislikesa + "% dislikes",
+						contextMessage: video.duration + " | "+ addCommas(video.views) + " views | " + likesa + "% likes | " + dislikesa + "% dislikes",
 						buttons: [{
 							title: "Watch Video",
 							iconUrl: "img/icon_play2.png"
 						}, {
-							title: "Close"
+							title: "Dismiss"
 						}]
 					};
  					var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + cnum;
-					wyn.log(0, "Found new YouTube video for " + video.name, "green");
+					wyn.log(0, "Found new YouTube video for " + channelName, "green");
 					notify(ntID, options);
 				}
 			},
