@@ -1,99 +1,131 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<link rel="stylesheet" href="css/material.min.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css" />
-	<link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css" />
-	<link rel="stylesheet" type="text/css" href="css/jquery-ui.slider-pips.css" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<script src="js/material.min.js"></script>
 	<script src="js/jquery.min.js"></script>
-	<script src="js/jquery-ui.min.js"></script>
-	<script src="js/jquery-ui.slider-pips.min.js"></script>
 	<script src="js/settings.js"></script>
 </head>
 <body>
-<div id="overlay"></div>
-<div id="content" class="main">
-	<div id="main">
-		<div id="loading"></div>
-		<h1>
-			<img id="tlogo" src="img/yt_logo.png">
-			<span id="ttitle">Notifications Settings</span>
-		</h1>
-		<h1 id="statusc" style="display:none">
-			<span id="statust"></span>
-		</h1>
-		<h1>
-			<div class="ui-navbar">
-				<table class="tnav" border="0">
-					<th class="nav-btn nbtn1">Newest Uploads</th>
-					<th class="nav-btn nav-btnr nbtn2">Edit Settings</th>
-				</table>
+	<div id="loading" style="display: none;"></div>
+	<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--fixed-tabs">
+		<header id="header" class="mdl-layout__header">
+			<div id="header_title" class="mdl-layout__header-row">
+				<img id="header_img" src="img/yt_logo.png" />
+				<span class="mdl-layout-title">Notifications</span>
 			</div>
-		</h1>
-		<div id="sl1">
-			<ul class="channellist1">
-			</ul>
-		</div>
-		<div id="sl2">
-			<ul class="channellist2"></ul>
-			<h1 class="addm">
-				<button id="add_more" class="bbutton hbutton">
-					<span class="bbutton_n">Add Channel</span>
-				</button>
-			</h1>
-			<h1>
-				<span>Edit Channel Listing Name:</span>
-				<input type="text" class="uinput2 cNameinp">
-				<button class="bbutton cbtn cNamebtn">
-					<span class="bbutton_n">Save</span>
-				</button>
-			</h1>
-			<h1>
-				<span>Refresh Intervals (in minutes):</span>
-				<input type="number" placeholder="Default: 2" class="uinput2 rIntervInp">
-				<button class="bbutton cbtn rInterv">
-					<span class="bbutton_n">Save</span>
-				</button>
-			</h1>
-			<h1>
-				<label class="mainLab" for="notifyCb">Enable Notifications:</label>
-				<input type="checkbox" id="notifyCb" class="uinputCb notifyInp">
-				<div class="iblock nsDiv nVolCont">
-					<span class="cboxSp">Notification Volume:</span>
-					<div class="nVolInp"></div>
-					<button class="bbutton cbtn nVolBtn">
-						<span class="bbutton_n">Test</span>
+			<!-- Tabs -->
+			<div id="header_tabs" class="mdl-layout__tab-bar mdl-js-ripple-effect">
+				<a href="#tab-newest_uploads" class="mdl-layout__tab is-active">Newest Uploads</a>
+				<a href="#tab-edit_settings" class="mdl-layout__tab">Edit Settings</a>
+			</div>
+		</header>
+		<main class="mdl-layout__content">
+			<section class="mdl-layout__tab-panel is-active" id="tab-newest_uploads">
+				<div class="page-content">
+					<div class="main_card fab mdl-card mdl-shadow--2dp">
+						<div id="channels">
+							<div id="masterChannelRow" class="channelRow" style="display: none;">
+								<div class="channelColumn">
+									<a class="channel_a"></a>
+									<img class="channel_img" src="" />
+									<span class="channel_author"></span>
+								</div>
+								<div class="channelColumn">
+									<a class="channel_video_a"></a>
+									<img class="channel_video_img" src="" />
+								</div>
+								<div class="channelColumn">
+									<a class="channel_video_a"></a>
+									<span class="channel_video_title"></span>
+									<span class="channel_video_time"></span>
+								</div>
+								<div class="channelColumn">
+									<button class="channel_remove_btn mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">X</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<button id="add_channels-fab" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
+						<i class="material-icons">add</i>
 					</button>
 				</div>
-			</h1>
-			<h1>
-				<label class="mainLab" for="animCb">Enable Animations:</label>
-				<input type="checkbox" id="animCb" class="uinputCb animateInp">
-				<div class="iblock ttsDiv">
-					<label class="mainLab cboxSp" for="ttsCb">Enable Text-to-Speech:</label>
-					<input type="checkbox" id="ttsCb" class="uinputCb ttsInp">
-					<select class="ttsSelect">
-					</select>
+			</section>
+			<section class="mdl-layout__tab-panel" id="tab-edit_settings">
+				<div class="page-content">
+					<div class="main_card mdl-card mdl-shadow--2dp">
+						<div id="settings">
+							<div id="settings_notifications" class="settingRow">
+								<div class="settingColumn">
+									Use Notifications:
+								</div>
+								<div class="settingColumn">
+									<label id="settings_notifications_toggle" class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="switch-1">
+										<input type="checkbox" id="switch-1" class="mdl-switch__input" />
+									</label>
+								</div>
+								<div class="settingColumn">
+									Notification Volume:
+								</div>
+								<div class="settingColumn">
+									<input id="settings_notifications_volume" class="mdl-slider mdl-js-slider" type="range"
+  min="0" max="100" tabindex="0"/>
+								</div>
+								<div class="settingColumn">
+									<button id="settings_notifications_test" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">Test</button>
+								</div>
+							</div>
+							<div id="tts_notifications" class="settingRow">
+								<div class="settingColumn">
+									Use Text-To-Speech:
+								</div>
+								<div class="settingColumn">
+									<label id="settings_tts_toggle" class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="switch-2">
+										<input type="checkbox" id="switch-2" class="mdl-switch__input" />
+									</label>
+								</div>
+								<div class="settingColumn">
+									Text-To-Speech Voice:
+								</div>
+								<div class="settingColumn">
+									<select id="settings_tts_select"></select>
+								</div>
+							</div>
+							<div class="settingRow">
+								<button id="settings_refresh" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect">
+									Manual Refresh
+								</button>
+							</div>
+						</div>
+					</div>
 				</div>
-			</h1>
-			<h1>
-				<span>Import Channels:</span>
-				<input type="text" class="uinput2 importInp">
-				<button class="bbutton cbtn importBtn">
-					<span class="bbutton_n">Save</span>
-				</button>
-			</h1>
-			<h1>
-				<span>Export Channels:</span>
-				<input type="text" placeholder="No channels found" class="uinput2 exportInp">
-			</h1>
-			<h1 class="rall">
-				<button id="refresh_all" class="gbutton hbutton">
-					<span class="bbutton_n">Manual Refresh</span>
-				</button>
-			</h1>
+			</section>
+		<span id="version">Version 1.0.9.2<br>by Wassup789</span>
+		</main>
+	</div>
+	<div id="add_channels-container" data-toggle="false">
+		<div class="overlay"></div>
+		<div id="add_channels-dialog" class="mdl-card mdl-shadow--2dp">
+			<div class="mdl-card__title">
+				<h2 class="mdl-card__title-text">Add Channels</h2>
+			</div>
+			<div class="mdl-card__supporting-text">
+				<div class="mdl-textfield mdl-js-textfield">
+					<input class="add_channel_input mdl-textfield__input" type="text" />
+					<label class="mdl-textfield__label" for="add_channel_input">Channel name, ID or URL</label>
+				</div>
+			</div>
+			<div class="mdl-card__actions mdl-card--border">
+				<a id="add_channels-add-button" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+					Add
+				</a>
+				<a id="add_channels-more-button" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+					Add More
+				</a>
+			</div>
 		</div>
 	</div>
-</div>
-<span id="version">Version 0.01</span>
 </body>
 </html>
