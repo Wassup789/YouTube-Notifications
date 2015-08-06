@@ -2,7 +2,14 @@ var wyn = {};
 	wyn.version = chrome.runtime.getManifest().version,
 	wyn.notificationSound = new Audio("sound/notification.mp3"),
 	wyn.batchChecking = false,
-	wyn.activeCheckings = [];
+	wyn.activeCheckings = [],
+	wyn.strings = {
+		"notification_watch": "Watch Video",
+		"notification_close": "Dismiss",
+		"notification_log_check": "Checking YouTube User: ",
+		"notification_log_new": "Found new YouTube video for: ",
+		"snackbar_nonewvideos": "No new videos found",
+	}
 
 if(localStorage.getItem("channels") == null)
 	localStorage.setItem("channels", JSON.stringify([]));
@@ -17,6 +24,10 @@ if(localStorage.getItem("settings") == null)
 			type: 1
 		}
 	}));
+
+chrome.notifications.onClicked.addListener(onNotificationClick);
+chrome.notifications.onButtonClicked.addListener(onNotificationButtonClick);
+chrome.notifications.onClosed.addListener(onNotificationClosed);
 
 $(function(){
 	chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
@@ -90,57 +101,60 @@ function checkYoutube(num, refresh) {
 		dataType: "json",
 		url: url,
 		success: function(data) {
-			channels = JSON.parse(localStorage.getItem("channels"));
-			data.data = data.data[0];
-			
-			var prevTimestamp = channels[num].latestVideo.timestamp;
-			channels[num].latestVideo.id = data.data.videoId;
-			channels[num].latestVideo.title = data.data.title;
-			channels[num].latestVideo.description = data.data.description.substring(0,100).replace(/(\r\n|\n|\r)/gm," ");
-			channels[num].latestVideo.timestamp = data.data.timestamp;
-			channels[num].latestVideo.thumbnail = data.data.thumbnail.replace("https:/", "http://");
-			channels[num].latestVideo.views = data.data.views;
-			channels[num].latestVideo.duration = data.data.duration;
-			channels[num].latestVideo.likes = data.data.likes;
-			channels[num].latestVideo.dislikes = data.data.dislikes;
-			localStorage.setItem("channels", JSON.stringify(channels));
-			var info = channels[num];
-			
-			if(prevTimestamp < info.latestVideo.timestamp) {
-					if(info.latestVideo.views == "301")
-						info.latestVideo.views = "301+";
-					info.latestVideo.likes = parseInt(info.latestVideo.likes);
-					info.latestVideo.dislikes = parseInt(info.latestVideo.dislikes);
-					var likesa = Math.round((info.latestVideo.likes / (info.latestVideo.likes + info.latestVideo.dislikes)) * 100);
-					var dislikesa = Math.round((info.latestVideo.dislikes / (info.latestVideo.likes + info.latestVideo.dislikes)) * 100);
-					if((likesa + dislikesa) > 100)
-						dislikesa--;
-					
-					var options = {
-						type: "image",
-						priority: 0,
-						title: info.latestVideo.title + " by " + info.name,
-						message: info.latestVideo.description,
-						imageUrl: info.latestVideo.thumbnail,
-						iconUrl: "img/icon_yt.png",
-						contextMessage: info.latestVideo.duration + " | "+ addCommas(info.latestVideo.views) + " views | " + likesa + "% likes | " + dislikesa + "% dislikes",
-						buttons: [{
-							title: "Watch Video",
-							iconUrl: "img/icon_play2.png"
-						}, {
-							title: "Dismiss"
-						}]
-					};
- 					var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + num;
-					console.log("Found new YouTube video for " + info.name);
-					notify(ntID, options);
+			if(data.status == "success"){
+				channels = JSON.parse(localStorage.getItem("channels"));
+				data.data = data.data[0];
+				
+				console.log(wyn.strings.notification_log_check + channels[i].name);
+				var prevTimestamp = channels[num].latestVideo.timestamp;
+				channels[num].latestVideo.id = data.data.videoId;
+				channels[num].latestVideo.title = data.data.title;
+				channels[num].latestVideo.description = data.data.description.substring(0,100).replace(/(\r\n|\n|\r)/gm," ");
+				channels[num].latestVideo.timestamp = data.data.timestamp;
+				channels[num].latestVideo.thumbnail = data.data.thumbnail.replace("https:/", "http://");
+				channels[num].latestVideo.views = data.data.views;
+				channels[num].latestVideo.duration = data.data.duration;
+				channels[num].latestVideo.likes = data.data.likes;
+				channels[num].latestVideo.dislikes = data.data.dislikes;
+				localStorage.setItem("channels", JSON.stringify(channels));
+				var info = channels[num];
+				
+				if(prevTimestamp < info.latestVideo.timestamp) {
+						if(info.latestVideo.views == "301")
+							info.latestVideo.views = "301+";
+						info.latestVideo.likes = parseInt(info.latestVideo.likes);
+						info.latestVideo.dislikes = parseInt(info.latestVideo.dislikes);
+						var likesa = Math.round((info.latestVideo.likes / (info.latestVideo.likes + info.latestVideo.dislikes)) * 100);
+						var dislikesa = Math.round((info.latestVideo.dislikes / (info.latestVideo.likes + info.latestVideo.dislikes)) * 100);
+						if((likesa + dislikesa) > 100)
+							dislikesa--;
+						
+						var options = {
+							type: "image",
+							priority: 0,
+							title: info.latestVideo.title + " by " + info.name,
+							message: info.latestVideo.description,
+							imageUrl: info.latestVideo.thumbnail,
+							iconUrl: "img/icon_yt.png",
+							contextMessage: info.latestVideo.duration + " | "+ addCommas(info.latestVideo.views) + " views | " + likesa + "% likes | " + dislikesa + "% dislikes",
+							buttons: [{
+								title: wyn.strings.notification_watch,
+								iconUrl: "img/icon_play2.png"
+							}, {
+								title: wyn.strings.notification_close
+							}]
+						};
+						var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + num;
+						console.log(wyn.strings.notification_log_new + info.name);
+						notify(ntID, options);
+				}
+				wyn.activeCheckings[num] = false;
+				for(var i = 0; i < wyn.activeCheckings.length; i++)
+					if(wyn.activeCheckings[i])
+						return;
+				if(refresh)
+					chrome.extension.sendMessage({type: "refreshPage"});
 			}
-			wyn.activeCheckings[num] = false;
-			for(var i = 0; i < wyn.activeCheckings.length; i++)
-				if(wyn.activeCheckings[i])
-					return;
-			if(refresh)
-				chrome.extension.sendMessage({type: "refreshPage"});
 		}
 	});
 }
@@ -166,60 +180,65 @@ function checkYoutubeBatch(refresh){
 		dataType: "json",
 		url: url,
 		success: function(data) {
-			for(var i = 0; i < data.data.length; i++){
-				channels = JSON.parse(localStorage.getItem("channels"));
-				if(!channels[i])
-					return;
-				console.log("Checking YouTube User: " + channels[i].name);
-				var vData = data.data[i];
-				var prevTimestamp = channels[i].latestVideo.timestamp;
-				channels[i].latestVideo.id = vData.videoId;
-				channels[i].latestVideo.title = vData.title;
-				channels[i].latestVideo.description = vData.description.substring(0,100).replace(/(\r\n|\n|\r)/gm," ");
-				channels[i].latestVideo.timestamp = vData.timestamp;
-				channels[i].latestVideo.thumbnail = vData.thumbnail.replace("https:/", "http://");
-				channels[i].latestVideo.views = vData.views;
-				channels[i].latestVideo.duration = vData.duration;
-				channels[i].latestVideo.likes = vData.likes;
-				channels[i].latestVideo.dislikes = vData.dislikes;
-				localStorage.setItem("channels", JSON.stringify(channels));
-				var info = channels[i];
-				
-				if(prevTimestamp < info.latestVideo.timestamp) {
-						hasChanged = true;
-						if(info.latestVideo.views == "301")
-							info.latestVideo.views = "301+";
-						info.latestVideo.likes = parseInt(info.latestVideo.likes);
-						info.latestVideo.dislikes = parseInt(info.latestVideo.dislikes);
-						var likesa = Math.round((info.latestVideo.likes / (info.latestVideo.likes + info.latestVideo.dislikes)) * 100);
-						var dislikesa = Math.round((info.latestVideo.dislikes / (info.latestVideo.likes + info.latestVideo.dislikes)) * 100);
-						if((likesa + dislikesa) > 100)
-							dislikesa--;
-						
-						var options = {
-							type: "image",
-							priority: 0,
-							title: info.latestVideo.title + " by " + info.name,
-							message: info.latestVideo.description,
-							imageUrl: info.latestVideo.thumbnail,
-							iconUrl: "img/icon_yt.png",
-							contextMessage: info.latestVideo.duration + " | "+ addCommas(info.latestVideo.views) + " views | " + likesa + "% likes | " + dislikesa + "% dislikes",
-							buttons: [{
-								title: "Watch Video",
-								iconUrl: "img/icon_play2.png"
-							}, {
-								title: "Dismiss"
-							}]
-						};
-						var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + i;
-						console.log("Found new YouTube video for " + info.name);
-						notify(ntID, options);
-				}
-				if(i == data.data.length-1){
-					wyn.batchChecking = false;
-					console.log("End of YouTube channel check");
-					if(hasChanged && refresh)
-						chrome.extension.sendMessage({type: "refreshPage"});
+			if(data.status == "success"){
+				for(var i = 0; i < data.data.length; i++){
+					channels = JSON.parse(localStorage.getItem("channels"));
+					if(!channels[i])
+						return;
+					console.log(wyn.strings.notification_log_check + channels[i].name);
+					var vData = data.data[i];
+					var prevTimestamp = channels[i].latestVideo.timestamp;
+					channels[i].latestVideo.id = vData.videoId;
+					channels[i].latestVideo.title = vData.title;
+					channels[i].latestVideo.description = vData.description.substring(0,100).replace(/(\r\n|\n|\r)/gm," ");
+					channels[i].latestVideo.timestamp = vData.timestamp;
+					channels[i].latestVideo.thumbnail = vData.thumbnail.replace("https:/", "http://");
+					channels[i].latestVideo.views = vData.views;
+					channels[i].latestVideo.duration = vData.duration;
+					channels[i].latestVideo.likes = vData.likes;
+					channels[i].latestVideo.dislikes = vData.dislikes;
+					localStorage.setItem("channels", JSON.stringify(channels));
+					var info = channels[i];
+					
+					if(prevTimestamp < info.latestVideo.timestamp) {
+							hasChanged = true;
+							if(info.latestVideo.views == "301")
+								info.latestVideo.views = "301+";
+							info.latestVideo.likes = parseInt(info.latestVideo.likes);
+							info.latestVideo.dislikes = parseInt(info.latestVideo.dislikes);
+							var likesa = Math.round((info.latestVideo.likes / (info.latestVideo.likes + info.latestVideo.dislikes)) * 100);
+							var dislikesa = Math.round((info.latestVideo.dislikes / (info.latestVideo.likes + info.latestVideo.dislikes)) * 100);
+							if((likesa + dislikesa) > 100)
+								dislikesa--;
+							
+							var options = {
+								type: "image",
+								priority: 0,
+								title: info.latestVideo.title + " by " + info.name,
+								message: info.latestVideo.description,
+								imageUrl: info.latestVideo.thumbnail,
+								iconUrl: "img/icon_yt.png",
+								contextMessage: info.latestVideo.duration + " | "+ addCommas(info.latestVideo.views) + " views | " + likesa + "% likes | " + dislikesa + "% dislikes",
+								buttons: [{
+									title: wyn.strings.notification_watch,
+									iconUrl: "img/icon_play2.png"
+								}, {
+									title: wyn.strings.notification_close
+								}]
+							};
+							var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + i;
+							console.log(wyn.strings.notification_log_new + info.name);
+							notify(ntID, options);
+					}
+					if(i == data.data.length-1){
+						wyn.batchChecking = false;
+						console.log("End of YouTube channel check");
+						if(hasChanged){
+							if(refresh)
+								chrome.extension.sendMessage({type: "refreshPage"});
+						}else
+							chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.snackbar_nonewvideos});
+					}
 				}
 			}
 		}
@@ -255,6 +274,45 @@ function notify(ntID, options){
 	});
 }
 
+function onNotificationClick(ntID){
+	if(typeof ntID.split("-")[4] !== "undefined") {
+		var channels = JSON.parse(localStorage.getItem("channels"));
+		createTab("https://www.youtube.com/watch?v=" + channels[ntID.split("-")[4]].latestVideo.id);
+		console.log("User clicked on notification; NTID: " + ntID);
+		console.log("Sending user to https://www.youtube.com/watch?v=" + channels[ntID.split("-")[4]].latestVideo.id);
+		chrome.notifications.clear(ntID);
+	}
+}
+
+function onNotificationButtonClick(ntID, btnID){
+	if(typeof ntID.split("-")[4] !== "undefined") {
+		if(btnID == 0){
+			var channels = JSON.parse(localStorage.getItem("channels"));
+			createTab("https://www.youtube.com/watch?v=" + channels[ntID.split("-")[4]].latestVideo.id);
+			console.log("User clicked on \"" + wyn.strings.notification_watch + "\" button; NTID: " + ntID);
+			console.log("Sending user to https://www.youtube.com/watch?v=" + channels[ntID.split("-")[4]].latestVideo.id);
+		}else if(btnID == 1){
+			console.log("User clicked on \"" + wyn.strings.notification_close + "\" button; NTID: " + ntID);
+		}
+	}
+}
+
+function onNotificationClosed(ntID, byUser){
+	if(typeof ntID.split("-")[4] !== "undefined" && byUser)
+		console.log("User clicked on \"X\" button; NTID: " + ntID);
+}
+
+function createTab(url) {
+	var numTabs = 0;
+	chrome.windows.getAll(function(data){
+		numTabs = data.length;
+		if(numTabs > 0)
+			chrome.tabs.create({url: url});
+		else
+			chrome.windows.create({url: url});
+	});
+}
+
 wyn.testNotify = function(){
 	var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5);
 	var options = {
@@ -266,10 +324,10 @@ wyn.testNotify = function(){
 		iconUrl: "img/icon_yt.png",
 		contextMessage: "12:34 | 5,678 views | 90% likes | 10% dislikes",
 		buttons: [{
-			title: "Watch Video",
+			title: wyn.strings.notification_watch,
 			iconUrl: "img/icon_play2.png"
 		}, {
-			title: "Dismiss"
+			title: wyn.strings.notification_close
 		}]
 	};
 	
@@ -293,4 +351,35 @@ function notifyTTS(options) {
 		message.text = options.title;
 		speechSynthesis.speak(message);
 	}
+}
+
+wyn.forceNotification = function(id) {
+	var info = JSON.parse(localStorage.getItem("channels"))[id];
+	if(info.latestVideo.views == "301")
+		info.latestVideo.views = "301+";
+	info.latestVideo.likes = parseInt(info.latestVideo.likes);
+	info.latestVideo.dislikes = parseInt(info.latestVideo.dislikes);
+	var likesa = Math.round((info.latestVideo.likes / (info.latestVideo.likes + info.latestVideo.dislikes)) * 100);
+	var dislikesa = Math.round((info.latestVideo.dislikes / (info.latestVideo.likes + info.latestVideo.dislikes)) * 100);
+	if((likesa + dislikesa) > 100)
+		dislikesa--;
+	
+	var options = {
+		type: "image",
+		priority: 0,
+		title: info.latestVideo.title + " by " + info.name,
+		message: info.latestVideo.description,
+		imageUrl: info.latestVideo.thumbnail,
+		iconUrl: "img/icon_yt.png",
+		contextMessage: info.latestVideo.duration + " | "+ addCommas(info.latestVideo.views) + " views | " + likesa + "% likes | " + dislikesa + "% dislikes",
+		buttons: [{
+			title: wyn.strings.notification_watch,
+			iconUrl: "img/icon_play2.png"
+		}, {
+			title: wyn.strings.notification_close
+		}]
+	};
+	var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + id;
+	console.log(wyn.strings.notification_log_new + info.name);
+	notify(ntID, options);
 }

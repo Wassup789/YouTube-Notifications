@@ -182,5 +182,14 @@ a{text-decoration: none;cursor:pointer;}
     to   {-webkit-transform: rotate(359deg);}
 }
 
+::-webkit-scrollbar {
+    width: 5px; 
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background: rgba(0,0,0,0.4);
+}
+
 /* SNACKBAR */
 .paper-snackbar{transition-property:opacity,bottom,left,right,width,margin,border-radius;transition-duration:.5s;transition-timing-function:ease;font-family:Arial;font-weight:normal;font-size:14px;min-height:14px;background-color:#323232;position:absolute;justify-content:space-between;align-items:center;color:#fff;line-height:22px;padding:18px 24px;opacity:0;min-width:288px;max-width:568px;display:inline-flex;border-radius:2px;margin:24px;bottom:-100px;z-index:100}.paper-snackbar .action{background:inherit;display:inline-block;border:none;font-size:inherit;text-transform:uppercase;color:#ffeb3b;margin:0 0 0 24px;padding:0;min-width:min-content}.paper-snackbar .action:hover{cursor: pointer;}.paper-snackbar .action:focus{outline:none;}

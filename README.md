@@ -1,6 +1,6 @@
 # YouTube Notifications #
 
-Get updates from your favorite YouTube users using this Chrome Extension. This extension uses the YouTube Data API Version 2.0 for it's data.
+Get updates from your favorite YouTube users using this Chrome Extension. This extension uses the YouTube Data API Version 3.0 for it's data.
 
 This code is licensed under the MIT License
 
@@ -21,7 +21,7 @@ This code is licensed under the MIT License
 
 **Latest Stable Release:**
 
- - **Version 1.0.9.1** - 07-15-2014 21:41 PDT
+ - **Version 1.0.9.2** - XX-XX-20XX XX:XX PDT
  - [Download Here via Google Drive][Dld_Latest_GD]
  - [Direct Link via Dropbox][Dld_Latest_DB]
 
@@ -29,44 +29,18 @@ This code is licensed under the MIT License
 
  - [Download Here via Google Drive][Dld_Archive]
 
-## To-Do
- * Allow subscriber export from YouTube channel
- * Fix TTS voice issue
- * Migrate from YouTube Data API v2 to v3
-
 ## Options
 
-### Import/Export Channel JSON
-The import and export channels is formatted in JSON and can be transferred to other computers
-
-*Note: Only available in v1.0.9.0 and higher*
-
 #### Format
-```
-[
-    "channel1",
-    "channel2",
-    "channel3",
-    "channel4",
-    "channel5",
-    "...",
-    "channelListingName",
-    "extensionVersion"
-]
-```
 
 ## Screenshots
-**Options - Page 1**
+**Options - Channel List**
 
-[![Screenshot 1](http://i.imgur.com/iwlq9vA.png)](http://i.imgur.com/iwlq9vA.png)
+[![Screenshot 1](http://i.imgur.com/aRQHB8k.png)](http://i.imgur.com/aRQHB8k.png)
 
-**Options - Page 2**
+**Options - Settings**
 
-[![Screenshot 2](http://i.imgur.com/wlbw6vx.png)](http://i.imgur.com/wlbw6vx.png)
-
-**Options - Page 2 - Bottom**
-
-[![Screenshot 3](http://i.imgur.com/wy5Glxa.png)](http://i.imgur.com/wy5Glxa.png)
+[![Screenshot 2](http://i.imgur.com/CIXlMxn.png)](http://i.imgur.com/CIXlMxn.png)
 
 **Example Notification**
 

@@ -1,5 +1,11 @@
 Changelog
 =====
+## v1.0.9.2 (XX-XX-XXXX)
+ * Reworked majority of files
+ * New UI
+ * Uses YouTube Data API v3
+ * Uses another server to limit requests
+
 ## v1.0.9.1 (07-15-2014)
  * Major connection error fixed
  * Requires new permission to access ytimg.com for video images
