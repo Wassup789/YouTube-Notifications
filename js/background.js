@@ -1,6 +1,8 @@
 var wyn = {};
 	wyn.version = chrome.runtime.getManifest().version,
 	wyn.notificationSound = new Audio("sound/notification.mp3"),
+	wyn.isConnected = false,
+	wyn.isTimedout = false,
 	wyn.batchChecking = false,
 	wyn.activeCheckings = [],
 	wyn.strings = {
@@ -9,6 +11,11 @@ var wyn = {};
 		"notification_log_check": "Checking YouTube User: ",
 		"notification_log_new": "Found new YouTube video for: ",
 		"snackbar_nonewvideos": "No new videos found",
+		"connect_success": "Connected to YouTube's Servers",
+		"connect_failed": "Could not connect to YouTube's Servers",
+		"log_color_prefix": "%c",
+		"log_color_green": "font-weight: bold; color: #2E7D32",
+		"log_color_red": "font-weight: bold; color: #B71C1C"
 	}
 
 if(localStorage.getItem("channels") == null)
@@ -47,11 +54,39 @@ $(function(){
 		}
 	});
 	
-	checkYoutubeBatch(true);
-	setInterval(function(){
-		checkYoutubeBatch(true);
-	}, 1000*60*10);
+	checkYoutubeStatus();
 });
+
+function checkYoutubeStatus(){
+	var url = "https://data.wassup789.ml/youtubenotifications/testserver.php";
+	$.ajax({
+		type: "GET",
+		dataType: "json",
+		url: url,
+		success: function(data) {
+			if(data.status == "success" && !wyn.isConnected){
+				wyn.isConnected = true;
+				chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.connect_success});
+				console.log(wyn.strings.log_color_prefix + wyn.strings.connect_success, wyn.strings.log_color_green);
+				checkYoutubeBatch(true);
+				setInterval(function(){
+					checkYoutubeBatch(true);
+				}, 1000*60*10);
+			}else{
+				wyn.isConnected = false;
+				chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.connect_failed});
+				console.log(wyn.strings.log_color_prefix + wyn.strings.connect_failed, wyn.strings.log_color_green);
+				if(!wyn.isTimedout){
+					wyn.isTimedout = true;
+					setTimeout(function(){
+						wyn.isTimedout = false;
+						checkYoutubeStatus();
+					}, 1000*60);
+				}
+			}
+		}
+	});
+}
 
 function setYoutube(name, refresh){
 	refresh = refresh || false;
@@ -105,7 +140,7 @@ function checkYoutube(num, refresh) {
 				channels = JSON.parse(localStorage.getItem("channels"));
 				data.data = data.data[0];
 				
-				console.log(wyn.strings.notification_log_check + channels[i].name);
+				console.log(wyn.strings.notification_log_check + channels[num].name);
 				var prevTimestamp = channels[num].latestVideo.timestamp;
 				channels[num].latestVideo.id = data.data.videoId;
 				channels[num].latestVideo.title = data.data.title;
@@ -139,13 +174,14 @@ function checkYoutube(num, refresh) {
 							contextMessage: info.latestVideo.duration + " | "+ addCommas(info.latestVideo.views) + " views | " + likesa + "% likes | " + dislikesa + "% dislikes",
 							buttons: [{
 								title: wyn.strings.notification_watch,
-								iconUrl: "img/icon_play2.png"
+								iconUrl: "img/ic_play.png"
 							}, {
-								title: wyn.strings.notification_close
+								title: wyn.strings.notification_close,
+								iconUrl: "img/ic_close.png"
 							}]
 						};
 						var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + num;
-						console.log(wyn.strings.notification_log_new + info.name);
+						console.log(wyn.strings.log_color_prefix + wyn.strings.notification_log_new + info.name, wyn.strings.log_color_green);
 						notify(ntID, options);
 				}
 				wyn.activeCheckings[num] = false;
@@ -221,13 +257,14 @@ function checkYoutubeBatch(refresh){
 								contextMessage: info.latestVideo.duration + " | "+ addCommas(info.latestVideo.views) + " views | " + likesa + "% likes | " + dislikesa + "% dislikes",
 								buttons: [{
 									title: wyn.strings.notification_watch,
-									iconUrl: "img/icon_play2.png"
+									iconUrl: "img/ic_play.png"
 								}, {
-									title: wyn.strings.notification_close
+									title: wyn.strings.notification_close,
+									iconUrl: "img/ic_close.png"
 								}]
 							};
 							var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + i;
-							console.log(wyn.strings.notification_log_new + info.name);
+							console.log(wyn.strings.log_color_prefix + wyn.strings.notification_log_new + info.name, wyn.strings.log_color_green);
 							notify(ntID, options);
 					}
 					if(i == data.data.length-1){
@@ -325,18 +362,14 @@ wyn.testNotify = function(){
 		contextMessage: "12:34 | 5,678 views | 90% likes | 10% dislikes",
 		buttons: [{
 			title: wyn.strings.notification_watch,
-			iconUrl: "img/icon_play2.png"
+			iconUrl: "img/ic_play.png"
 		}, {
-			title: wyn.strings.notification_close
+			title: wyn.strings.notification_close,
+			iconUrl: "img/ic_close.png"
 		}]
 	};
 	
-	chrome.notifications.create(ntID, options, function(){
-		wyn.notificationSound.volume = parseInt(JSON.parse(localStorage.getItem("settings"))["notifications"]["volume"])/100;
-		wyn.notificationSound.play();
-		
-		notifyTTS(options);
-	});
+	notify(ntID, options);
 }
 
 function notifyTTS(options) {
@@ -380,6 +413,6 @@ wyn.forceNotification = function(id) {
 		}]
 	};
 	var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + id;
-	console.log(wyn.strings.notification_log_new + info.name);
+	console.log(wyn.strings.log_color_prefix + wyn.strings.notification_log_new + info.name, wyn.strings.log_color_green);
 	notify(ntID, options);
 }

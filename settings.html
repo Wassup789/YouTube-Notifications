@@ -44,7 +44,29 @@
 								</div>
 								<div class="channelColumn">
 									<button class="channel_remove_btn mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">X</button>
+									<button class="channel_info_btn mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">i</button>
 								</div>
+							</div>
+						</div>
+					</div>
+					<div id="popup_overlay" class="overlay" style="display: none;"></div>
+					<div id="popup_card" class="mdl-card" data-toggle="false" style="box-shadow: 0 0 0 0 rgba(0,0,0,0),0 0 0 0 rgba(0,0,0,0),0 0 0 0 rgba(0,0,0,0);display: none;">
+						<div id="popup_loading" class="mdl-spinner mdl-js-spinner is-active"></div>
+						<div id="popup_videoList" style="display: none;">
+							<div id="masterVideoListRow" class="videoListRow" style="display: none;">
+								<a href="">
+									<div class="videoListColumn">
+										<img class="videoList_img" src="" />
+									</div>
+									<div class="videoListColumn">
+										<span class="videoList_title"></span>
+										<span class="videoList_sub"></span>
+									</div>
+									<div class="videoListColumn">
+										<span class="videoList_title"></span>
+										<span class="videoList_sub"></span>
+									</div>
+								</a>
 							</div>
 						</div>
 					</div>
