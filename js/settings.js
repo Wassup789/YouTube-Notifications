@@ -40,16 +40,18 @@ function getVideoList() {
 		elem.attr("data-id", i);
 		elem.css("display", "");
 		elem.children(".channelColumn:nth-child(1)").children(".channel_img").attr("src", channels[i].thumbnail);
-		elem.children(".channelColumn:nth-child(1)").children(".channel_author").text(channels[i].name);
 		elem.children(".channelColumn:nth-child(1)").children(".channel_a").attr("href", "https://www.youtube.com/channel/" + channels[i].id);
-		elem.children(".channelColumn:nth-child(1)").children(".channel_a").attr("title",  channels[i].name);
-		elem.children(".channelColumn:nth-child(2)").children(".channel_video_img").attr("src", channels[i].latestVideo.thumbnail);
-		elem.children(".channelColumn:nth-child(2)").children(".channel_video_a").attr("href", "https://www.youtube.com/watch?v=" + channels[i].latestVideo.id);
+		elem.children(".channelColumn:nth-child(2)").children(".channel_author").text(channels[i].name);
+		elem.children(".channelColumn:nth-child(2)").children(".channel_author_info").text(addCommas(channels[i].subscriberCount) + " subscribers \u2022 " + addCommas(channels[i].viewCount) + " views");
+		elem.children(".channelColumn:nth-child(2)").children(".channel_a").attr("href", "https://www.youtube.com/channel/" + channels[i].id);
+		elem.children(".channelColumn:nth-child(2)").children(".channel_a").attr("title",  channels[i].name);
+		elem.children(".channelColumn:nth-child(3)").children(".channel_video_img").attr("src", channels[i].latestVideo.thumbnail);
 		elem.children(".channelColumn:nth-child(3)").children(".channel_video_a").attr("href", "https://www.youtube.com/watch?v=" + channels[i].latestVideo.id);
-		elem.children(".channelColumn:nth-child(2)").children(".channel_video_a").attr("title", channels[i].latestVideo.title);
+		elem.children(".channelColumn:nth-child(4)").children(".channel_video_a").attr("href", "https://www.youtube.com/watch?v=" + channels[i].latestVideo.id);
 		elem.children(".channelColumn:nth-child(3)").children(".channel_video_a").attr("title", channels[i].latestVideo.title);
-		elem.children(".channelColumn:nth-child(3)").children(".channel_video_title").text(channels[i].latestVideo.title);
-		elem.children(".channelColumn:nth-child(3)").children(".channel_video_time").text(date);
+		elem.children(".channelColumn:nth-child(4)").children(".channel_video_a").attr("title", channels[i].latestVideo.title);
+		elem.children(".channelColumn:nth-child(4)").children(".channel_video_title").text(channels[i].latestVideo.title);
+		elem.children(".channelColumn:nth-child(4)").children(".channel_video_time").text(date);
 	}
 }
 
@@ -213,8 +215,6 @@ function displayPopupCard(num){
 			$("#popup_card").css("top", $("#channels .channelRow:not(#masterChannelRow)")[num].getBoundingClientRect().top - parseInt($($(".main_card")[0]).css("margin")));//Align popup with clicked card
 			$("#popup_card").css("height", 70);
 			
-			$("#popup_loading").delay(1000).fadeIn("fast");//Fade in loading (will look strange without fades)
-			
 			$("#popup_card").fadeIn("fast");
 			$("#popup_card").animate({//Card appears to be lifted
 				boxShadow: "0 16px 24px 2px rgba(0,0,0,.14),0 6px 30px 5px rgba(0,0,0,.12),0 8px 10px -5px rgba(0,0,0,.2)",
@@ -229,7 +229,7 @@ function displayPopupCard(num){
 			$("#popup_overlay").delay(650).fadeIn("fast");
 			setTimeout(function(){
 				$("#popup_card .channel_info_btn").css("marginTop", "");//Reset info button
-				$("#popup_card .channelColumn").not(":first").not(":last").hide();//Remove unneeded content
+				$("#popup_card .channelColumn").not(".popup_show").hide();//Remove unneeded content
 				$("#popup_card").attr("data-toggle", "true");
 				getChannelVideos();
 			}, 650);
@@ -263,11 +263,10 @@ function getChannelVideos(){
 	var id = parseInt($("#popup_card .channelRow").attr("data-id")),
 		channelId = JSON.parse(localStorage.getItem("channels"))[id].id,
 		url = "https://data.wassup789.ml/youtubenotifications/getvideos.php?query=" + channelId;
-	if(typeof savedData[channelId] !== "undefined"){
+	if(typeof savedData[channelId] !== "undefined")
 		setChannelVideos(savedData[channelId]);
-		$("#popup_loading").fadeOut("slow");
-		$("#popup_videoList").fadeIn("slow");
-	}else{
+	else{
+		$("#popup_loading").delay(500).fadeIn("fast");//Fade in loading (will look strange without fades)
 		$.ajax({
 			type: "GET",
 			dataType: "json",

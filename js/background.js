@@ -99,9 +99,11 @@ function setYoutube(name, refresh){
 		success: function(data) {
 			if(data.status == "success") {
 				var output = {
-					"id": 			data.data.id,
-					"name":			data.data.name,
-					"thumbnail":	data.data.thumbnail,
+					"id": 				data.data.id,
+					"name":				data.data.name,
+					"thumbnail":		data.data.thumbnail,
+					"viewCount":		data.data.viewCount,
+					"subscriberCount":	data.data.subscriberCount,
 					"latestVideo":	{
 						"id": 			"",
 						"title":		"",

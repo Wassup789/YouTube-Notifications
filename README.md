@@ -36,11 +36,15 @@ This code is licensed under the MIT License
 ## Screenshots
 **Options - Channel List**
 
-[![Screenshot 1](http://i.imgur.com/aRQHB8k.png)](http://i.imgur.com/aRQHB8k.png)
+[![Screenshot 1](http://i.imgur.com/DMqcsFg.png)](http://i.imgur.com/DMqcsFg.png)
 
 **Options - Settings**
 
 [![Screenshot 2](http://i.imgur.com/CIXlMxn.png)](http://i.imgur.com/CIXlMxn.png)
+
+**Options - Channel Information**
+
+[![Screenshot 3](http://i.imgur.com/xiHQo9Y.png)](http://i.imgur.com/xiHQo9Y.png)
 
 **Example Notification**
 
