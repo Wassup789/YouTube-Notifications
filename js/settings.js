@@ -94,16 +94,18 @@ function registerListeners(){
 	});
 	
 	$(".channel_remove_btn").on("click", function(){
-		var id = parseInt($(this).parent().parent().attr("data-id"));
-		var channels = JSON.parse(localStorage.getItem("channels")),
-			name = channels[id].name;
-		channels.splice(id, 1);
-		localStorage.setItem("channels", JSON.stringify(channels));
-		$(this).parent().parent().remove();
-		$(".channelRow:not(#masterChannelRow)").each(function(i){
-			$(this).attr("data-id", i);
-		});
-		console.log("Removed YouTube Channel: " + name);
+		if(sortable.option("disabled")){
+			var id = parseInt($(this).parent().parent().attr("data-id"));
+			var channels = JSON.parse(localStorage.getItem("channels")),
+				name = channels[id].name;
+			channels.splice(id, 1);
+			localStorage.setItem("channels", JSON.stringify(channels));
+			$(this).parent().parent().remove();
+			$(".channelRow:not(#masterChannelRow)").each(function(i){
+				$(this).attr("data-id", i);
+			});
+			console.log("Removed YouTube Channel: " + name);
+		}
 	});
 	$(".channel_info_btn").on("click", function(){
 		var id = parseInt($(this).parent().parent().attr("data-id"));
@@ -126,6 +128,60 @@ function registerListeners(){
 	$("#settings_notifications_test").on("click", function(){
 		chrome.extension.sendMessage({type: "testNotify"});
 	});
+	
+	var sortable = new Sortable(document.getElementById("channels"), {
+		disabled: true,
+		draggable: ".channelRow",
+		animation: 150,
+		filter: ".channel_remove_btn",
+		onFilter: function(e) {
+			var el = sortable.closest(e.item);
+			el && el.parentNode.removeChild(el);
+		}
+	});
+	$("#menu_changeAlignment").on("click", function(){
+		if($(this).attr("data-toggle") != "false"){
+			$(".channelRow:not(#masterChannelRow)").removeClass("editable");
+			sortable.option("disabled", true);
+			disableButtons(false);
+			
+			var newArr = [],
+				oldArr = JSON.parse(localStorage.getItem("channels"));
+			$(".channelRow:not(#masterChannelRow)").each(function(){
+				var id = parseInt($(this).attr("data-id"));
+				newArr.push(oldArr[id]);
+			});
+			
+			localStorage.setItem("channels", JSON.stringify(newArr));
+			createSnackbar("Saved");
+			
+			$(this).attr("data-toggle", "false");
+		}else{
+			$(".channelRow:not(#masterChannelRow)").addClass("editable");
+			sortable.option("disabled", false);
+			disableButtons(true);
+			
+			$(this).attr("data-toggle", "true");
+		}
+	});
+}
+
+function disableButtons(bool){
+	if(bool){
+		if($("#popup_card").attr("data-toggle") == "true")
+			displayPopupCard(0);
+		$(".channelRow:not(#masterChannelRow) .channelColumn:nth-child(5) .channel_info_btn").hide();
+		$("#add_channels-fab").hide();
+		$("#add_channels-container").attr("data-toggle", "false");
+		
+		$("a.mdl-layout__tab").removeClass("is-active");
+		$("a[href='#tab-newest_uploads']").addClass("is-active");
+		$(".mdl-layout__tab-panel").removeClass("is-active");
+		$("#tab-newest_uploads").addClass("is-active");
+	}else{
+		$(".channelRow:not(#masterChannelRow) .channelColumn:nth-child(5)").show();
+		$("#add_channels-fab").show();
+	}
 }
 
 function refreshPage(){

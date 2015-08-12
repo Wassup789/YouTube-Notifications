@@ -143,7 +143,7 @@ function checkYoutube(num, refresh) {
 				data.data = data.data[0];
 				
 				console.log(wyn.strings.notification_log_check + channels[num].name);
-				var prevTimestamp = channels[num].latestVideo.timestamp;
+				var prevVideoId = channels[i].latestVideo.id;
 				channels[num].latestVideo.id = data.data.videoId;
 				channels[num].latestVideo.title = data.data.title;
 				channels[num].latestVideo.description = data.data.description.substring(0,100).replace(/(\r\n|\n|\r)/gm," ");
@@ -156,7 +156,7 @@ function checkYoutube(num, refresh) {
 				localStorage.setItem("channels", JSON.stringify(channels));
 				var info = channels[num];
 				
-				if(prevTimestamp < info.latestVideo.timestamp) {
+				if(prevVideoId != info.latestVideo.id) {
 						if(info.latestVideo.views == "301")
 							info.latestVideo.views = "301+";
 						info.latestVideo.likes = parseInt(info.latestVideo.likes);
@@ -225,7 +225,7 @@ function checkYoutubeBatch(refresh){
 						return;
 					console.log(wyn.strings.notification_log_check + channels[i].name);
 					var vData = data.data[i];
-					var prevTimestamp = channels[i].latestVideo.timestamp;
+					var prevVideoId = channels[i].latestVideo.id;
 					channels[i].latestVideo.id = vData.videoId;
 					channels[i].latestVideo.title = vData.title;
 					channels[i].latestVideo.description = vData.description.substring(0,100).replace(/(\r\n|\n|\r)/gm," ");
@@ -238,7 +238,7 @@ function checkYoutubeBatch(refresh){
 					localStorage.setItem("channels", JSON.stringify(channels));
 					var info = channels[i];
 					
-					if(prevTimestamp < info.latestVideo.timestamp) {
+					if(prevVideoId != info.latestVideo.id) {
 							hasChanged = true;
 							if(info.latestVideo.views == "301")
 								info.latestVideo.views = "301+";

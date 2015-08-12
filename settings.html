@@ -4,9 +4,10 @@
 	<link rel="stylesheet" href="css/material.min.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css" />
 	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-	<script src="js/material.min.js"></script>
-	<script src="js/jquery.min.js"></script>
-	<script src="js/settings.js"></script>
+	<script type="text/javascript" src="js/material.min.js"></script>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/sortable.min.js"></script>
+	<script type="text/javascript" src="js/settings.js"></script>
 </head>
 <body>
 	<div id="loading" style="display: none;"></div>
@@ -15,8 +16,16 @@
 			<div id="header_title" class="mdl-layout__header-row">
 				<img id="header_img" src="img/yt_logo.png" />
 				<span class="mdl-layout-title">Notifications</span>
+				
+				<div id="button-menu-container">
+					<button id="demo-menu-lower-right" class="mdl-button mdl-js-button mdl-button--icon">
+						<i class="material-icons">more_vert</i>
+					</button>
+					<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="demo-menu-lower-right">
+						<li id="menu_changeAlignment" class="mdl-menu__item" data-toggle="false"></li>
+					</ul>
+				</div>
 			</div>
-			<!-- Tabs -->
 			<div id="header_tabs" class="mdl-layout__tab-bar mdl-js-ripple-effect">
 				<a href="#tab-newest_uploads" class="mdl-layout__tab is-active">Newest Uploads</a>
 				<a href="#tab-edit_settings" class="mdl-layout__tab">Edit Settings</a>

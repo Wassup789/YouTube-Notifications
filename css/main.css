@@ -37,6 +37,15 @@ a{text-decoration: none;cursor:pointer;}
 #header_title {padding-left: 18px;}
 #header_title .mdl-layout-title {margin-left: 5px;}
 #header_img {height: 32px;}
+#button-menu-container {
+	box-sizing: border-box;
+	position: absolute;
+	top: 12px;
+	right: 16px;
+}
+#button-menu-container .mdl-menu__container {margin-top: -30px;}
+#menu_changeAlignment[data-toggle="false"]:after {content: "Change Alignment";}
+#menu_changeAlignment[data-toggle="true"]:after {content: "Finish Alignment";}
 .mdl-layout.is-upgraded .mdl-layout__tab.is-active::after {background: #FFEB3B;}
 .overlay {
 	position: absolute;
@@ -65,6 +74,7 @@ a{text-decoration: none;cursor:pointer;}
 	font-size: 14px;
 	font-weight: bold;
 }
+.channelRow.editable * {cursor: move;}
 .channelRow:last-child, .settingRow:last-child {border: none;}
 
 .channelColumn, .settingColumn {display: table-cell;}
@@ -124,7 +134,9 @@ a{text-decoration: none;cursor:pointer;}
 	font-size: 12px;
 	margin-top: 2px;
 	background: #B71C1C!important;
+	cursor: pointer!important;
 }
+.channel_remove_btn .mdl-button__ripple-container{cursor: pointer!important;}
 .channel_info_btn {
     min-width: inherit;
     height: 23px;
