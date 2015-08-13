@@ -179,7 +179,7 @@ function disableButtons(bool){
 		$(".mdl-layout__tab-panel").removeClass("is-active");
 		$("#tab-newest_uploads").addClass("is-active");
 	}else{
-		$(".channelRow:not(#masterChannelRow) .channelColumn:nth-child(5)").show();
+		$(".channelRow:not(#masterChannelRow) .channelColumn:nth-child(5) .channel_info_btn").show();
 		$("#add_channels-fab").show();
 	}
 }

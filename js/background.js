@@ -5,6 +5,7 @@ var wyn = {};
 	wyn.isTimedout = false,
 	wyn.batchChecking = false,
 	wyn.activeCheckings = [],
+	wyn.activeInfoCheckings = [],
 	wyn.strings = {
 		"notification_watch": "Watch Video",
 		"notification_close": "Dismiss",
@@ -54,8 +55,43 @@ $(function(){
 		}
 	});
 	
+	updateChannelsInfo(true);
 	checkYoutubeStatus();
 });
+
+function updateChannelsInfo(refresh){
+	//NOT RECOMMENDED TO DO THIS METHOD
+	refresh = refresh || false;
+	
+	var channels = JSON.parse(localStorage.getItem("channels"));
+	for(var i = 0; i < channels.length; i++){
+		wyn.activeInfoCheckings[i] = true;
+		var url = "https://data.wassup789.ml/youtubenotifications/getchannel.php?query=" + encodeURIComponent(channels[i].id);
+		$.ajax({
+			type: "GET",
+			dataType: "json",
+			url: url,
+			i: i,
+			success: function(data) {
+				if(data.status == "success") {
+					var num = this.i;
+					channels[num].name				= data.data.name;
+					channels[num].thumbnail			= data.data.thumbnail;
+					channels[num].viewCount			= data.data.viewCount;
+					channels[num].subscriberCount	= data.data.subscriberCount;
+					
+					wyn.activeInfoCheckings[num] = false;
+					for(var i = 0; i < wyn.activeInfoCheckings.length; i++)
+						if(wyn.activeInfoCheckings[i])
+							return;
+					localStorage.setItem("channels", JSON.stringify(channels));
+					if(refresh)
+						chrome.extension.sendMessage({type: "refreshPage"});
+				}
+			}
+		});
+	}
+}
 
 function checkYoutubeStatus(){
 	var url = "https://data.wassup789.ml/youtubenotifications/testserver.php";
@@ -143,7 +179,7 @@ function checkYoutube(num, refresh) {
 				data.data = data.data[0];
 				
 				console.log(wyn.strings.notification_log_check + channels[num].name);
-				var prevVideoId = channels[i].latestVideo.id;
+				var prevVideoId = channels[num].latestVideo.id;
 				channels[num].latestVideo.id = data.data.videoId;
 				channels[num].latestVideo.title = data.data.title;
 				channels[num].latestVideo.description = data.data.description.substring(0,100).replace(/(\r\n|\n|\r)/gm," ");
