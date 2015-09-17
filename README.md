@@ -51,6 +51,6 @@ This code is licensed under the MIT License
 
   [Dld_Latest_GD]: http://goo.gl/YLdcXX
   [Dld_Latest_DB]: http://db.orangedox.com/VVgMh12Eb47lnY0WyK/Youtube_Notifications_v1.0.9.1.crx
-  [Dld_Archive]: http://goo.gl/rczott
+  [Dld_Archive]: https://goo.gl/0sGIfC
   
   [CLog.md]: https://github.com/Wassup789/Youtube-Notifications/blob/master/CHANGELOG.md
