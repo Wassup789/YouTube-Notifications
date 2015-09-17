@@ -18,20 +18,21 @@ This code is licensed under the MIT License
 
 ## Downloads
 
+[![ChromeWebStore](https://raw.githubusercontent.com/Wassup789/Youtube-Notifications/master/img/chromewebstore.png)](https://chrome.google.com/webstore/detail/youtube-notifications/cilgbgkmanbbecbjihnbpeaoodmgchom)
 
+<s>
 **Latest Stable Release:**
 
- - **Version 1.0.9.2** - XX-XX-20XX XX:XX PDT
+ - **Version 1.0.9.1** - 07-15-2014 21:41 PDT
  - [Download Here via Google Drive][Dld_Latest_GD]
  - [Direct Link via Dropbox][Dld_Latest_DB]
+</s>
 
 **Release Archive:**
 
  - [Download Here via Google Drive][Dld_Archive]
 
 ## Options
-
-#### Format
 
 ## Screenshots
 **Options - Channel List**

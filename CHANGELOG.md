@@ -1,10 +1,10 @@
 Changelog
 =====
-## v1.0.9.2 (XX-XX-XXXX)
+## v1.0.9.2 (09-16-2015)
  * Reworked majority of files
  * New UI
  * Uses YouTube Data API v3
- * Uses another server to limit requests
+ * Uses another server to limit requests (Could be slow)
 
 ## v1.0.9.1 (07-15-2014)
  * Major connection error fixed
