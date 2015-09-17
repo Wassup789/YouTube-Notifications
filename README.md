@@ -43,7 +43,7 @@ This code is licensed under the MIT License
 
 **Example Notification**
 
-[![Screenshot 4](http://i.imgur.com/H08EfDR.png)](http://i.imgur.com/H08EfDR.png)
+[![Screenshot 4](http://i.imgur.com/B3sSnsb.png)](http://i.imgur.com/B3sSnsb.png)
 
 ## Changelog
 [See CHANGELOG.md][CLog.md]

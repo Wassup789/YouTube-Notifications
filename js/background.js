@@ -445,9 +445,10 @@ wyn.forceNotification = function(id) {
 		contextMessage: info.latestVideo.duration + " | "+ addCommas(info.latestVideo.views) + " views | " + likesa + "% likes | " + dislikesa + "% dislikes",
 		buttons: [{
 			title: wyn.strings.notification_watch,
-			iconUrl: "img/icon_play2.png"
+			iconUrl: "img/ic_play.png"
 		}, {
-			title: wyn.strings.notification_close
+			title: wyn.strings.notification_close,
+			iconUrl: "img/ic_close.png"
 		}]
 	};
 	var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + id;
