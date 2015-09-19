@@ -157,6 +157,7 @@ main {
 	bottom: 20px;
 	background: #2196F3;
 	z-index: 10;
+	box-shadow: 0 0 10px rgba(115, 115, 115, 0.75);
 }
 #add_channels-dialog {
 	position: fixed;
@@ -293,7 +294,12 @@ main {
     max-width: 185px;
 }
 .videoListColumn:nth-child(3) {
+    max-width: 272px;
 	margin-left: 5px;
+	letter-spacing: -0.5px;
+	overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 .videoList_img {
 	height: 50px;

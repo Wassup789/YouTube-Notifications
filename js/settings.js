@@ -270,10 +270,11 @@ function displayPopupCard(num){
 	if(typeof $("#channels .channelRow:not(#masterChannelRow)")[num] !== "undefined"){
 		if($("#popup_card").attr("data-toggle") != "true"){
 			popupId = num;
+			$("main").addClass("unscrollable");//Disable scrolling so popup_card doesn't look weird
 			$("#popup_card").children(":not(#popup_videoList):not(#popup_loading)").remove();//Remove items from popup before
 			$("#popup_card").children("#popup_videoList").children(":not(#masterVideoListRow)").remove();//Remove video list items from popup before
 			$("#popup_card").prepend($("#channels .channelRow:not(#masterChannelRow)")[num].outerHTML);//Prepend clicked contents
-			$("#popup_card").css("top", $("#channels .channelRow:not(#masterChannelRow)")[num].getBoundingClientRect().top - parseInt($($(".main_card")[0]).css("margin")));//Align popup with clicked card
+			$("#popup_card").css("top", $("#channels .channelRow:not(#masterChannelRow)")[num].getBoundingClientRect().top - parseInt($($(".main_card")[0]).css("marginTop")) - parseInt($("main").css("marginTop"))+1);//Align popup with clicked card
 			$("#popup_card").css("height", 70);
 			
 			$("#popup_card").fadeIn("fast");
@@ -292,14 +293,13 @@ function displayPopupCard(num){
 				$("#popup_card .channel_info_btn").css("marginTop", "");//Reset info button
 				$("#popup_card .channelColumn").not(".popup_show").hide();//Remove unneeded content
 				$("#popup_card").attr("data-toggle", "true");
-				$("main").addClass("unscrollable");
 				getChannelVideos();
 			}, 650);
 		}else{
 			$("#popup_card").animate({ scrollTop: 0 }, "fast");//Scroll to top for info button transition alignment
 			$("#popup_loading").fadeOut("fast");//Remove loading if exists
 			$("#popup_card").animate({//Transform card to original size
-				top: $("#channels .channelRow:not(#masterChannelRow)")[popupId].getBoundingClientRect().top - parseInt($($(".main_card")[0]).css("margin")),
+				top: $("#channels .channelRow:not(#masterChannelRow)")[popupId].getBoundingClientRect().top - parseInt($($(".main_card")[0]).css("marginTop")) - parseInt($("main").css("marginTop"))+1,
 				height: 70
 			}, 350);
 			$("#popup_card .channel_info_btn").animate({//Seamless info button transition
@@ -315,8 +315,10 @@ function displayPopupCard(num){
 				$("#popup_card .channel_info_btn").css("marginTop", "");//Reset info button
 				$("#popup_card .channelColumn").not(":first").not(":last").show();//Re-add buttons
 				$("#popup_card").attr("data-toggle", "false");
-				$("main").removeClass("unscrollable");
 			}, 450);
+			setTimeout(function(){
+				$("main").removeClass("unscrollable");//Delays scrollability until popup_card completely disapears
+			}, 700);
 			popupId = -1;
 		}
 	}
@@ -391,7 +393,7 @@ function setChannelVideos(data){
 		var elem = $("#masterVideoListRow").clone().appendTo("#popup_videoList");
 		elem.removeAttr("id");
 		elem.css("display", "");
-		elem.children("a").attr("href", "https://www.youtube.com/watch?v=" + data[i].videoId);
+		elem.children("a").attr("href", "https://www.youtube.com/watch?v=" + data[i].id);
 		elem.children("a").attr("title", data[i].title);
 		elem.children("a").children(".videoListColumn:nth-child(1)").children(".videoList_img").attr("src", data[i].thumbnail);
 		elem.children("a").children(".videoListColumn:nth-child(2)").children(".videoList_title").text(data[i].title);
@@ -447,12 +449,7 @@ function timeSince(date){
 		return interval + " second";
 }
 function addCommas(num) {
-	var str = num.toString().split('.');
-	if (str[0].length >= 5)
-		str[0] = str[0].replace(/(\d)(?=(\d{3})+$)/g, '$1,');
-	if (str[1] && str[1].length >= 5) 
-		str[1] = str[1].replace(/(\d{3})/g, '$1 ');
-	return str.join('.');
+	return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 function convertISO8601Duration(t){ 
