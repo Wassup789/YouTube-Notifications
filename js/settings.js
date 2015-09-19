@@ -1,3 +1,4 @@
+var apiKey = chrome.extension.getBackgroundPage().wyn.apiKey;
 $(function(){
 	if(!chrome.extension.getBackgroundPage().wyn.isConnected)
 		createSnackbar("Could not connect to YouTube's Servers");
@@ -18,6 +19,10 @@ $(function(){
 				break;
 		}
 	});
+	
+	var manifest = chrome.runtime.getManifest();
+	$("#version").html("Version " + manifest.version + "<br/>by Wassup789");
+	
 	getVideoList();
 	registerListeners();
 	setTimeout(function(){
@@ -287,6 +292,7 @@ function displayPopupCard(num){
 				$("#popup_card .channel_info_btn").css("marginTop", "");//Reset info button
 				$("#popup_card .channelColumn").not(".popup_show").hide();//Remove unneeded content
 				$("#popup_card").attr("data-toggle", "true");
+				$("main").addClass("unscrollable");
 				getChannelVideos();
 			}, 650);
 		}else{
@@ -309,6 +315,7 @@ function displayPopupCard(num){
 				$("#popup_card .channel_info_btn").css("marginTop", "");//Reset info button
 				$("#popup_card .channelColumn").not(":first").not(":last").show();//Re-add buttons
 				$("#popup_card").attr("data-toggle", "false");
+				$("main").removeClass("unscrollable");
 			}, 450);
 			popupId = -1;
 		}
@@ -318,7 +325,8 @@ function displayPopupCard(num){
 function getChannelVideos(){
 	var id = parseInt($("#popup_card .channelRow").attr("data-id")),
 		channelId = JSON.parse(localStorage.getItem("channels"))[id].id,
-		url = "https://data.wassup789.ml/youtubenotifications/getvideos.php?query=" + channelId;
+		playlistId = JSON.parse(localStorage.getItem("channels"))[id].playlistId,
+		url = "https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&maxResults=10&playlistId=" + playlistId + "&key=" + apiKey;
 	if(typeof savedData[channelId] !== "undefined")
 		setChannelVideos(savedData[channelId]);
 	else{
@@ -328,13 +336,36 @@ function getChannelVideos(){
 			dataType: "json",
 			url: url,
 			success: function(data) {
-				if(data.status == "success" && popupId != -1) {
-					data = data.data;
-					setChannelVideos(data);
-					savedData[channelId] = data;
-					$("#popup_loading").fadeOut("slow");
-					$("#popup_videoList").fadeIn("slow");
-				}
+				var videos = "";
+				for(var i = 0; i < data.items.length; i++)
+					videos += data.items[i].contentDetails.videoId + ",";
+				var url = "https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,contentDetails&maxResults=1&id=" + videos + "&key=" + apiKey;
+				$.ajax({
+					type: "GET",
+					dataType: "json",
+					url: url,
+					success: function(data) {
+						var output = [];
+						for(var i = 0; i < data.items.length; i++){
+							var outputAdd = {
+								id:				data.items[i].id,
+								title:			data.items[i].snippet.title,
+								description:	data.items[i].snippet.description,
+								timestamp:		Date.parse(data.items[i].snippet.publishedAt)/1000,
+								thumbnail:		data.items[i].snippet.thumbnails.high.url,
+								likes:			data.items[i].statistics.likeCount,
+								dislikes:		data.items[i].statistics.dislikeCount,
+								views:			data.items[i].statistics.viewCount,
+								duration:		convertISO8601Duration(data.items[i].contentDetails.duration)
+							};
+							output.push(outputAdd);
+						}
+						setChannelVideos(output);
+						savedData[channelId] = output;
+						$("#popup_loading").fadeOut("slow");
+						$("#popup_videoList").fadeIn("slow");
+					}
+				});
 			}
 		});
 	}
@@ -423,6 +454,74 @@ function addCommas(num) {
 		str[1] = str[1].replace(/(\d{3})/g, '$1 ');
 	return str.join('.');
 }
+
+function convertISO8601Duration(t){ 
+    //dividing period from time
+    var x = t.split('T'),
+        duration = '',
+        time = {},
+        period = {},
+        //just shortcuts
+        s = 'string',
+        v = 'variables',
+        l = 'letters',
+        // store the information about ISO8601 duration format and the divided strings
+        d = {
+            period: {
+                string: x[0].substring(1,x[0].length),
+                len: 4,
+                // years, months, weeks, days
+                letters: ['Y', 'M', 'W', 'D'],
+                variables: {}
+            },
+            time: {
+                string: x[1],
+                len: 3,
+                // hours, minutes, seconds
+                letters: ['H', 'M', 'S'],
+                variables: {}
+            }
+        };
+    //in case the duration is a multiple of one day
+    if (!d.time.string) {
+        d.time.string = '';
+    }
+
+    for (var i in d) {
+        var len = d[i].len;
+        for (var j = 0; j < len; j++) {
+            d[i][s] = d[i][s].split(d[i][l][j]);
+            if (d[i][s].length>1) {
+                d[i][v][d[i][l][j]] = parseInt(d[i][s][0], 10);
+                d[i][s] = d[i][s][1];
+            } else {
+                d[i][v][d[i][l][j]] = 0;
+                d[i][s] = d[i][s][0];
+            }
+        }
+    } 
+    period = d.period.variables;
+    time = d.time.variables;
+    time.H +=   24 * period.D + 
+                            24 * 7 * period.W +
+                            24 * 7 * 4 * period.M + 
+                            24 * 7 * 4 * 12 * period.Y;
+
+    if (time.H) {
+        duration = time.H + ':';
+        if (time.M < 10) {
+            time.M = '0' + time.M;
+        }
+    }
+
+    if (time.S < 10) {
+        time.S = '0' + time.S;
+    }
+
+    duration += time.M + ':' + time.S;
+    return duration;
+}
+
 
 // SNACKBAR
 var createSnackbar=function(){var t=null;return function(e,i,n){t&&t.dismiss();var a=document.createElement("div");a.className="paper-snackbar",a.dismiss=function(){this.style.opacity=0};var s=document.createTextNode(e);if(a.appendChild(s),i){n||(n=a.dismiss.bind(a));var d=document.createElement("button");d.className="action",d.innerHTML=i,d.addEventListener("click",n),a.appendChild(d)}setTimeout(function(){t===this&&t.dismiss()}.bind(a),5e3),a.addEventListener("transitionend",function(e){"opacity"===e.propertyName&&0==this.style.opacity&&(this.parentElement.removeChild(this),t===this&&(t=null))}.bind(a)),t=a,document.body.appendChild(a),getComputedStyle(a).bottom,a.style.bottom="0px",a.style.opacity=1}}();

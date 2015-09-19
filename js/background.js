@@ -4,6 +4,8 @@ var wyn = {};
 	wyn.isConnected = false,
 	wyn.isTimedout = false,
 	wyn.batchChecking = false,
+	wyn.hasBatchChanged = false,
+	wyn.activeBatchCheckings = [],
 	wyn.activeCheckings = [],
 	wyn.activeInfoCheckings = [],
 	wyn.strings = {
@@ -17,7 +19,8 @@ var wyn = {};
 		"log_color_prefix": "%c",
 		"log_color_green": "font-weight: bold; color: #2E7D32",
 		"log_color_red": "font-weight: bold; color: #B71C1C"
-	}
+	},
+	wyn.apiKey = "AIzaSyA8W5tYDVst9tnMpnV56OSjMvHSD70T7oU";// CHANGE THIS API KEY TO YOUR OWN
 
 if(localStorage.getItem("channels") == null)
 	localStorage.setItem("channels", JSON.stringify([]));
@@ -66,27 +69,38 @@ function updateChannelsInfo(refresh){
 	var channels = JSON.parse(localStorage.getItem("channels"));
 	for(var i = 0; i < channels.length; i++){
 		wyn.activeInfoCheckings[i] = true;
-		var url = "https://data.wassup789.ml/youtubenotifications/getchannel.php?query=" + encodeURIComponent(channels[i].id);
+		var url = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&maxResults=1&q=" + channels[i].id + "&key=" + wyn.apiKey;
 		$.ajax({
 			type: "GET",
 			dataType: "json",
 			url: url,
 			i: i,
-			success: function(data) {
-				if(data.status == "success") {
-					var num = this.i;
-					channels[num].name				= data.data.name;
-					channels[num].thumbnail			= data.data.thumbnail;
-					channels[num].viewCount			= data.data.viewCount;
-					channels[num].subscriberCount	= data.data.subscriberCount;
-					
-					wyn.activeInfoCheckings[num] = false;
-					for(var i = 0; i < wyn.activeInfoCheckings.length; i++)
-						if(wyn.activeInfoCheckings[i])
-							return;
-					localStorage.setItem("channels", JSON.stringify(channels));
-					if(refresh)
-						chrome.extension.sendMessage({type: "refreshPage"});
+			success: function(data){
+				if(data.items.length == 1){
+					var url = "https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&maxResults=1&id=" + channels[this.i].id + "&key=" + wyn.apiKey;
+					$.ajax({
+						type: "GET",
+						dataType: "json",
+						url: url,
+						i: this.i,
+						success: function(data) {
+							if(data.status == "success") {
+								var num = this.i;
+								channels[num].name				= data.items[0].snippet.title;
+								channels[num].thumbnail			= data.items[0].snippet.thumbnails.default.url;
+								channels[num].viewCount			= data.items[0].statistics.viewCount;
+								channels[num].subscriberCount	= data.items[0].statistics.subscriberCount;
+								
+								wyn.activeInfoCheckings[num] = false;
+								for(var i = 0; i < wyn.activeInfoCheckings.length; i++)
+									if(wyn.activeInfoCheckings[i])
+										return;
+								localStorage.setItem("channels", JSON.stringify(channels));
+								if(refresh)
+									chrome.extension.sendMessage({type: "refreshPage"});
+							}
+						}
+					});
 				}
 			}
 		});
@@ -94,11 +108,22 @@ function updateChannelsInfo(refresh){
 }
 
 function checkYoutubeStatus(){
-	var url = "https://data.wassup789.ml/youtubenotifications/testserver.php";
+	var url = "https://www.googleapis.com/youtube/v3/";
 	$.ajax({
 		type: "GET",
 		dataType: "json",
 		url: url,
+		statusCode: {
+			404: function() {
+				wyn.isConnected = true;
+				chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.connect_success});
+				console.log(wyn.strings.log_color_prefix + wyn.strings.connect_success, wyn.strings.log_color_green);
+				checkYoutubeBatch(true);
+				setInterval(function(){
+					checkYoutubeBatch(true);
+				}, 1000*60*10);
+			}
+		},
 		success: function(data) {
 			if(data.status == "success" && !wyn.isConnected){
 				wyn.isConnected = true;
@@ -127,72 +152,90 @@ function checkYoutubeStatus(){
 function setYoutube(name, refresh){
 	refresh = refresh || false;
 	
-	var url = "https://data.wassup789.ml/youtubenotifications/getchannel.php?query=" + encodeURIComponent(name);
+	var url = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&maxResults=1&q=" + name + "&key=" + wyn.apiKey;
 	$.ajax({
 		type: "GET",
 		dataType: "json",
 		url: url,
 		success: function(data) {
-			if(data.status == "success") {
-				var output = {
-					"id": 				data.data.id,
-					"name":				data.data.name,
-					"thumbnail":		data.data.thumbnail,
-					"viewCount":		data.data.viewCount,
-					"subscriberCount":	data.data.subscriberCount,
-					"latestVideo":	{
-						"id": 			"",
-						"title":		"",
-						"description":	"",
-						"timestamp":	"",
-						"thumbnail":	"",
-						"views":		"",
-						"duration":		"",
-						"likes":		"",
-						"dislikes":		""
+			if(data.items.length == 1){
+				var id = data.items[0].id.channelId;
+				var url = "https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&maxResults=1&id=" + id + "&key=" + wyn.apiKey;
+				$.ajax({
+					type: "GET",
+					dataType: "json",
+					url: url,
+					success: function(data) {
+						var output = {
+							"id": 				data.items[0].id,
+							"playlistId": 		data.items[0].contentDetails.relatedPlaylists.uploads,
+							"name":				data.items[0].snippet.title,
+							"thumbnail":		data.items[0].snippet.thumbnails.default.url,
+							"viewCount":		data.items[0].statistics.viewCount,
+							"subscriberCount":	data.items[0].statistics.subscriberCount,
+							"latestVideo":	{
+								"id": 			"",
+								"title":		"",
+								"description":	"",
+								"timestamp":	"",
+								"thumbnail":	"",
+								"views":		"",
+								"duration":		"",
+								"likes":		"",
+								"dislikes":		""
+							}
+						};
+						var arr = JSON.parse(localStorage.getItem("channels"));
+						arr.push(output);
+						localStorage.setItem("channels", JSON.stringify(arr));
+						checkYoutube(arr.length-1, refresh);
 					}
-				};
-				var arr = JSON.parse(localStorage.getItem("channels"));
-				arr.push(output);
-				localStorage.setItem("channels", JSON.stringify(arr));
-				checkYoutube(arr.length-1, refresh);
+				});
 			}
 		}
 	});
 	
 }
 
-function checkYoutube(num, refresh) {
+function checkYoutube(num, refresh, batch) {
 	refresh = refresh || false;
+	batch = batch || false;
 	wyn.activeCheckings[num] = true;
 	
 	var channels = JSON.parse(localStorage.getItem("channels"));
-	var url = "https://data.wassup789.ml/youtubenotifications/getlist.php?query=" + encodeURIComponent(btoa(JSON.stringify([{id: channels[num].id}])));
+	var url = "https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&maxResults=1&playlistId=" + channels[num].playlistId + "&key=" + wyn.apiKey;
 	
 	$.ajax({
 		type: "GET",
 		dataType: "json",
 		url: url,
 		success: function(data) {
-			if(data.status == "success"){
-				channels = JSON.parse(localStorage.getItem("channels"));
-				data.data = data.data[0];
-				
-				console.log(wyn.strings.notification_log_check + channels[num].name);
-				var prevVideoId = channels[num].latestVideo.id;
-				channels[num].latestVideo.id = data.data.videoId;
-				channels[num].latestVideo.title = data.data.title;
-				channels[num].latestVideo.description = data.data.description.substring(0,100).replace(/(\r\n|\n|\r)/gm," ");
-				channels[num].latestVideo.timestamp = data.data.timestamp;
-				channels[num].latestVideo.thumbnail = data.data.thumbnail.replace("https:/", "http://");
-				channels[num].latestVideo.views = data.data.views;
-				channels[num].latestVideo.duration = data.data.duration;
-				channels[num].latestVideo.likes = data.data.likes;
-				channels[num].latestVideo.dislikes = data.data.dislikes;
-				localStorage.setItem("channels", JSON.stringify(channels));
-				var info = channels[num];
-				
-				if(prevVideoId != info.latestVideo.id) {
+			var videoId = data.items[0].contentDetails.videoId,
+				url = "https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,contentDetails&maxResults=1&id=" + videoId + "&key=" + wyn.apiKey;
+			$.ajax({
+				type: "GET",
+				dataType: "json",
+				url: url,
+				success: function(data) {
+					channels = JSON.parse(localStorage.getItem("channels"));
+					
+					console.log(wyn.strings.notification_log_check + channels[num].name);
+					var prevVideoId = channels[num].latestVideo.id;
+					channels[num].latestVideo.id = data.items[0].id;
+					channels[num].latestVideo.title = data.items[0].snippet.title;
+					channels[num].latestVideo.description = data.items[0].snippet.description.substring(0,100).replace(/(\r\n|\n|\r)/gm," ");
+					channels[num].latestVideo.timestamp = Date.parse(data.items[0].snippet.publishedAt)/1000;
+					channels[num].latestVideo.thumbnail = data.items[0].snippet.thumbnails.high.url.replace("https:/", "http://");
+					channels[num].latestVideo.views = data.items[0].statistics.viewCount;
+					channels[num].latestVideo.duration = convertISO8601Duration(data.items[0].contentDetails.duration);
+					channels[num].latestVideo.likes = data.items[0].statistics.likeCount;
+					channels[num].latestVideo.dislikes = data.items[0].statistics.dislikeCount;
+					localStorage.setItem("channels", JSON.stringify(channels));
+					var info = channels[num];
+					
+					if(prevVideoId != info.latestVideo.id) {
+						if(batch)
+							wyn.hasBatchChanged = true;
 						if(info.latestVideo.views == "301")
 							info.latestVideo.views = "301+";
 						info.latestVideo.likes = parseInt(info.latestVideo.likes);
@@ -221,16 +264,97 @@ function checkYoutube(num, refresh) {
 						var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + num;
 						console.log(wyn.strings.log_color_prefix + wyn.strings.notification_log_new + info.name, wyn.strings.log_color_green);
 						notify(ntID, options);
+					}
+					wyn.activeCheckings[num] = false;
+					if(!batch){
+						for(var i = 0; i < wyn.activeCheckings.length; i++)
+							if(wyn.activeCheckings[i])
+								return;
+						if(refresh)
+							chrome.extension.sendMessage({type: "refreshPage"});
+					}else{
+						wyn.activeBatchCheckings[num] = false;
+						for(var i = 0; i < wyn.activeBatchCheckings.length; i++)
+							if(wyn.activeBatchCheckings[i])
+								return;
+						wyn.batchChecking = false;
+						if(wyn.hasBatchChanged){
+							if(refresh)
+								chrome.extension.sendMessage({type: "refreshPage"});
+						}else
+							chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.snackbar_nonewvideos});
+					}
 				}
-				wyn.activeCheckings[num] = false;
-				for(var i = 0; i < wyn.activeCheckings.length; i++)
-					if(wyn.activeCheckings[i])
-						return;
-				if(refresh)
-					chrome.extension.sendMessage({type: "refreshPage"});
-			}
+			});
 		}
 	});
+}
+
+function convertISO8601Duration(t){ 
+    //dividing period from time
+    var x = t.split('T'),
+        duration = '',
+        time = {},
+        period = {},
+        //just shortcuts
+        s = 'string',
+        v = 'variables',
+        l = 'letters',
+        // store the information about ISO8601 duration format and the divided strings
+        d = {
+            period: {
+                string: x[0].substring(1,x[0].length),
+                len: 4,
+                // years, months, weeks, days
+                letters: ['Y', 'M', 'W', 'D'],
+                variables: {}
+            },
+            time: {
+                string: x[1],
+                len: 3,
+                // hours, minutes, seconds
+                letters: ['H', 'M', 'S'],
+                variables: {}
+            }
+        };
+    //in case the duration is a multiple of one day
+    if (!d.time.string) {
+        d.time.string = '';
+    }
+
+    for (var i in d) {
+        var len = d[i].len;
+        for (var j = 0; j < len; j++) {
+            d[i][s] = d[i][s].split(d[i][l][j]);
+            if (d[i][s].length>1) {
+                d[i][v][d[i][l][j]] = parseInt(d[i][s][0], 10);
+                d[i][s] = d[i][s][1];
+            } else {
+                d[i][v][d[i][l][j]] = 0;
+                d[i][s] = d[i][s][0];
+            }
+        }
+    } 
+    period = d.period.variables;
+    time = d.time.variables;
+    time.H +=   24 * period.D + 
+                            24 * 7 * period.W +
+                            24 * 7 * 4 * period.M + 
+                            24 * 7 * 4 * 12 * period.Y;
+
+    if (time.H) {
+        duration = time.H + ':';
+        if (time.M < 10) {
+            time.M = '0' + time.M;
+        }
+    }
+
+    if (time.S < 10) {
+        time.S = '0' + time.S;
+    }
+
+    duration += time.M + ':' + time.S;
+    return duration;
 }
 
 function checkYoutubeBatch(refresh){
@@ -239,85 +363,14 @@ function checkYoutubeBatch(refresh){
 	if(wyn.batchChecking)
 		return;
 	wyn.batchChecking = true;
+	wyn.hasBatchChanged = false;
 	
 	console.log("Initializing YouTube channel check");
-	var channels = JSON.parse(localStorage.getItem("channels")),
-		arr = [];
-	for(var i = 0; i < channels.length; i++) 
-		arr[i] = {id: channels[i].id};
-	
-	var url = "https://data.wassup789.ml/youtubenotifications/getlist.php?query=" + encodeURIComponent(btoa(JSON.stringify(arr))),
-		hasChanged = false;
-	
-	$.ajax({
-		type: "GET",
-		dataType: "json",
-		url: url,
-		success: function(data) {
-			if(data.status == "success"){
-				for(var i = 0; i < data.data.length; i++){
-					channels = JSON.parse(localStorage.getItem("channels"));
-					if(!channels[i])
-						return;
-					console.log(wyn.strings.notification_log_check + channels[i].name);
-					var vData = data.data[i];
-					var prevVideoId = channels[i].latestVideo.id;
-					channels[i].latestVideo.id = vData.videoId;
-					channels[i].latestVideo.title = vData.title;
-					channels[i].latestVideo.description = vData.description.substring(0,100).replace(/(\r\n|\n|\r)/gm," ");
-					channels[i].latestVideo.timestamp = vData.timestamp;
-					channels[i].latestVideo.thumbnail = vData.thumbnail.replace("https:/", "http://");
-					channels[i].latestVideo.views = vData.views;
-					channels[i].latestVideo.duration = vData.duration;
-					channels[i].latestVideo.likes = vData.likes;
-					channels[i].latestVideo.dislikes = vData.dislikes;
-					localStorage.setItem("channels", JSON.stringify(channels));
-					var info = channels[i];
-					
-					if(prevVideoId != info.latestVideo.id) {
-							hasChanged = true;
-							if(info.latestVideo.views == "301")
-								info.latestVideo.views = "301+";
-							info.latestVideo.likes = parseInt(info.latestVideo.likes);
-							info.latestVideo.dislikes = parseInt(info.latestVideo.dislikes);
-							var likesa = Math.round((info.latestVideo.likes / (info.latestVideo.likes + info.latestVideo.dislikes)) * 100);
-							var dislikesa = Math.round((info.latestVideo.dislikes / (info.latestVideo.likes + info.latestVideo.dislikes)) * 100);
-							if((likesa + dislikesa) > 100)
-								dislikesa--;
-							
-							var options = {
-								type: "image",
-								priority: 0,
-								title: info.latestVideo.title + " by " + info.name,
-								message: info.latestVideo.description,
-								imageUrl: info.latestVideo.thumbnail,
-								iconUrl: "img/icon_yt.png",
-								contextMessage: info.latestVideo.duration + " | "+ addCommas(info.latestVideo.views) + " views | " + likesa + "% likes | " + dislikesa + "% dislikes",
-								buttons: [{
-									title: wyn.strings.notification_watch,
-									iconUrl: "img/ic_play.png"
-								}, {
-									title: wyn.strings.notification_close,
-									iconUrl: "img/ic_close.png"
-								}]
-							};
-							var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + i;
-							console.log(wyn.strings.log_color_prefix + wyn.strings.notification_log_new + info.name, wyn.strings.log_color_green);
-							notify(ntID, options);
-					}
-					if(i == data.data.length-1){
-						wyn.batchChecking = false;
-						console.log("End of YouTube channel check");
-						if(hasChanged){
-							if(refresh)
-								chrome.extension.sendMessage({type: "refreshPage"});
-						}else
-							chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.snackbar_nonewvideos});
-					}
-				}
-			}
-		}
-	});
+	var channels = JSON.parse(localStorage.getItem("channels"));
+	for(var i = 0; i < channels.length; i++){
+		wyn.activeBatchCheckings[i] = true;
+		checkYoutube(i, true, true);
+	}
 }
 
 function addCommas(num) {

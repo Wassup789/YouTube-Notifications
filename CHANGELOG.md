@@ -1,5 +1,12 @@
 Changelog
 =====
+## v1.1.0.1 (09-18-2015)
+ * Fixed bug that causes new channel additions to not refresh options menu
+
+## v1.1.0.0 (09-18-2015)
+ * Updated to comply with Chrome Web Store guidelines
+ * Requests to YouTube's Data API is now client side
+
 ## v1.0.9.2 (09-16-2015)
  * Reworked majority of files
  * New UI
