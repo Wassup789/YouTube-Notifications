@@ -20,11 +20,7 @@ This code is licensed under the MIT License
 
 [![ChromeWebStore](https://raw.githubusercontent.com/Wassup789/Youtube-Notifications/master/img/chromewebstore.png)](https://chrome.google.com/webstore/detail/youtube-notifications/cilgbgkmanbbecbjihnbpeaoodmgchom)
 
-<<<<<<< HEAD
 **Latest Version:** ***v1.1.0.1***
-=======
-**Latest Version:** ***v1.0.9.2***
->>>>>>> origin/master
 
 **Release Archive:**
 
@@ -55,6 +51,6 @@ This code is licensed under the MIT License
 
   [Dld_Latest_GD]: http://goo.gl/YLdcXX
   [Dld_Latest_DB]: http://db.orangedox.com/VVgMh12Eb47lnY0WyK/Youtube_Notifications_v1.0.9.1.crx
-  [Dld_Archive]: https://goo.gl/0sGIfC
+  [Dld_Archive]: http://goo.gl/rczott
   
   [CLog.md]: https://github.com/Wassup789/Youtube-Notifications/blob/master/CHANGELOG.md
