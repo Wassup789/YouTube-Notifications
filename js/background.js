@@ -58,7 +58,7 @@ $(function(){
 		}
 	});
 	
-	updateChannelsInfo(true);
+	//updateChannelsInfo(true);
 	checkYoutubeStatus();
 });
 
@@ -203,29 +203,28 @@ function checkYoutube(num, refresh, batch) {
 	wyn.activeCheckings[num] = true;
 	
 	var channels = JSON.parse(localStorage.getItem("channels"));
-	var url = "https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&maxResults=1&playlistId=" + channels[num].playlistId + "&key=" + wyn.apiKey;
+	var url = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=1&playlistId=" + channels[num].playlistId + "&key=" + wyn.apiKey;
 	
 	$.ajax({
 		type: "GET",
 		dataType: "json",
 		url: url,
 		success: function(data) {
-			var videoId = data.items[0].contentDetails.videoId,
-				url = "https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,contentDetails&maxResults=1&id=" + videoId + "&key=" + wyn.apiKey;
+			var videoId = data.items[0].snippet.resourceId.videoId,
+				url = "https://www.googleapis.com/youtube/v3/videos?part=statistics,contentDetails&maxResults=1&id=" + videoId + "&key=" + wyn.apiKey,
+				prevVideoId = channels[num].latestVideo.id;
+			channels[num].latestVideo.id = videoId;
+			channels[num].latestVideo.title = data.items[0].snippet.title;
+			channels[num].latestVideo.description = data.items[0].snippet.description.substring(0,100).replace(/(\r\n|\n|\r)/gm," ");
+			channels[num].latestVideo.timestamp = Date.parse(data.items[0].snippet.publishedAt)/1000;
+			channels[num].latestVideo.thumbnail = data.items[0].snippet.thumbnails.high.url.replace("https:/", "http://");
 			$.ajax({
 				type: "GET",
 				dataType: "json",
 				url: url,
 				success: function(data) {
-					channels = JSON.parse(localStorage.getItem("channels"));
 					
 					console.log(wyn.strings.notification_log_check + channels[num].name);
-					var prevVideoId = channels[num].latestVideo.id;
-					channels[num].latestVideo.id = data.items[0].id;
-					channels[num].latestVideo.title = data.items[0].snippet.title;
-					channels[num].latestVideo.description = data.items[0].snippet.description.substring(0,100).replace(/(\r\n|\n|\r)/gm," ");
-					channels[num].latestVideo.timestamp = Date.parse(data.items[0].snippet.publishedAt)/1000;
-					channels[num].latestVideo.thumbnail = data.items[0].snippet.thumbnails.high.url.replace("https:/", "http://");
 					channels[num].latestVideo.views = data.items[0].statistics.viewCount;
 					channels[num].latestVideo.duration = convertISO8601Duration(data.items[0].contentDetails.duration);
 					channels[num].latestVideo.likes = data.items[0].statistics.likeCount;
