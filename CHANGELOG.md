@@ -1,6 +1,6 @@
 Changelog
 =====
-## v1.1.0.1 (09-19-2015)
+## v1.1.0.1 (09-21-2015)
  * Fixed bug that causes new channel additions to not refresh options menu
  * Fixed alignment for channel video list
  * Fixed number comma separators

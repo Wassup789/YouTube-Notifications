@@ -24,7 +24,7 @@ This code is licensed under the MIT License
 
 **Release Archive:**
 
- - [Download Here via Google Drive][Dld_Archive]
+ - [Download Here][Dld_Archive]
 
 ## Options
 
@@ -50,7 +50,5 @@ This code is licensed under the MIT License
 
 
   [Dld_Latest_GD]: http://goo.gl/YLdcXX
-  [Dld_Latest_DB]: http://db.orangedox.com/VVgMh12Eb47lnY0WyK/Youtube_Notifications_v1.0.9.1.crx
-  [Dld_Archive]: http://goo.gl/rczott
   
   [CLog.md]: https://github.com/Wassup789/Youtube-Notifications/blob/master/CHANGELOG.md
