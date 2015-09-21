@@ -4,6 +4,7 @@ Changelog
  * Fixed bug that causes new channel additions to not refresh options menu
  * Fixed alignment for channel video list
  * Fixed number comma separators
+ * Optimized GET requests to use up less quota
 
 ## v1.1.0.0 (09-18-2015)
  * Updated to comply with Chrome Web Store guidelines

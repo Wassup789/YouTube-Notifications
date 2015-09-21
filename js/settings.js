@@ -1,7 +1,14 @@
-var apiKey = chrome.extension.getBackgroundPage().wyn.apiKey;
+var wyns = {};
+	wyns.apiKey = chrome.extension.getBackgroundPage().wyn.apiKey,
+	wyns.strings = {
+		"connect_failed": chrome.extension.getBackgroundPage().wyn.strings.connect_failed,
+		"updating": "Updating...",
+		"saved": "Saved",
+		"user_remove_chanel": "Removed YouTube Channel: "
+	};
 $(function(){
 	if(!chrome.extension.getBackgroundPage().wyn.isConnected)
-		createSnackbar("Could not connect to YouTube's Servers");
+		createSnackbar(wyns.strings.connect_failed);
 	
 	chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 		switch (request.type) {
@@ -45,19 +52,19 @@ function getVideoList() {
 		elem.removeAttr("id");
 		elem.attr("data-id", i);
 		elem.css("display", "");
-		elem.children(".channelColumn:nth-child(1)").children(".channel_img").attr("src", channels[i].thumbnail);
-		elem.children(".channelColumn:nth-child(1)").children(".channel_a").attr("href", "https://www.youtube.com/channel/" + channels[i].id);
-		elem.children(".channelColumn:nth-child(2)").children(".channel_author").text(channels[i].name);
-		elem.children(".channelColumn:nth-child(2)").children(".channel_author_info").text(addCommas(channels[i].subscriberCount) + " subscribers \u2022 " + addCommas(channels[i].viewCount) + " views");
-		elem.children(".channelColumn:nth-child(2)").children(".channel_a").attr("href", "https://www.youtube.com/channel/" + channels[i].id);
-		elem.children(".channelColumn:nth-child(2)").children(".channel_a").attr("title",  channels[i].name);
-		elem.children(".channelColumn:nth-child(3)").children(".channel_video_img").attr("src", channels[i].latestVideo.thumbnail);
-		elem.children(".channelColumn:nth-child(3)").children(".channel_video_a").attr("href", "https://www.youtube.com/watch?v=" + channels[i].latestVideo.id);
-		elem.children(".channelColumn:nth-child(4)").children(".channel_video_a").attr("href", "https://www.youtube.com/watch?v=" + channels[i].latestVideo.id);
-		elem.children(".channelColumn:nth-child(3)").children(".channel_video_a").attr("title", channels[i].latestVideo.title);
-		elem.children(".channelColumn:nth-child(4)").children(".channel_video_a").attr("title", channels[i].latestVideo.title);
-		elem.children(".channelColumn:nth-child(4)").children(".channel_video_title").text(channels[i].latestVideo.title);
-		elem.children(".channelColumn:nth-child(4)").children(".channel_video_time").text(date);
+		elem.find(".channelColumn:nth-child(1) .channel_img").attr("src", channels[i].thumbnail);
+		elem.find(".channelColumn:nth-child(1) .channel_a").attr("href", "https://www.youtube.com/channel/" + channels[i].id);
+		elem.find(".channelColumn:nth-child(2) .channel_author").text(channels[i].name);
+		elem.find(".channelColumn:nth-child(2) .channel_author_info").text(addCommas(channels[i].subscriberCount) + " subscribers \u2022 " + addCommas(channels[i].viewCount) + " views");
+		elem.find(".channelColumn:nth-child(2) .channel_a").attr("href", "https://www.youtube.com/channel/" + channels[i].id);
+		elem.find(".channelColumn:nth-child(2) .channel_a").attr("title",  channels[i].name);
+		elem.find(".channelColumn:nth-child(3) .channel_video_img").attr("src", channels[i].latestVideo.thumbnail);
+		elem.find(".channelColumn:nth-child(3) .channel_video_a").attr("href", "https://www.youtube.com/watch?v=" + channels[i].latestVideo.id);
+		elem.find(".channelColumn:nth-child(4) .channel_video_a").attr("href", "https://www.youtube.com/watch?v=" + channels[i].latestVideo.id);
+		elem.find(".channelColumn:nth-child(3) .channel_video_a").attr("title", channels[i].latestVideo.title);
+		elem.find(".channelColumn:nth-child(4) .channel_video_a").attr("title", channels[i].latestVideo.title);
+		elem.find(".channelColumn:nth-child(4) .channel_video_title").text(channels[i].latestVideo.title);
+		elem.find(".channelColumn:nth-child(4) .channel_video_time").text(date);
 	}
 }
 
@@ -75,7 +82,11 @@ function registerListeners(){
 			$("#add_channels-container").attr("data-toggle", "false");
 	});
 	$("#add_channels-more-button").on("click", function(){
-		$($("#add_channels-dialog .mdl-card__supporting-text .mdl-textfield")[0]).clone().appendTo("#add_channels-dialog .mdl-card__supporting-text").children("input").val("");
+		var elem = $($("#add_channels-dialog .mdl-card__supporting-text .mdl-textfield")[0]).clone().appendTo("#add_channels-dialog .mdl-card__supporting-text").children("input").val("");
+		elem = elem.parent();
+		elem.removeClass("is-upgraded");
+		elem.removeAttr("data-upgraded");
+		componentHandler.upgradeElement(elem[0]);
 	});
 	
 	$("#add_channels-add-button").on("click", function(){
@@ -110,7 +121,7 @@ function registerListeners(){
 			$(".channelRow:not(#masterChannelRow)").each(function(i){
 				$(this).attr("data-id", i);
 			});
-			console.log("Removed YouTube Channel: " + name);
+			console.log(wyns.strings.user_remove_chanel + name);
 		}
 	});
 	$(".channel_info_btn").on("click", function(){
@@ -122,13 +133,13 @@ function registerListeners(){
 		displayPopupCard(id);
 	});
 	$("#popup_overlay").on("click", function(){
-		var id = parseInt($(this).parent().children("#popup_card").children(".channelRow").attr("data-id"));
+		var id = parseInt($(this).parent().find("#popup_card .channelRow").attr("data-id"));
 		displayPopupCard(id);
 	});
 	
 	$("#settings_refresh").on("click", function(){
 		chrome.extension.sendMessage({type: "checkYoutubeBatch", refresh: true});
-		createSnackbar("Updating...");
+		createSnackbar(wyns.strings.updating);
 	});
 	
 	$("#settings_notifications_test").on("click", function(){
@@ -159,7 +170,7 @@ function registerListeners(){
 			});
 			
 			localStorage.setItem("channels", JSON.stringify(newArr));
-			createSnackbar("Saved");
+			createSnackbar(wyns.strings.saved);
 			
 			$(this).attr("data-toggle", "false");
 		}else{
@@ -213,18 +224,18 @@ function configureSettings(){
 			settings = JSON.parse(localStorage.getItem("settings"));
 		settings.notifications.enabled = value;
 		localStorage.setItem("settings", JSON.stringify(settings));
-		createSnackbar("Saved");
+		createSnackbar(wyns.strings.saved);
 	});
 	
 	$("#settings_notifications_volume").val(settings.notifications.volume);
-	$("#settings_notifications_volume").parent().children(".mdl-slider__background-flex").children(".mdl-slider__background-lower").css("flex", (settings.notifications.volume/100) + " 1 0%");
-	$("#settings_notifications_volume").parent().children(".mdl-slider__background-flex").children(".mdl-slider__background-upper").css("flex", (1-(settings.notifications.volume/100)) + " 1 0%");
+	$("#settings_notifications_volume").parent().find(".mdl-slider__background-lower").css("flex", (settings.notifications.volume/100) + " 1 0%");
+	$("#settings_notifications_volume").parent().find(".mdl-slider__background-upper").css("flex", (1-(settings.notifications.volume/100)) + " 1 0%");
 	$("#settings_notifications_volume").on("change", function(){
 		var value = $("#settings_notifications_volume").val(),
 			settings = JSON.parse(localStorage.getItem("settings"));
 		settings.notifications.volume = value;
 		localStorage.setItem("settings", JSON.stringify(settings));
-		createSnackbar("Saved");
+		createSnackbar(wyns.strings.saved);
 	});
 	
 	
@@ -240,7 +251,7 @@ function configureSettings(){
 			settings = JSON.parse(localStorage.getItem("settings"));
 		settings.tts.enabled = value;
 		localStorage.setItem("settings", JSON.stringify(settings));
-		createSnackbar("Saved");
+		createSnackbar(wyns.strings.saved);
 	});
 	
 	launchSpeechSynthesis();
@@ -261,7 +272,7 @@ function launchSpeechSynthesis(){
 				settings = JSON.parse(localStorage.getItem("settings"));
 			settings.tts.type = parseInt($("#settings_tts_select").val());
 			localStorage.setItem("settings", JSON.stringify(settings));
-			createSnackbar("Saved");
+			createSnackbar(wyns.strings.saved);
 		});
 	}
 }
@@ -329,7 +340,7 @@ function getChannelVideos(){
 	var id = parseInt($("#popup_card .channelRow").attr("data-id")),
 		channelId = JSON.parse(localStorage.getItem("channels"))[id].id,
 		playlistId = JSON.parse(localStorage.getItem("channels"))[id].playlistId,
-		url = "https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&maxResults=10&playlistId=" + playlistId + "&key=" + apiKey;
+		url = "https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&maxResults=10&playlistId=" + playlistId + "&key=" + wyns.apiKey;
 	if(typeof savedData[channelId] !== "undefined")
 		setChannelVideos(savedData[channelId]);
 	else{
@@ -342,7 +353,7 @@ function getChannelVideos(){
 				var videos = "";
 				for(var i = 0; i < data.items.length; i++)
 					videos += data.items[i].contentDetails.videoId + ",";
-				var url = "https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,contentDetails&maxResults=1&id=" + videos + "&key=" + apiKey;
+				var url = "https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,contentDetails&maxResults=1&id=" + videos + "&key=" + wyns.apiKey;
 				$.ajax({
 					type: "GET",
 					dataType: "json",
@@ -396,11 +407,11 @@ function setChannelVideos(data){
 		elem.css("display", "");
 		elem.children("a").attr("href", "https://www.youtube.com/watch?v=" + data[i].id);
 		elem.children("a").attr("title", data[i].title);
-		elem.children("a").children(".videoListColumn:nth-child(1)").children(".videoList_img").attr("src", data[i].thumbnail);
-		elem.children("a").children(".videoListColumn:nth-child(2)").children(".videoList_title").text(data[i].title);
-		elem.children("a").children(".videoListColumn:nth-child(2)").children(".videoList_sub").text(date);
-		elem.children("a").children(".videoListColumn:nth-child(3)").children(".videoList_title").text(addCommas(data[i].views) + " views | " + likesa + "% likes | " + dislikesa + "% dislikes");
-		elem.children("a").children(".videoListColumn:nth-child(3)").children(".videoList_sub").text(data[i].duration);
+		elem.find("a .videoListColumn:nth-child(1) .videoList_img").attr("src", data[i].thumbnail);
+		elem.find("a .videoListColumn:nth-child(2) .videoList_title").text(data[i].title);
+		elem.find("a .videoListColumn:nth-child(2) .videoList_sub").text(date);
+		elem.find("a .videoListColumn:nth-child(3) .videoList_title").text(addCommas(data[i].views) + " views | " + likesa + "% likes | " + dislikesa + "% dislikes");
+		elem.find("a .videoListColumn:nth-child(3) .videoList_sub").text(data[i].duration);
 	}
 }
 

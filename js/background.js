@@ -58,7 +58,7 @@ $(function(){
 		}
 	});
 	
-	//updateChannelsInfo(true);
+	updateChannelsInfo(true);
 	checkYoutubeStatus();
 });
 
@@ -69,38 +69,30 @@ function updateChannelsInfo(refresh){
 	var channels = JSON.parse(localStorage.getItem("channels"));
 	for(var i = 0; i < channels.length; i++){
 		wyn.activeInfoCheckings[i] = true;
-		var url = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&maxResults=1&q=" + channels[i].id + "&key=" + wyn.apiKey;
+		var url = "https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&maxResults=1&id=" + channels[i].id + "&key=" + wyn.apiKey;
 		$.ajax({
 			type: "GET",
 			dataType: "json",
 			url: url,
 			i: i,
-			success: function(data){
+			error: function(data) {
+				wyn.activeInfoCheckings[this.i] = false;
+			},
+			success: function(data) {
 				if(data.items.length == 1){
-					var url = "https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&maxResults=1&id=" + channels[this.i].id + "&key=" + wyn.apiKey;
-					$.ajax({
-						type: "GET",
-						dataType: "json",
-						url: url,
-						i: this.i,
-						success: function(data) {
-							if(data.status == "success") {
-								var num = this.i;
-								channels[num].name				= data.items[0].snippet.title;
-								channels[num].thumbnail			= data.items[0].snippet.thumbnails.default.url;
-								channels[num].viewCount			= data.items[0].statistics.viewCount;
-								channels[num].subscriberCount	= data.items[0].statistics.subscriberCount;
-								
-								wyn.activeInfoCheckings[num] = false;
-								for(var i = 0; i < wyn.activeInfoCheckings.length; i++)
-									if(wyn.activeInfoCheckings[i])
-										return;
-								localStorage.setItem("channels", JSON.stringify(channels));
-								if(refresh)
-									chrome.extension.sendMessage({type: "refreshPage"});
-							}
-						}
-					});
+					var num = this.i;
+					channels[num].name				= data.items[0].snippet.title;
+					channels[num].thumbnail			= data.items[0].snippet.thumbnails.default.url;
+					channels[num].viewCount			= data.items[0].statistics.viewCount;
+					channels[num].subscriberCount	= data.items[0].statistics.subscriberCount;
+					
+					wyn.activeInfoCheckings[num] = false;
+					for(var i = 0; i < wyn.activeInfoCheckings.length; i++)
+						if(wyn.activeInfoCheckings[i])
+							return;
+					localStorage.setItem("channels", JSON.stringify(channels));
+					if(refresh)
+						chrome.extension.sendMessage({type: "refreshPage"});
 				}
 			}
 		});
@@ -205,10 +197,14 @@ function checkYoutube(num, refresh, batch) {
 	var channels = JSON.parse(localStorage.getItem("channels"));
 	var url = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=1&playlistId=" + channels[num].playlistId + "&key=" + wyn.apiKey;
 	
+	console.log(wyn.strings.notification_log_check + channels[num].name);
 	$.ajax({
 		type: "GET",
 		dataType: "json",
 		url: url,
+		error: function(data) {
+			wyn.activeCheckings[num] = false;
+		},
 		success: function(data) {
 			var videoId = data.items[0].snippet.resourceId.videoId,
 				url = "https://www.googleapis.com/youtube/v3/videos?part=statistics,contentDetails&maxResults=1&id=" + videoId + "&key=" + wyn.apiKey,
@@ -218,13 +214,23 @@ function checkYoutube(num, refresh, batch) {
 			channels[num].latestVideo.description = data.items[0].snippet.description.substring(0,100).replace(/(\r\n|\n|\r)/gm," ");
 			channels[num].latestVideo.timestamp = Date.parse(data.items[0].snippet.publishedAt)/1000;
 			channels[num].latestVideo.thumbnail = data.items[0].snippet.thumbnails.high.url.replace("https:/", "http://");
+			
+			if(prevVideoId == channels[num].latestVideo.id){
+				var channels2 = JSON.parse(localStorage.getItem("channels"));
+				channels2[num] = channels[num];
+				localStorage.setItem("channels", JSON.stringify(channels2));
+				
+				wyn.activeCheckings[num] = false;
+				return;
+			}
 			$.ajax({
 				type: "GET",
 				dataType: "json",
 				url: url,
+				error: function(data) {
+					wyn.activeCheckings[num] = false;
+				},
 				success: function(data) {
-					
-					console.log(wyn.strings.notification_log_check + channels[num].name);
 					channels[num].latestVideo.views = data.items[0].statistics.viewCount;
 					channels[num].latestVideo.duration = convertISO8601Duration(data.items[0].contentDetails.duration);
 					channels[num].latestVideo.likes = data.items[0].statistics.likeCount;
@@ -236,38 +242,38 @@ function checkYoutube(num, refresh, batch) {
 					
 					var info = channels[num];
 					
-					if(prevVideoId != info.latestVideo.id) {
-						if(batch)
-							wyn.hasBatchChanged = true;
-						if(info.latestVideo.views == "301")
-							info.latestVideo.views = "301+";
-						info.latestVideo.likes = parseInt(info.latestVideo.likes);
-						info.latestVideo.dislikes = parseInt(info.latestVideo.dislikes);
-						var likesa = Math.round((info.latestVideo.likes / (info.latestVideo.likes + info.latestVideo.dislikes)) * 100);
-						var dislikesa = Math.round((info.latestVideo.dislikes / (info.latestVideo.likes + info.latestVideo.dislikes)) * 100);
-						if((likesa + dislikesa) > 100)
-							dislikesa--;
-						
-						var options = {
-							type: "image",
-							priority: 0,
-							title: info.latestVideo.title + " by " + info.name,
-							message: info.latestVideo.description,
-							imageUrl: info.latestVideo.thumbnail,
-							iconUrl: "img/icon_yt.png",
-							contextMessage: info.latestVideo.duration + " | "+ addCommas(info.latestVideo.views) + " views | " + likesa + "% likes | " + dislikesa + "% dislikes",
-							buttons: [{
-								title: wyn.strings.notification_watch,
-								iconUrl: "img/ic_play.png"
-							}, {
-								title: wyn.strings.notification_close,
-								iconUrl: "img/ic_close.png"
-							}]
-						};
-						var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + num;
-						console.log(wyn.strings.log_color_prefix + wyn.strings.notification_log_new + info.name, wyn.strings.log_color_green);
-						notify(ntID, options);
-					}
+					if(batch)
+						wyn.hasBatchChanged = true;
+					if(info.latestVideo.views == "301")
+						info.latestVideo.views = "301+";
+					info.latestVideo.likes = parseInt(info.latestVideo.likes);
+					info.latestVideo.dislikes = parseInt(info.latestVideo.dislikes);
+					var likesa = Math.round((info.latestVideo.likes / (info.latestVideo.likes + info.latestVideo.dislikes)) * 100);
+					var dislikesa = Math.round((info.latestVideo.dislikes / (info.latestVideo.likes + info.latestVideo.dislikes)) * 100);
+					if((likesa + dislikesa) > 100)
+						dislikesa--;
+					
+					var options = {
+						type: "image",
+						priority: 0,
+						title: info.latestVideo.title + " by " + info.name,
+						message: info.latestVideo.description,
+						imageUrl: info.latestVideo.thumbnail,
+						iconUrl: "img/icon_yt.png",
+						contextMessage: info.latestVideo.duration + " | "+ addCommas(info.latestVideo.views) + " views | " + likesa + "% likes | " + dislikesa + "% dislikes",
+						buttons: [{
+							title: wyn.strings.notification_watch,
+							iconUrl: "img/ic_play.png"
+						}, {
+							title: wyn.strings.notification_close,
+							iconUrl: "img/ic_close.png"
+						}]
+					};
+					var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + num;
+					console.log(wyn.strings.log_color_prefix + wyn.strings.notification_log_new + info.name, wyn.strings.log_color_green);
+					notify(ntID, options);
+					
+					
 					wyn.activeCheckings[num] = false;
 					if(!batch){
 						for(var i = 0; i < wyn.activeCheckings.length; i++)
