@@ -20,8 +20,9 @@ $(function(){
 		}
 	});
 	
-	var manifest = chrome.runtime.getManifest();
-	$("#version").html("Version " + manifest.version + "<br/>by Wassup789");
+	var manifest = chrome.runtime.getManifest(),
+		homeUrl = "https://github.com/Wassup789";
+	$("#version").html("Version " + manifest.version + "<br/>by <a href=\"" + homeUrl + "\">Wassup789</a>");
 	
 	getVideoList();
 	registerListeners();

@@ -229,7 +229,11 @@ function checkYoutube(num, refresh, batch) {
 					channels[num].latestVideo.duration = convertISO8601Duration(data.items[0].contentDetails.duration);
 					channels[num].latestVideo.likes = data.items[0].statistics.likeCount;
 					channels[num].latestVideo.dislikes = data.items[0].statistics.dislikeCount;
-					localStorage.setItem("channels", JSON.stringify(channels));
+					
+					var channels2 = JSON.parse(localStorage.getItem("channels"));
+					channels2[num] = channels[num];
+					localStorage.setItem("channels", JSON.stringify(channels2));
+					
 					var info = channels[num];
 					
 					if(prevVideoId != info.latestVideo.id) {

@@ -34,6 +34,8 @@ a{text-decoration: none;cursor:pointer;}
     color: #777;
     cursor: default;
 }
+#version a {color: #3178B1;}
+#version a:hover {color: #16334A;}
 
 #header_title {padding-left: 18px;}
 #header_title .mdl-layout-title {margin-left: 5px;}
@@ -45,8 +47,8 @@ a{text-decoration: none;cursor:pointer;}
 	right: 16px;
 }
 #button-menu-container .mdl-menu__container {margin-top: -30px;}
-#menu_changeAlignment[data-toggle="false"]:after {content: "Edit Alignment";}
-#menu_changeAlignment[data-toggle="true"]:after {content: "Finish Alignment";}
+#menu_changeAlignment[data-toggle="false"]:after {content: "Edit Channel Alignment";}
+#menu_changeAlignment[data-toggle="true"]:after {content: "Save Changes";}
 .mdl-layout.is-upgraded .mdl-layout__tab.is-active::after {background: #FFEB3B;}
 main {
 	margin: 3px 0;
