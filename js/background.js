@@ -10,7 +10,10 @@ var wyn = {};
 	wyn.activeInfoCheckings = [],
 	wyn.strings = {
 		"notification_watch": "Watch Video",
+		"notification_watch_icon": "img/ic_play.png",
 		"notification_close": "Dismiss",
+		"notification_close_icon": "img/ic_close.png",
+		"notification_main_icon": "img/ic_youtube.png",
 		"notification_log_check": "Checking YouTube User: ",
 		"notification_log_new": "Found new YouTube video for: ",
 		"snackbar_nonewvideos": "No new videos found",
@@ -259,14 +262,14 @@ function checkYoutube(num, refresh, batch) {
 						title: info.latestVideo.title + " by " + info.name,
 						message: info.latestVideo.description,
 						imageUrl: info.latestVideo.thumbnail,
-						iconUrl: "img/icon_yt.png",
+						iconUrl: wyn.strings.notification_main_icon,
 						contextMessage: info.latestVideo.duration + " | "+ addCommas(info.latestVideo.views) + " views | " + likesa + "% likes | " + dislikesa + "% dislikes",
 						buttons: [{
 							title: wyn.strings.notification_watch,
-							iconUrl: "img/ic_play.png"
+							iconUrl: wyn.strings.notification_watch_icon
 						}, {
 							title: wyn.strings.notification_close,
-							iconUrl: "img/ic_close.png"
+							iconUrl: wyn.strings.notification_close_icon
 						}]
 					};
 					var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + num;
@@ -452,15 +455,15 @@ wyn.testNotify = function(){
 		priority: 0,
 		title: "Video by Youtube Creator",
 		message: "Insert Description Here",
-		imageUrl: "img/null.gif",
-		iconUrl: "img/icon_yt.png",
+		imageUrl: "img/notification_placeholder.png",
+		iconUrl: wyn.strings.notification_main_icon,
 		contextMessage: "12:34 | 5,678 views | 90% likes | 10% dislikes",
 		buttons: [{
 			title: wyn.strings.notification_watch,
-			iconUrl: "img/ic_play.png"
+			iconUrl: wyn.strings.notification_watch_icon
 		}, {
 			title: wyn.strings.notification_close,
-			iconUrl: "img/ic_close.png"
+			iconUrl: wyn.strings.notification_close_icon
 		}]
 	};
 	
@@ -498,14 +501,14 @@ wyn.forceNotification = function(id) {
 		title: info.latestVideo.title + " by " + info.name,
 		message: info.latestVideo.description,
 		imageUrl: info.latestVideo.thumbnail,
-		iconUrl: "img/icon_yt.png",
+		iconUrl: wyn.strings.notification_main_icon,
 		contextMessage: info.latestVideo.duration + " | "+ addCommas(info.latestVideo.views) + " views | " + likesa + "% likes | " + dislikesa + "% dislikes",
 		buttons: [{
 			title: wyn.strings.notification_watch,
-			iconUrl: "img/ic_play.png"
+			iconUrl: wyn.strings.notification_watch_icon
 		}, {
 			title: wyn.strings.notification_close,
-			iconUrl: "img/ic_close.png"
+			iconUrl: wyn.strings.notification_close_icon
 		}]
 	};
 	var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + id;
