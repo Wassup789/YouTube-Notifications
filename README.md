@@ -49,6 +49,6 @@ This code is licensed under the MIT License
 [See CHANGELOG.md][CLog.md]
 
 
-  [Dld_Latest_GD]: http://goo.gl/YLdcXX
+  [Dld_Archive]: http://goo.gl/uDPhkW
   
   [CLog.md]: https://github.com/Wassup789/Youtube-Notifications/blob/master/CHANGELOG.md
