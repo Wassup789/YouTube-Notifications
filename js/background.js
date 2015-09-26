@@ -224,6 +224,17 @@ function checkYoutube(num, refresh, batch) {
 				localStorage.setItem("channels", JSON.stringify(channels2));
 				
 				wyn.activeCheckings[num] = false;
+				
+				wyn.activeBatchCheckings[num] = false;
+				for(var i = 0; i < wyn.activeBatchCheckings.length; i++)
+					if(wyn.activeBatchCheckings[i])
+						return;
+				wyn.batchChecking = false;
+				if(wyn.hasBatchChanged){
+					if(refresh)
+						chrome.extension.sendMessage({type: "refreshPage"});
+				}else
+					chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.snackbar_nonewvideos});
 				return;
 			}
 			$.ajax({

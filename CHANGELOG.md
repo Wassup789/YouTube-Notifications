@@ -1,5 +1,8 @@
 Changelog
 =====
+## v1.1.0.2 (09-26-2015)
+ * Fixed bug where notifications only update once
+
 ## v1.1.0.1 (09-21-2015)
  * Fixed bug that causes new channel additions to not refresh options menu
  * Fixed alignment for channel video list
