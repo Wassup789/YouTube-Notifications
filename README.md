@@ -2,7 +2,7 @@
 
 Get updates from your favorite YouTube users using this Chrome Extension. This extension uses the YouTube Data API Version 3.0 for it's data.
 
-This code is licensed under the MIT License
+This code is licensed under the MIT License.
 
 ## About
 
