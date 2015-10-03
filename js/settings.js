@@ -38,6 +38,9 @@ $(function(){
 	}, 500);
 });
 
+/**
+ *  Gets information of all YouTube channels and displays it in the options menu
+ */
 function getVideoList() {
 	var channels = JSON.parse(localStorage.getItem("channels"));
 	for(var i = 0; i < channels.length; i++) {
@@ -68,6 +71,9 @@ function getVideoList() {
 	}
 }
 
+/**
+ *  Registers all listeners
+ */
 function registerListeners(){
 	$(document).on("click", "a", function(){
 		if($(this).attr("href") != null && $(this).attr("href").charAt(0) != "#")
@@ -183,6 +189,9 @@ function registerListeners(){
 	});
 }
 
+/**
+ *  Disable specific buttons (The information button, add channel button)
+ */
 function disableButtons(bool){
 	if(bool){
 		if($("#popup_card").attr("data-toggle") == "true")
@@ -201,6 +210,9 @@ function disableButtons(bool){
 	}
 }
 
+/**
+ *  Refreshes the options menu
+ */
 function refreshPage(){
 	setTimeout(function(){
 		$("body").fadeOut("slow");
@@ -210,6 +222,9 @@ function refreshPage(){
 	}, 500);
 }
 
+/**
+ *  Updates the values in the settings page
+ */
 function configureSettings(){
 	var settings = JSON.parse(localStorage.getItem("settings"));
 	if(settings.notifications.enabled){
@@ -257,6 +272,9 @@ function configureSettings(){
 	launchSpeechSynthesis();
 }
 
+/**
+ *  Tests if speech synthesis exists
+ */
 function launchSpeechSynthesis(){
 	var speechSynthesisList = window.speechSynthesis.getVoices();
 	if(speechSynthesisList.length < 1){
@@ -277,6 +295,11 @@ function launchSpeechSynthesis(){
 	}
 }
 
+/**
+ *  Displays a popup card for a channel displaying it's information and it's last ten videos
+ *  
+ *  @param {number} num The channel's index
+ */
 var popupId = -1, savedData = {};
 function displayPopupCard(num){
 	if(typeof $("#channels .channelRow:not(#masterChannelRow)")[num] !== "undefined"){
@@ -336,6 +359,9 @@ function displayPopupCard(num){
 	}
 }
 
+/**
+ *  Recieves information about the popup channel
+ */
 function getChannelVideos(){
 	var id = parseInt($("#popup_card .channelRow").attr("data-id")),
 		channelId = JSON.parse(localStorage.getItem("channels"))[id].id,
@@ -384,6 +410,12 @@ function getChannelVideos(){
 		});
 	}
 }
+
+/**
+ *  Information for popup recieved, display information 
+ *  
+ *  @param {object} data The data recived from function: getChannelVideos
+ */
 function setChannelVideos(data){
 	for(var i = 0; i < data.length; i++) {
 		var date = new Date(parseInt(data[i].timestamp)*1000);
@@ -415,6 +447,12 @@ function setChannelVideos(data){
 	}
 }
 
+/**
+ *  Returns the time difference from today
+ *  
+ *  @param {number} date A UNIX timestamp
+ *  @returns {string} The time difference in user-friendly format
+ */
 function timeSince(date){
 	var seconds = Math.floor((new Date() - date) / 1000);
 	var interval = Math.floor(seconds / 31536000);
@@ -460,10 +498,24 @@ function timeSince(date){
 	}else
 		return interval + " second";
 }
+
+/**
+ *  Add commas to numbers > 3
+ *  Ex: 1234567 -> 1,234,567
+ *  
+ *  @param {number} num The number to add commas to
+ *  @returns {string} Number inputted with commas
+ */
 function addCommas(num) {
 	return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
+/**
+ *  Converts an ISO-8601 formatted string to a different timestamp format (HH:MM:SS)
+ *  
+ *  @param {string} t The ISO-8601 formmated string
+ *  @returns {string} Returns duration in HH:MM:SS format
+ */
 function convertISO8601Duration(t){ 
     //dividing period from time
     var x = t.split('T'),

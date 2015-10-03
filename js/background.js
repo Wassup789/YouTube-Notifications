@@ -65,6 +65,12 @@ $(function(){
 	checkYoutubeStatus();
 });
 
+/**
+ *  Updates all channels stored's information
+ *  Request is made once.
+ *  
+ *  @param {boolean} [refresh=false] Refreshes the options page after execution
+ */
 function updateChannelsInfo(refresh){
 	//NOT RECOMMENDED TO DO THIS METHOD
 	refresh = refresh || false;
@@ -102,6 +108,9 @@ function updateChannelsInfo(refresh){
 	}
 }
 
+/**
+ *  Pings the YouTube Data API servers
+ */
 function checkYoutubeStatus(){
 	var url = "https://www.googleapis.com/youtube/v3/";
 	$.ajax({
@@ -144,6 +153,12 @@ function checkYoutubeStatus(){
 	});
 }
 
+/**
+ *  Adds a new channel
+ *  
+ *  @param {string} name The name of the channel to get information from.
+ *  @param {boolean} [refresh=false] Refreshes the options page after execution
+ */
 function setYoutube(name, refresh){
 	refresh = refresh || false;
 	
@@ -189,9 +204,15 @@ function setYoutube(name, refresh){
 			}
 		}
 	});
-	
 }
 
+/**
+ *  Checks a specific YouTube channel
+ *  
+ *  @param {number} num The index of the YouTube channel (located in localStorage item: "channels"
+ *  @param {boolean} [refresh=false] Refreshes the options page after execution
+ *  @param {boolean} [batch=false] If the request is from a batch check (see function: checkYoutubeBatch)
+ */
 function checkYoutube(num, refresh, batch) {
 	refresh = refresh || false;
 	batch = batch || false;
@@ -287,7 +308,6 @@ function checkYoutube(num, refresh, batch) {
 					console.log(wyn.strings.log_color_prefix + wyn.strings.notification_log_new + info.name, wyn.strings.log_color_green);
 					notify(ntID, options);
 					
-					
 					wyn.activeCheckings[num] = false;
 					if(!batch){
 						for(var i = 0; i < wyn.activeCheckings.length; i++)
@@ -313,6 +333,12 @@ function checkYoutube(num, refresh, batch) {
 	});
 }
 
+/**
+ *  Converts an ISO-8601 formatted string to a different timestamp format (HH:MM:SS)
+ *  
+ *  @param {string} t The ISO-8601 formmated string
+ *  @returns {string} Returns duration in HH:MM:SS format
+ */
 function convertISO8601Duration(t){ 
     //dividing period from time
     var x = t.split('T'),
@@ -380,6 +406,11 @@ function convertISO8601Duration(t){
     return duration;
 }
 
+/**
+ *  Checks all YouTube channels
+ *  
+ *  @param {boolean} [refresh=false] Refreshes the options page after execution
+ */
 function checkYoutubeBatch(refresh){
 	refresh = refresh || false;
 	
@@ -396,9 +427,22 @@ function checkYoutubeBatch(refresh){
 	}
 }
 
+/**
+ *  Add commas to numbers > 3
+ *  Ex: 1234567 -> 1,234,567
+ *  
+ *  @param {number} num The number to add commas to
+ *  @returns {string} Number inputted with commas
+ */
 function addCommas(num) {
 	return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
+/**
+ *  Creates a random alphanumberic string
+ *  
+ *  @param {number} len The length of the random string
+ *  @returns {string} Random alphanumeric string
+ */
 function rndStr(len){
 	var text = "";
 	var charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -407,6 +451,12 @@ function rndStr(len){
 	return text;
 }
 
+/**
+ *  Creates a notification
+ *  
+ *  @param {string} ntID A random string used to identify the notification later
+ *  @param {object} options Notification options (see: https://developer.chrome.com/apps/notifications#type-NotificationOptions)
+ */
 function notify(ntID, options){
 	chrome.notifications.create(ntID, options, function(){
 		/*var bc = localStorage.getItem("badgeCount");
@@ -420,6 +470,11 @@ function notify(ntID, options){
 	});
 }
 
+/**
+ *  Ran when a notification is clicked
+ *  
+ *  @param {string} ntID A random string used to identify the notification
+ */
 function onNotificationClick(ntID){
 	if(typeof ntID.split("-")[4] !== "undefined") {
 		var channels = JSON.parse(localStorage.getItem("channels"));
@@ -430,6 +485,11 @@ function onNotificationClick(ntID){
 	}
 }
 
+/**
+ *  Ran when a notification's buttons are clicked
+ *  
+ *  @param {string} ntID A random string used to identify the notification
+ */
 function onNotificationButtonClick(ntID, btnID){
 	if(typeof ntID.split("-")[4] !== "undefined") {
 		if(btnID == 0){
@@ -440,14 +500,26 @@ function onNotificationButtonClick(ntID, btnID){
 		}else if(btnID == 1){
 			console.log("User clicked on \"" + wyn.strings.notification_close + "\" button; NTID: " + ntID);
 		}
+		chrome.notifications.clear(ntID);
 	}
 }
 
+/**
+ *  Ran when a notification is closed
+ *  
+ *  @param {string} ntID A random string used to identify the notification
+ *  @param {boolean} byUser If the notification was closed by the user
+ */
 function onNotificationClosed(ntID, byUser){
 	if(typeof ntID.split("-")[4] !== "undefined" && byUser)
 		console.log("User clicked on \"X\" button; NTID: " + ntID);
 }
 
+/**
+ *  Opens a link in a new tab/window
+ *  
+ *  @param {string} user The URL to open
+ */
 function createTab(url) {
 	var numTabs = 0;
 	chrome.windows.getAll(function(data){
@@ -459,6 +531,10 @@ function createTab(url) {
 	});
 }
 
+/**
+ *  Launches a test notification
+ *  Can be launched in the option settings
+ */
 wyn.testNotify = function(){
 	var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5);
 	var options = {
@@ -481,6 +557,11 @@ wyn.testNotify = function(){
 	notify(ntID, options);
 }
 
+/**
+ *  Reads the notification's title if TTS is enabled in the settings
+ *  
+ *  @param {object} options Notification options (see: https://developer.chrome.com/apps/notifications#type-NotificationOptions)
+ */
 function notifyTTS(options) {
 	if(JSON.parse(localStorage.getItem("settings")).tts.enabled){
 		var voice = JSON.parse(localStorage.getItem("settings")).tts.type;
@@ -495,6 +576,11 @@ function notifyTTS(options) {
 	}
 }
 
+/**
+ *  Forces a notification to be displayed
+ *  
+ *  @param {number} id The index of the video to be displayed
+ */
 wyn.forceNotification = function(id) {
 	var info = JSON.parse(localStorage.getItem("channels"))[id];
 	if(info.latestVideo.views == "301")
