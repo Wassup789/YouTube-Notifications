@@ -36,12 +36,39 @@ if(localStorage.getItem("settings") == null)
 		tts: {
 			enabled: false,
 			type: 1
+		},
+		addBtn: {
+			enabled: true
 		}
 	}));
+fixItems();
+function fixItems(){
+	var settings = JSON.parse(localStorage.getItem("settings"));
+	if(typeof settings.addBtn === "undefined"){
+		settings.addBtn = {
+			enabled: true
+		};
+		localStorage.setItem("settings", JSON.stringify(settings));
+	}
+}
 
 chrome.notifications.onClicked.addListener(onNotificationClick);
 chrome.notifications.onButtonClicked.addListener(onNotificationButtonClick);
 chrome.notifications.onClosed.addListener(onNotificationClosed);
+
+chrome.runtime.onInstalled.addListener(function(details){
+    if(details.reason == "install"){
+        console.log("First launch!");
+		wyn.firstLaunch();
+    }else if(details.reason == "update"){
+        var thisVersion = chrome.runtime.getManifest().version;
+        console.log("Updated from " + details.previousVersion + " to " + thisVersion + "!");
+    }
+});
+
+wyn.firstLaunch = function(){
+	createTab("chrome-extension://" + chrome.runtime.id + "/pages/first-launch.html");
+};
 
 $(function(){
 	chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
@@ -53,10 +80,26 @@ $(function(){
 				sendResponse(checkYoutube(request.name));
 				break;
 			case "setYoutube":
-				sendResponse(setYoutube(request.name, request.refresh));
+				if(request.contentScript)
+					sendResponse(setYoutube(request.name, request.refresh, true));
+				else
+					sendResponse(setYoutube(request.name, request.refresh));
 				break;
 			case "testNotify":
 				sendResponse(wyn.testNotify());
+				break;
+			case "removeYoutube":
+				if(request.contentScript)
+					sendResponse(removeYoutube(request.num, request.name, request.refresh, true));
+				else
+					sendResponse(removeYoutube(request.num, request.name, request.refresh));
+				break;
+			case "doesYoutubeExist":
+				sendResponse(doesYoutubeExist(request.id, request.index));
+				break;
+			case "showAddButton":
+				var settings = JSON.parse(localStorage.getItem("settings"));
+				sendResponse(settings.addBtn.enabled);
 				break;
 		}
 	});
@@ -158,9 +201,11 @@ function checkYoutubeStatus(){
  *  
  *  @param {string} name The name of the channel to get information from.
  *  @param {boolean} [refresh=false] Refreshes the options page after execution
+ *  @param {boolean} [fromContentScript=false] If the request was from a content script
  */
-function setYoutube(name, refresh){
+function setYoutube(name, refresh, fromContentScript){
 	refresh = refresh || false;
+	fromContentScript = fromContentScript || false;
 	
 	var url = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&maxResults=1&q=" + name + "&key=" + wyn.apiKey;
 	$.ajax({
@@ -204,6 +249,71 @@ function setYoutube(name, refresh){
 			}
 		}
 	});
+	/**
+	 *  FIX THIS: because of async, the content script will recieve a null value if returns inside async request.
+	 *  Possible fixes:
+	 *  	- Synchronous
+	 *  Problem:
+	 *  	- Stops code in background from executing
+	 */
+	if(fromContentScript)
+		return true;
+}
+
+/**
+ *  Removes an existing channel
+ *  
+ *  @param {number} type The type of the channel name (0 = index, 1 = channelID)
+ *  @param {string} name The name of the channel's name
+ *  @param {boolean} [refresh=false] Refreshes the options page after execution
+ *  @param {boolean} [fromContentScript=false] If the request was from a content script
+ */
+function removeYoutube(type, name, refresh, fromContentScript){
+	refresh = refresh || false;
+	fromContentScript = fromContentScript || false;
+	
+	type = parseInt(type);
+	if(type == 0){
+		var id = parseInt(name);
+		var channels = JSON.parse(localStorage.getItem("channels"));
+		channels.splice(id, 1);
+		localStorage.setItem("channels", JSON.stringify(channels));
+		if(refresh)
+			chrome.extension.sendMessage({type: "refreshPage"});
+		if(fromContentScript)
+			return true;
+	}else if(type == 1){
+		var channels = JSON.parse(localStorage.getItem("channels"));
+		for(var i = 0; i < channels.length; i++){
+			if(channels[i].id == name){
+				console.log("found name");
+				channels.splice(i, 1);
+				localStorage.setItem("channels", JSON.stringify(channels));
+				if(refresh)
+					chrome.extension.sendMessage({type: "refreshPage"});
+				if(fromContentScript)
+					return true;
+				return;
+			}
+				console.log("found nvm");
+		}
+		return false;
+	}
+}
+
+/**
+ *  Checks if a YouTube channel exists
+ *  
+ *  @param {string} id The name of the channel's ID
+ *  @param {number} index The index for an element (for injected.js)
+ */
+ function doesYoutubeExist(id, index){
+	var channels = JSON.parse(localStorage.getItem("channels"));
+	for(var i = 0; i < channels.length; i++){
+		if(channels[i].id == id)
+			return {status: true, index: index};
+	}
+	return {status: false, index: index};
 }
 
 /**

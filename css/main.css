@@ -203,6 +203,7 @@ main {
 	width: 150px;
 	margin-left: 5px;
 }
+#settings_addbtn_toggle {margin-left: 5px;}
 
 #popup_card {
     width: 572px;
