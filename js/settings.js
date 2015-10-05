@@ -269,6 +269,22 @@ function configureSettings(){
 		createSnackbar(wyns.strings.saved);
 	});
 	
+	
+	if(settings.addBtn.enabled){
+		$("#settings_addbtn_toggle").addClass("is-checked");
+		$("#settings_addbtn_toggle input")[0].checked = true;
+	}else{
+		$("#settings_addbtn_toggle").removeClass("is-checked");
+		$("#settings_addbtn_toggle input")[0].checked = false;
+	}
+	$("#settings_addbtn_toggle input").on("change", function(){
+		var value = $("#settings_addbtn_toggle input")[0].checked,
+			settings = JSON.parse(localStorage.getItem("settings"));
+		settings.addBtn.enabled = value;
+		localStorage.setItem("settings", JSON.stringify(settings));
+		createSnackbar(wyns.strings.saved);
+	});
+	
 	launchSpeechSynthesis();
 }
 
