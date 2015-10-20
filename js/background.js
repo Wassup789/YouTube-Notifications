@@ -19,6 +19,9 @@ var wyn = {};
 		"snackbar_nonewvideos": "No new videos found",
 		"connect_success": "Connected to YouTube's Servers",
 		"connect_failed": "Could not connect to YouTube's Servers",
+		"update_channels_init": "Updating YouTube channels",
+		"update_channels_complete": "Finished updating YouTube channels",
+		"update_channels_failed": "Could not update YouTube channels",
 		"log_color_prefix": "%c",
 		"log_color_green": "font-weight: bold; color: #2E7D32",
 		"log_color_red": "font-weight: bold; color: #B71C1C"
@@ -71,6 +74,12 @@ wyn.firstLaunch = function(){
 };
 
 $(function(){
+	$.ajaxSetup({
+		type: "GET",
+		dataType: "json",
+		timeout: 5*60*1000, // Timeout ajax requests after 5 minutes
+	});
+	
 	chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 		switch (request.type) {
 			case "checkYoutubeBatch":
@@ -104,7 +113,6 @@ $(function(){
 		}
 	});
 	
-	updateChannelsInfo(true);
 	checkYoutubeStatus();
 });
 
@@ -115,40 +123,36 @@ $(function(){
  *  @param {boolean} [refresh=false] Refreshes the options page after execution
  */
 function updateChannelsInfo(refresh){
-	//NOT RECOMMENDED TO DO THIS METHOD
 	refresh = refresh || false;
 	
+	console.log(wyn.strings.update_channels_init);
+	
 	var channels = JSON.parse(localStorage.getItem("channels"));
+	var channelIdList = "";
 	for(var i = 0; i < channels.length; i++){
-		wyn.activeInfoCheckings[i] = true;
-		var url = "https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&maxResults=1&id=" + channels[i].id + "&key=" + wyn.apiKey;
-		$.ajax({
-			type: "GET",
-			dataType: "json",
-			url: url,
-			i: i,
-			error: function(data) {
-				wyn.activeInfoCheckings[this.i] = false;
-			},
-			success: function(data) {
-				if(data.items.length == 1){
-					var num = this.i;
-					channels[num].name				= data.items[0].snippet.title;
-					channels[num].thumbnail			= data.items[0].snippet.thumbnails.default.url;
-					channels[num].viewCount			= data.items[0].statistics.viewCount;
-					channels[num].subscriberCount	= data.items[0].statistics.subscriberCount;
-					
-					wyn.activeInfoCheckings[num] = false;
-					for(var i = 0; i < wyn.activeInfoCheckings.length; i++)
-						if(wyn.activeInfoCheckings[i])
-							return;
-					localStorage.setItem("channels", JSON.stringify(channels));
-					if(refresh)
-						chrome.extension.sendMessage({type: "refreshPage"});
-				}
-			}
-		});
+		channelIdList += channels[i].id + ",";
 	}
+	var url = "https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&maxResults=1&id=" + channelIdList + "&key=" + wyn.apiKey;
+	$.ajax({
+		url: url,
+		error: function(){
+			console.log(wyn.strings.update_channels_failed);
+		},
+		success: function(data){
+			if(data.items.length == channels.length){
+				for(var i = 0; i < channels.length; i++){
+					channels[i].name				= data.items[0].snippet.title;
+					channels[i].thumbnail			= data.items[0].snippet.thumbnails.default.url;
+					channels[i].viewCount			= data.items[0].statistics.viewCount;
+					channels[i].subscriberCount	= data.items[0].statistics.subscriberCount;
+					localStorage.setItem("channels", JSON.stringify(channels));
+				}
+				console.log(wyn.strings.update_channels_complete);
+				if(refresh)
+					chrome.extension.sendMessage({type: "refreshPage"});
+			}
+		}
+	});
 }
 
 /**
@@ -157,18 +161,31 @@ function updateChannelsInfo(refresh){
 function checkYoutubeStatus(){
 	var url = "https://www.googleapis.com/youtube/v3/";
 	$.ajax({
-		type: "GET",
-		dataType: "json",
 		url: url,
 		statusCode: {
 			404: function() {
 				wyn.isConnected = true;
 				chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.connect_success});
 				console.log(wyn.strings.log_color_prefix + wyn.strings.connect_success, wyn.strings.log_color_green);
+				updateChannelsInfo(true);
 				checkYoutubeBatch(true);
 				setInterval(function(){
 					checkYoutubeBatch(true);
 				}, 1000*60*10);
+			}
+		},
+		error: function(XMLHttpRequest, textStatus, error) {
+			if(XMLHttpRequest.statusText != "OK"){
+				wyn.isConnected = false;
+				chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.connect_failed});
+				console.log(wyn.strings.log_color_prefix + wyn.strings.connect_failed, wyn.strings.log_color_green);
+				if(!wyn.isTimedout){
+					wyn.isTimedout = true;
+					setTimeout(function(){
+						wyn.isTimedout = false;
+						checkYoutubeStatus();
+					}, 1000*60);
+				}
 			}
 		},
 		success: function(data) {
@@ -176,6 +193,7 @@ function checkYoutubeStatus(){
 				wyn.isConnected = true;
 				chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.connect_success});
 				console.log(wyn.strings.log_color_prefix + wyn.strings.connect_success, wyn.strings.log_color_green);
+				updateChannelsInfo(true);
 				checkYoutubeBatch(true);
 				setInterval(function(){
 					checkYoutubeBatch(true);
@@ -209,16 +227,12 @@ function setYoutube(name, refresh, fromContentScript){
 	
 	var url = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&maxResults=1&q=" + name + "&key=" + wyn.apiKey;
 	$.ajax({
-		type: "GET",
-		dataType: "json",
 		url: url,
 		success: function(data) {
 			if(data.items.length == 1){
 				var id = data.items[0].id.channelId;
 				var url = "https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&maxResults=1&id=" + id + "&key=" + wyn.apiKey;
 				$.ajax({
-					type: "GET",
-					dataType: "json",
 					url: url,
 					success: function(data) {
 						var output = {
@@ -333,8 +347,6 @@ function checkYoutube(num, refresh, batch) {
 	
 	console.log(wyn.strings.notification_log_check + channels[num].name);
 	$.ajax({
-		type: "GET",
-		dataType: "json",
 		url: url,
 		error: function(data) {
 			wyn.activeCheckings[num] = false;
@@ -369,8 +381,6 @@ function checkYoutube(num, refresh, batch) {
 				return;
 			}
 			$.ajax({
-				type: "GET",
-				dataType: "json",
 				url: url,
 				error: function(data) {
 					wyn.activeCheckings[num] = false;
