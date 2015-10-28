@@ -31,6 +31,10 @@ $(function(){
 		homeUrl = "https://github.com/Wassup789";
 	$("#version").html("Version " + manifest.version + "<br/>by <a href=\"" + homeUrl + "\">Wassup789</a>");
 	
+	var settings = JSON.parse(localStorage.getItem("settings"));
+	if(settings.updated.enabled)
+		$("#version-updated").show();
+	
 	getVideoList();
 	registerListeners();
 	setTimeout(function(){
@@ -186,6 +190,22 @@ function registerListeners(){
 			
 			$(this).attr("data-toggle", "true");
 		}
+	});
+	$("#menu_help").on("click", function(){
+		chrome.extension.getBackgroundPage().wyn.firstLaunch();
+	});
+	$("#version-updated").on("click", function(){
+		$("#changelog-container").attr("data-toggle", true);
+		var settings = JSON.parse(localStorage.getItem("settings"));
+		settings.updated.enabled = false;
+		localStorage.setItem("settings", JSON.stringify(settings));
+	});
+	$("#changelog-close-button").on("click", function(){
+		$("#changelog-container").attr("data-toggle", false);
+	});
+	$("#changelog-container .overlay").on("click", function(){
+		if(!$("#loading").is(":visible"))
+			$("#changelog-container").attr("data-toggle", false);
 	});
 }
 

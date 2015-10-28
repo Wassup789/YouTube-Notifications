@@ -42,14 +42,24 @@ if(localStorage.getItem("settings") == null)
 		},
 		addBtn: {
 			enabled: true
+		},
+		updated: {
+			enabled: false
 		}
 	}));
+
 fixItems();
 function fixItems(){
 	var settings = JSON.parse(localStorage.getItem("settings"));
 	if(typeof settings.addBtn === "undefined"){
 		settings.addBtn = {
 			enabled: true
+		};
+		localStorage.setItem("settings", JSON.stringify(settings));
+	}
+	if(typeof settings.updated === "undefined"){
+		settings.updated = {
+			enabled: false
 		};
 		localStorage.setItem("settings", JSON.stringify(settings));
 	}
@@ -66,6 +76,10 @@ chrome.runtime.onInstalled.addListener(function(details){
     }else if(details.reason == "update"){
         var thisVersion = chrome.runtime.getManifest().version;
         console.log("Updated from " + details.previousVersion + " to " + thisVersion + "!");
+		
+		var settings = JSON.parse(localStorage.getItem("settings"));
+		settings.updated.enabled = true;
+		localStorage.setItem("settings", JSON.stringify(settings));
     }
 });
 
@@ -300,7 +314,6 @@ function removeYoutube(type, name, refresh, fromContentScript){
 		var channels = JSON.parse(localStorage.getItem("channels"));
 		for(var i = 0; i < channels.length; i++){
 			if(channels[i].id == name){
-				console.log("found name");
 				channels.splice(i, 1);
 				localStorage.setItem("channels", JSON.stringify(channels));
 				if(refresh)
@@ -309,7 +322,6 @@ function removeYoutube(type, name, refresh, fromContentScript){
 					return true;
 				return;
 			}
-				console.log("found nvm");
 		}
 		return false;
 	}

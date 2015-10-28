@@ -78,6 +78,9 @@ $(function(){
 				opacity: 1
 			}, 1200);
 		}, 500);
+		if(num == 2 || num == 3)
+			$("#add-channel-" + num)[0].play();
+			
 	}
 	
 	function windowResize(){

@@ -1,9 +1,11 @@
 Changelog
 =====
-## v1.1.0.3 (XX-XX-2015)
- * Implemented 'Add to Youtube Notifications" button to videos, channels and subscription lists
+## v1.1.0.3 (10-27-2015)
+ * Implemented 'Add to YouTube Notifications" button to videos, channels and subscription lists
  * Added a first launch screen
  * Optimized channel update requests
+ * Added a viewable changelog when updated
+ * Added a help button under the "more" icon
 
 ## v1.1.0.2 (09-26-2015)
  * Fixed bug where notifications only update once

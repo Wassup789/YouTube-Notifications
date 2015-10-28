@@ -16,13 +16,14 @@
 			<div id="header_title" class="mdl-layout__header-row">
 				<img id="header_img" src="img/yt_logo.png" />
 				<span class="mdl-layout-title">Notifications</span>
-				
+				<button id="version-updated" class="mdl-button mdl-js-button mdl-js-ripple-effect">New Version!</button>
 				<div id="button-menu-container">
 					<button id="demo-menu-lower-right" class="mdl-button mdl-js-button mdl-button--icon">
 						<i class="material-icons">more_vert</i>
 					</button>
 					<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="demo-menu-lower-right">
 						<li id="menu_changeAlignment" class="mdl-menu__item" data-toggle="false"></li>
+						<li id="menu_help" class="mdl-menu__item" data-toggle="false">Help</li>
 					</ul>
 				</div>
 			</div>
@@ -168,6 +169,29 @@
 				</a>
 				<a id="add_channels-more-button" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
 					Add More
+				</a>
+			</div>
+		</div>
+	</div>
+	<div id="changelog-container" data-toggle="false">
+		<div class="overlay"></div>
+		<div id="changelog-dialog" class="mdl-card mdl-shadow--2dp">
+			<div class="mdl-card__title">
+				<h2 class="mdl-card__title-text">Changelog</h2>
+			</div>
+			<div class="mdl-card__supporting-text">
+				<div class="card-header">v1.1.0.3</div>
+				<ul>
+					<li>Implemented 'Add to YouTube Notifications" button to videos, channels and subscription lists</li>
+					<li>Added a first launch screen</li>
+					<li>Optimized channel update requests</li>
+					<li>Added a viewable changelog when updated</li>
+					<li>Added a help button under the "more" icon</li>
+				</ul>
+			</div>
+			<div class="mdl-card__actions mdl-card--border">
+				<a id="changelog-close-button" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+					Close
 				</a>
 			</div>
 		</div>

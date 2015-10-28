@@ -13,6 +13,7 @@ This code is licensed under the MIT License.
 
 ### Permissions
  - notifications
+ - unlimitedStorage
  - \*://\*.youtube.com/\*
  - \*://\*.ytimg.com/\*
 
@@ -20,7 +21,7 @@ This code is licensed under the MIT License.
 
 [![ChromeWebStore](https://raw.githubusercontent.com/Wassup789/Youtube-Notifications/master/img/chromewebstore.png)](https://chrome.google.com/webstore/detail/youtube-notifications/cilgbgkmanbbecbjihnbpeaoodmgchom)
 
-**Latest Version:** ***v1.1.0.2***
+**Latest Version:** ***v1.1.0.3***
 
 **Release Archive:**
 
