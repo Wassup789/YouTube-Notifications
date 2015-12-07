@@ -93,3 +93,9 @@ a:hover {
 	font-size: 24px;
 	white-space: nowrap;
 }
+.content-subheader a {
+	color: #9C0000;
+}
+.content-subheader a:hover {
+	color: #F00;
+}

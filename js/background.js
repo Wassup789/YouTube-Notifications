@@ -22,6 +22,8 @@ var wyn = {};
 		"update_channels_init": "Updating YouTube channels",
 		"update_channels_complete": "Finished updating YouTube channels",
 		"update_channels_failed": "Could not update YouTube channels",
+		"update_channels_failed_channel_prefix": "Youtube channel: ",
+		"update_channels_failed_channel_suffix": " could not be verified",
 		"log_color_prefix": "%c",
 		"log_color_green": "font-weight: bold; color: #2E7D32",
 		"log_color_red": "font-weight: bold; color: #B71C1C"
@@ -146,6 +148,7 @@ function updateChannelsInfo(refresh){
 	for(var i = 0; i < channels.length; i++){
 		channelIdList += channels[i].id + ",";
 	}
+	channelIdList = channelIdList.substring(0, channelIdList.length-1);
 	var url = "https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&maxResults=1&id=" + channelIdList + "&key=" + wyn.apiKey;
 	$.ajax({
 		url: url,
@@ -153,18 +156,18 @@ function updateChannelsInfo(refresh){
 			console.log(wyn.strings.update_channels_failed);
 		},
 		success: function(data){
-			if(data.items.length == channels.length){
-				for(var i = 0; i < channels.length; i++){
-					channels[i].name				= data.items[0].snippet.title;
-					channels[i].thumbnail			= data.items[0].snippet.thumbnails.default.url;
-					channels[i].viewCount			= data.items[0].statistics.viewCount;
-					channels[i].subscriberCount	= data.items[0].statistics.subscriberCount;
-					localStorage.setItem("channels", JSON.stringify(channels));
+			for(var i = 0; i < channels.length; i++) {
+				for(var j = 0; j < data.items.length; j++){
+					if(data.items[j].id == channels[i].id){
+						channels[i].name				= data.items[j].snippet.title;
+						channels[i].thumbnail			= data.items[j].snippet.thumbnails.default.url;
+						channels[i].viewCount			= data.items[j].statistics.viewCount;
+						channels[i].subscriberCount		= data.items[j].statistics.subscriberCount;
+						break;
+					}
 				}
-				console.log(wyn.strings.update_channels_complete);
-				if(refresh)
-					chrome.extension.sendMessage({type: "refreshPage"});
 			}
+			localStorage.setItem("channels", JSON.stringify(channels));
 		}
 	});
 }
@@ -185,7 +188,7 @@ function checkYoutubeStatus(){
 				checkYoutubeBatch(true);
 				setInterval(function(){
 					checkYoutubeBatch(true);
-				}, 1000*60*10);
+				}, 1000*60*5);
 			}
 		},
 		error: function(XMLHttpRequest, textStatus, error) {
@@ -211,7 +214,7 @@ function checkYoutubeStatus(){
 				checkYoutubeBatch(true);
 				setInterval(function(){
 					checkYoutubeBatch(true);
-				}, 1000*60*10);
+				}, 1000*60*5);
 			}else{
 				wyn.isConnected = false;
 				chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.connect_failed});

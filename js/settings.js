@@ -383,13 +383,13 @@ function displayPopupCard(num){
 			$("#popup_card").delay(500).fadeOut("fast");
 			$("#popup_overlay").delay(500).fadeOut("fast");
 			setTimeout(function(){
+				$("main").removeClass("unscrollable");//Delays scrollability until popup_card completely disapears
+			}, 1100);
+			setTimeout(function(){
 				$("#popup_card .channel_info_btn").css("marginTop", "");//Reset info button
 				$("#popup_card .channelColumn").not(":first").not(":last").show();//Re-add buttons
 				$("#popup_card").attr("data-toggle", "false");
 			}, 450);
-			setTimeout(function(){
-				$("main").removeClass("unscrollable");//Delays scrollability until popup_card completely disapears
-			}, 700);
 			popupId = -1;
 		}
 	}
