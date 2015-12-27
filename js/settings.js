@@ -453,6 +453,14 @@ function getChannelVideos(){
  *  @param {object} data The data recived from function: getChannelVideos
  */
 function setChannelVideos(data){
+	data.sort(function(a, b){
+		var a = a.timestamp,
+			b = b.timestamp;
+		if(a > b) return -1;
+		if(a < b) return 1;
+		return 0;
+	});
+	
 	for(var i = 0; i < data.length; i++) {
 		var date = new Date(parseInt(data[i].timestamp)*1000);
 		date = timeSince(date);

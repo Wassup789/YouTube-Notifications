@@ -192,7 +192,7 @@ function checkYoutubeStatus(){
 			}
 		},
 		error: function(XMLHttpRequest, textStatus, error) {
-			if(XMLHttpRequest.statusText != "OK"){
+			if(XMLHttpRequest.statusText != "OK" && XMLHttpRequest.status != 404){
 				wyn.isConnected = false;
 				chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.connect_failed});
 				console.log(wyn.strings.log_color_prefix + wyn.strings.connect_failed, wyn.strings.log_color_green);
@@ -358,7 +358,7 @@ function checkYoutube(num, refresh, batch) {
 	wyn.activeCheckings[num] = true;
 	
 	var channels = JSON.parse(localStorage.getItem("channels"));
-	var url = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=1&playlistId=" + channels[num].playlistId + "&key=" + wyn.apiKey;
+	var url = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=5&playlistId=" + channels[num].playlistId + "&key=" + wyn.apiKey;
 	
 	console.log(wyn.strings.notification_log_check + channels[num].name);
 	$.ajax({
@@ -367,6 +367,14 @@ function checkYoutube(num, refresh, batch) {
 			wyn.activeCheckings[num] = false;
 		},
 		success: function(data) {
+			data.items.sort(function(a, b){
+				var a = new Date(a.snippet.publishedAt),
+					b = new Date(b.snippet.publishedAt);
+				if(a > b) return -1;
+				if(a < b) return 1;
+				return 0;
+			});
+			
 			var videoId = data.items[0].snippet.resourceId.videoId,
 				url = "https://www.googleapis.com/youtube/v3/videos?part=statistics,contentDetails&maxResults=1&id=" + videoId + "&key=" + wyn.apiKey,
 				prevVideoId = channels[num].latestVideo.id;
