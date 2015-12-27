@@ -1,9 +1,10 @@
 Changelog
 =====
-## v1.1.0.4 (XX-XX-2015)
+## v1.1.0.4 (12-26-2015)
  * Decreased update interval from every 10 minutes to every 5 minutes
  * Fixed channel information not updating properly
  * Fixed videos not showing the right video order for notifications and displays
+
 ## v1.1.0.3 (10-27-2015)
  * Implemented 'Add to YouTube Notifications" button to videos, channels and subscription lists
  * Added a first launch screen
