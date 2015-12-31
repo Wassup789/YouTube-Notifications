@@ -195,6 +195,7 @@ function registerListeners(){
 		chrome.extension.getBackgroundPage().wyn.firstLaunch();
 	});
 	$("#version-updated").on("click", function(){
+		$("#changelog-dialog .card-header").text("v" + chrome.runtime.getManifest().version);
 		$("#changelog-container").attr("data-toggle", true);
 		var settings = JSON.parse(localStorage.getItem("settings"));
 		settings.updated.enabled = false;
@@ -402,7 +403,8 @@ function getChannelVideos(){
 	var id = parseInt($("#popup_card .channelRow").attr("data-id")),
 		channelId = JSON.parse(localStorage.getItem("channels"))[id].id,
 		playlistId = JSON.parse(localStorage.getItem("channels"))[id].playlistId,
-		url = "https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&maxResults=10&playlistId=" + playlistId + "&key=" + wyns.apiKey;
+		//url = "https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&maxResults=10&playlistId=" + playlistId + "&key=" + wyns.apiKey;
+		url = "https://www.googleapis.com/youtube/v3/search?part=snippet&order=date&maxResults=10&channelId=" + channelId + "&key=" + wyns.apiKey;
 	if(typeof savedData[channelId] !== "undefined")
 		setChannelVideos(savedData[channelId]);
 	else{
@@ -414,7 +416,8 @@ function getChannelVideos(){
 			success: function(data) {
 				var videos = "";
 				for(var i = 0; i < data.items.length; i++)
-					videos += data.items[i].contentDetails.videoId + ",";
+					//videos += data.items[i].contentDetails.videoId + ",";
+					videos += data.items[i].id.videoId + ",";
 				var url = "https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,contentDetails&maxResults=1&id=" + videos + "&key=" + wyns.apiKey;
 				$.ajax({
 					type: "GET",

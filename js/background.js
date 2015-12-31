@@ -358,7 +358,8 @@ function checkYoutube(num, refresh, batch) {
 	wyn.activeCheckings[num] = true;
 	
 	var channels = JSON.parse(localStorage.getItem("channels"));
-	var url = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=5&playlistId=" + channels[num].playlistId + "&key=" + wyn.apiKey;
+	//var url = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=5&playlistId=" + channels[num].playlistId + "&key=" + wyn.apiKey;
+	var url = "https://www.googleapis.com/youtube/v3/search?part=snippet&order=date&maxResults=1&channelId=" + channels[num].id + "&key=" + wyn.apiKey;
 	
 	console.log(wyn.strings.notification_log_check + channels[num].name);
 	$.ajax({
@@ -367,15 +368,17 @@ function checkYoutube(num, refresh, batch) {
 			wyn.activeCheckings[num] = false;
 		},
 		success: function(data) {
-			data.items.sort(function(a, b){
+			//COMMENTED OUT = OLD
+			/*data.items.sort(function(a, b){
 				var a = new Date(a.snippet.publishedAt),
 					b = new Date(b.snippet.publishedAt);
 				if(a > b) return -1;
 				if(a < b) return 1;
 				return 0;
-			});
+			});*/
 			
-			var videoId = data.items[0].snippet.resourceId.videoId,
+			//var videoId = data.items[0].snippet.resourceId.videoId,
+			var videoId = data.items[0].id.videoId,
 				url = "https://www.googleapis.com/youtube/v3/videos?part=statistics,contentDetails&maxResults=1&id=" + videoId + "&key=" + wyn.apiKey,
 				prevVideoId = channels[num].latestVideo.id;
 			channels[num].latestVideo.id = videoId;
