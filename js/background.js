@@ -24,6 +24,8 @@ var wyn = {};
 		"update_channels_failed": "Could not update YouTube channels",
 		"update_channels_failed_channel_prefix": "Youtube channel: ",
 		"update_channels_failed_channel_suffix": " could not be verified",
+		"add_channel_init": "Adding channel: ",
+		"add_channel_failed": "Could not add channel: ",
 		"log_color_prefix": "%c",
 		"log_color_green": "font-weight: bold; color: #2E7D32",
 		"log_color_red": "font-weight: bold; color: #B71C1C"
@@ -243,8 +245,12 @@ function setYoutube(name, refresh, fromContentScript){
 	fromContentScript = fromContentScript || false;
 	
 	var url = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&maxResults=1&q=" + name + "&key=" + wyn.apiKey;
+	console.log(wyn.strings.add_channel_init + "\"" + name + "\"");
 	$.ajax({
 		url: url,
+		error: function(data) {
+			console.log(wyn.strings.add_channel_failed + "\"" + name + "\"");
+		},
 		success: function(data) {
 			if(data.items.length == 1){
 				var id = data.items[0].id.channelId;
@@ -366,6 +372,11 @@ function checkYoutube(num, refresh, batch) {
 		url: url,
 		error: function(data) {
 			wyn.activeCheckings[num] = false;
+			wyn.activeBatchCheckings[num] = false;
+			for(var i = 0; i < wyn.activeBatchCheckings.length; i++)
+				if(wyn.activeBatchCheckings[i])
+					return;
+			wyn.batchChecking = false;
 		},
 		success: function(data) {
 			//COMMENTED OUT = OLD
@@ -410,6 +421,11 @@ function checkYoutube(num, refresh, batch) {
 				url: url,
 				error: function(data) {
 					wyn.activeCheckings[num] = false;
+					wyn.activeBatchCheckings[num] = false;
+					for(var i = 0; i < wyn.activeBatchCheckings.length; i++)
+						if(wyn.activeBatchCheckings[i])
+							return;
+					wyn.batchChecking = false;
 				},
 				success: function(data) {
 					channels[num].latestVideo.views = data.items[0].statistics.viewCount;
