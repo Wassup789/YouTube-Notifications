@@ -16,20 +16,20 @@
 			<div id="header_title" class="mdl-layout__header-row">
 				<img id="header_img" src="img/yt_logo.png" />
 				<span class="mdl-layout-title">Notifications</span>
-				<button id="version-updated" class="mdl-button mdl-js-button mdl-js-ripple-effect">New Version!</button>
+				<button id="version-updated" class="mdl-button mdl-js-button mdl-js-ripple-effect" i18n="settings_newVersion"></button>
 				<div id="button-menu-container">
 					<button id="demo-menu-lower-right" class="mdl-button mdl-js-button mdl-button--icon">
 						<i class="material-icons">more_vert</i>
 					</button>
 					<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="demo-menu-lower-right">
 						<li id="menu_changeAlignment" class="mdl-menu__item" data-toggle="false"></li>
-						<li id="menu_help" class="mdl-menu__item" data-toggle="false">Help</li>
+						<li id="menu_help" class="mdl-menu__item" data-toggle="false" i18n="settings_vertSettings_help"></li>
 					</ul>
 				</div>
 			</div>
 			<div id="header_tabs" class="mdl-layout__tab-bar mdl-js-ripple-effect">
-				<a href="#tab-newest_uploads" class="mdl-layout__tab is-active">Newest Uploads</a>
-				<a href="#tab-edit_settings" class="mdl-layout__tab">Edit Settings</a>
+				<a href="#tab-newest_uploads" class="mdl-layout__tab is-active" i18n="settings_headerTabs1"></a>
+				<a href="#tab-edit_settings" class="mdl-layout__tab" i18n="settings_headerTabs2"></a>
 			</div>
 		</header>
 		<main class="mdl-layout__content">
@@ -94,28 +94,27 @@
 					<div class="main_card mdl-card mdl-shadow--2dp">
 						<div id="settings">
 							<div id="settings_notifications" class="settingRow">
-								<div class="settingColumn">
-									Use Notifications:
+								<div class="settingColumn text">
+									<span i18n="settings_editSettings_useNotifications"></span>
 								</div>
 								<div class="settingColumn">
 									<label id="settings_notifications_toggle" class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="switch-1">
 										<input type="checkbox" id="switch-1" class="mdl-switch__input" />
 									</label>
 								</div>
-								<div class="settingColumn">
-									Notification Volume:
+								<div class="settingColumn text">
+									<span i18n="settings_editSettings_notificationVolume"></span>
 								</div>
 								<div class="settingColumn">
-									<input id="settings_notifications_volume" class="mdl-slider mdl-js-slider" type="range"
-  min="0" max="100" tabindex="0"/>
+									<input id="settings_notifications_volume" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" tabindex="0"/>
 								</div>
 								<div class="settingColumn">
-									<button id="settings_notifications_test" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">Test</button>
+									<button id="settings_notifications_test" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored" i18n="settings_editSettings_notificationTest"></button>
 								</div>
 							</div>
 							<div id="tts_notifications" class="settingRow">
-								<div class="settingColumn">
-									Use Text-To-Speech:
+								<div class="settingColumn text">
+									<span i18n="settings_editSettings_tts"></span>
 								</div>
 								<div class="settingColumn">
 									<label id="settings_tts_toggle" class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="switch-2">
@@ -123,7 +122,7 @@
 									</label>
 								</div>
 								<div class="settingColumn">
-									Text-To-Speech Voice:
+									<span i18n="settings_editSettings_ttsVoice"></span>
 								</div>
 								<div class="settingColumn">
 									<select id="settings_tts_select"></select>
@@ -131,7 +130,7 @@
 							</div>
 							<div id="addBtn_notifications" class="settingRow">
 								<div class="settingColumn">
-									Enable Add buttons on YouTube:
+									<span i18n="settings_editSettings_addButtons"></span>
 								</div>
 								<div class="settingColumn">
 									<label id="settings_addbtn_toggle" class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="switch-3">
@@ -140,9 +139,7 @@
 								</div>
 							</div>
 							<div class="settingRow">
-								<button id="settings_refresh" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect">
-									Manual Refresh
-								</button>
+								<button id="settings_refresh" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect" i18n="settings_editSettings_manualRefresh"></button>
 							</div>
 						</div>
 					</div>
@@ -155,21 +152,17 @@
 		<div class="overlay"></div>
 		<div id="add_channels-dialog" class="mdl-card mdl-shadow--2dp">
 			<div class="mdl-card__title">
-				<h2 class="mdl-card__title-text">Add Channels</h2>
+				<h2 class="mdl-card__title-text" i18n="settings_addChannel_title"></h2>
 			</div>
 			<div class="mdl-card__supporting-text">
 				<div class="mdl-textfield mdl-js-textfield">
 					<input class="add_channel_input mdl-textfield__input" type="text" />
-					<label class="mdl-textfield__label" for="add_channel_input">Channel name, ID or URL</label>
+					<label class="mdl-textfield__label" for="add_channel_input" i18n="settings_addChannel_placeholder"></label>
 				</div>
 			</div>
 			<div class="mdl-card__actions mdl-card--border">
-				<a id="add_channels-add-button" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
-					Add
-				</a>
-				<a id="add_channels-more-button" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
-					Add More
-				</a>
+				<a id="add_channels-add-button" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" i18n="settings_addChannel_add"></a>
+				<a id="add_channels-more-button" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" i18n="settings_addChannel_addMore"></a>
 			</div>
 		</div>
 	</div>
@@ -177,7 +170,7 @@
 		<div class="overlay"></div>
 		<div id="changelog-dialog" class="mdl-card mdl-shadow--2dp">
 			<div class="mdl-card__title">
-				<h2 class="mdl-card__title-text">Changelog</h2>
+				<h2 class="mdl-card__title-text" i18n="settings_changelog_title"></h2>
 			</div>
 			<div class="mdl-card__supporting-text">
 				<div class="card-header">vX.X.X.X</div>
@@ -187,9 +180,7 @@
 				</ul>
 			</div>
 			<div class="mdl-card__actions mdl-card--border">
-				<a id="changelog-close-button" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
-					Close
-				</a>
+				<a id="changelog-close-button" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" i18n="settings_changelog_close"></a>
 			</div>
 		</div>
 	</div>

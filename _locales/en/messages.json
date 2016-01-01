@@ -1,0 +1,158 @@
+{
+	"appName": {
+		"description": "App name.",
+		"message": "YouTube Notifications"
+	},
+	"appDesc": {
+		"description": "App description.",
+		"message": "Get notifications when selected YouTube users upload a new video."
+	},
+	"settings_newVersion": {
+		"description": "The button displayed when there is a new version",
+		"message": "New Version!"
+	},
+	"settings_headerTabs1": {
+		"description": "The first tab text: Newest Uploads",
+		"message": "Newest Uploads"
+	},
+	"settings_headerTabs2": {
+		"description": "The second tab text: Edit Settings",
+		"message": "Edit Settings"
+	},
+	"settings_editSettings_useNotifications": {
+		"description": "The label for the enable notifications checkbox",
+		"message": "Use Notifications"
+	},
+	"settings_editSettings_notificationVolume": {
+		"description": "The label for the notification volume slider",
+		"message": "Notification Volume"
+	},
+	"settings_editSettings_notificationTest": {
+		"description": "The label for the notification test button",
+		"message": "Test"
+	},
+	"settings_editSettings_tts": {
+		"description": "The label for the enable text-to-speech checkbox",
+		"message": "Use Text-To-Speech"
+	},
+	"settings_editSettings_ttsVoice": {
+		"description": "The label for the text-to-speech selector",
+		"message": "Text-To-Speech Voice"
+	},
+	"settings_editSettings_addButtons": {
+		"description": "The label for the enable add buttons checkbox",
+		"message": "Enable Add buttons on YouTube"
+	},
+	"settings_editSettings_manualRefresh": {
+		"description": "The label for the manual refresh button",
+		"message": "Manual Refresh"
+	},
+	"settings_vertSettings_help": {
+		"description": "The label for the help button",
+		"message": "Help"
+	},
+	"settings_vertSettings_channelAlignment": {
+		"description": "The label for the edit channel alignment button",
+		"message": "Edit Channel Alignment"
+	},
+	"settings_vertSettings_channelAlignment2": {
+		"description": "The label for the edit channel alignment finish button",
+		"message": "Save Changes"
+	},
+	"settings_addChannel_title": {
+		"description": "The label for the title of the add channel popup",
+		"message": "Add Channels"
+	},
+	"settings_addChannel_placeholder": {
+		"description": "The placeholder label for the add channel textbox",
+		"message": "Channel name, ID or URL"
+	},
+	"settings_addChannel_add": {
+		"description": "The label for the add channel's add button",
+		"message": "Add"
+	},
+	"settings_addChannel_addMore": {
+		"description": "The label for the add channel's add more button",
+		"message": "Add More"
+	},
+	"settings_changelog_title": {
+		"description": "The label for the title of the changelog popup",
+		"message": "Changelog"
+	},
+	"settings_changelog_close": {
+		"description": "The label for the changelog's close button",
+		"message": "Close"
+	},
+	"settingsJs_updating": {
+		"description": "",
+		"message": "Updating..."
+	},
+	"settingsJs_saved": {
+		"description": "",
+		"message": "Saved"
+	},
+	"settingsJs_userRemoveChannel": {
+		"description": "",
+		"message": "Removed YouTube Channel: "
+	},
+	"settingsJs_addChannelsFailed": {
+		"description": "",
+		"message": "Could not add any channels entered"
+	},
+	"background_notificationWatch": {
+		"description": "",
+		"message": "Watch Video"
+	},
+	"background_notificationClose": {
+		"description": "",
+		"message": "Dismiss"
+	},
+	"background_notificationLogCheck": {
+		"description": "",
+		"message": "Checking YouTube User: "
+	},
+	"background_notificationLogNew": {
+		"description": "",
+		"message": "Found new YouTube video for: "
+	},
+	"background_snackbarNoNewVideos": {
+		"description": "",
+		"message": "No new videos found"
+	},
+	"background_connectSuccess": {
+		"description": "",
+		"message": "Connected to YouTube's Servers"
+	},
+	"background_connectFailed": {
+		"description": "",
+		"message": "Could not connect to YouTube's Servers"
+	},
+	"background_updateChannelsInit": {
+		"description": "",
+		"message": "Updating YouTube channels"
+	},
+	"background_updateChannelsComplete": {
+		"description": "",
+		"message": "Finished updating YouTube channels"
+	},
+	"background_updateChannelsFailed": {
+		"description": "",
+		"message": "Could not update YouTube channels"
+	},
+	"background_updateChannelsFailedChannelPrefix": {
+		"description": "",
+		"message": "Youtube channel: "
+	},
+	"background_updateChannelsFailedChannelSuffix": {
+		"description": "",
+		"message": " could not be verified"
+	},
+	"background_addChannelInit": {
+		"description": "",
+		"message": "Adding channel: "
+	},
+	"background_addChannelFailed": {
+		"description": "",
+		"message": "Could not add channel: "
+	}
+}

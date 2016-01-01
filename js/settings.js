@@ -2,12 +2,14 @@ var wyns = {};
 	wyns.apiKey = chrome.extension.getBackgroundPage().wyn.apiKey,
 	wyns.strings = {
 		"connect_failed": chrome.extension.getBackgroundPage().wyn.strings.connect_failed,
-		"updating": "Updating...",
-		"saved": "Saved",
-		"user_remove_chanel": "Removed YouTube Channel: ",
-		"add_channels_failed": "Could not add any channels entered"
+		"updating": getString("updating"),
+		"saved": getString("saved"),
+		"user_remove_channel": getString("userRemoveChannel"),
+		"add_channels_failed": getString("addChannelsFailed")
 	};
 $(function(){
+	setLocales();
+	
 	if(!chrome.extension.getBackgroundPage().wyn.isConnected)
 		createSnackbar(wyns.strings.connect_failed);
 	
@@ -42,6 +44,26 @@ $(function(){
 		configureSettings();
 	}, 500);
 });
+
+/**
+ *  Sets the appropriate text to all html tags with the attribute 'i18n'
+ */
+function setLocales() {
+	$("[i18n]").each(function(i, html){
+		var string = chrome.i18n.getMessage($(html).attr("i18n"));
+		$(html).text(string);
+	});
+}
+
+/**
+ *  Gets the string from the locales appropriate to settings.js
+ *  
+ *  @param {string} name A valid localized string which doesn't include 'settingsJs'
+ *  @returns {string} The localized string
+ */
+function getString(name) {
+	return chrome.i18n.getMessage("settingsJs_" + name);
+}
 
 /**
  *  Gets information of all YouTube channels and displays it in the options menu
@@ -133,7 +155,7 @@ function registerListeners(){
 			$(".channelRow:not(#masterChannelRow)").each(function(i){
 				$(this).attr("data-id", i);
 			});
-			console.log(wyns.strings.user_remove_chanel + name);
+			console.log(wyns.strings.user_remove_channel + name);
 		}
 	});
 	$(".channel_info_btn").on("click", function(){
@@ -408,7 +430,7 @@ function getChannelVideos(){
 		channelId = JSON.parse(localStorage.getItem("channels"))[id].id,
 		playlistId = JSON.parse(localStorage.getItem("channels"))[id].playlistId,
 		//url = "https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&maxResults=10&playlistId=" + playlistId + "&key=" + wyns.apiKey;
-		url = "https://www.googleapis.com/youtube/v3/search?part=snippet&order=date&maxResults=10&channelId=" + channelId + "&key=" + wyns.apiKey;
+		url = "https://www.googleapis.com/youtube/v3/search?part=snippet&order=date&safeSearch=none&type=video&maxResults=10&channelId=" + channelId + "&key=" + wyns.apiKey;
 	if(typeof savedData[channelId] !== "undefined")
 		setChannelVideos(savedData[channelId]);
 	else{

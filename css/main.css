@@ -47,8 +47,8 @@ a{text-decoration: none;cursor:pointer;}
 	right: 16px;
 }
 #button-menu-container .mdl-menu__container {margin-top: -30px;}
-#menu_changeAlignment[data-toggle="false"]:after {content: "Edit Channel Alignment";}
-#menu_changeAlignment[data-toggle="true"]:after {content: "Save Changes";}
+#menu_changeAlignment[data-toggle="false"]:after {content: "__MSG_settings_vertSettings_channelAlignment__";}
+#menu_changeAlignment[data-toggle="true"]:after {content: "__MSG_settings_vertSettings_channelAlignment2__";}
 .mdl-layout.is-upgraded .mdl-layout__tab.is-active::after {background: #FFEB3B;}
 main {
 	margin: 3px 0;
@@ -84,6 +84,7 @@ main {
 .channelRow:last-child, .settingRow:last-child {border: none;}
 
 .channelColumn, .settingColumn {display: table-cell;}
+.settingColumn.text span:after {content: ":";}
 .channelColumn:nth-child(2) {
 	min-width: 175px;
 }

@@ -9,23 +9,23 @@ var wyn = {};
 	wyn.activeCheckings = [],
 	wyn.activeInfoCheckings = [],
 	wyn.strings = {
-		"notification_watch": "Watch Video",
+		"notification_watch": getString("notificationWatch"),
 		"notification_watch_icon": "img/ic_play.png",
-		"notification_close": "Dismiss",
+		"notification_close": getString("notificationClose"),
 		"notification_close_icon": "img/ic_close.png",
 		"notification_main_icon": "img/ic_youtube.png",
-		"notification_log_check": "Checking YouTube User: ",
-		"notification_log_new": "Found new YouTube video for: ",
-		"snackbar_nonewvideos": "No new videos found",
-		"connect_success": "Connected to YouTube's Servers",
-		"connect_failed": "Could not connect to YouTube's Servers",
-		"update_channels_init": "Updating YouTube channels",
-		"update_channels_complete": "Finished updating YouTube channels",
-		"update_channels_failed": "Could not update YouTube channels",
-		"update_channels_failed_channel_prefix": "Youtube channel: ",
-		"update_channels_failed_channel_suffix": " could not be verified",
-		"add_channel_init": "Adding channel: ",
-		"add_channel_failed": "Could not add channel: ",
+		"notification_log_check": getString("notificationLogCheck"),
+		"notification_log_new": getString("notificationLogNew"),
+		"snackbar_nonewvideos": getString("snackbarNoNewVideos"),
+		"connect_success": getString("connectSuccess"),
+		"connect_failed": getString("connectFailed"),
+		"update_channels_init": getString("updateChannelsInit"),
+		"update_channels_complete": getString("updateChannelsComplete"),
+		"update_channels_failed": getString("updateChannelsFailed"),
+		"update_channels_failed_channel_prefix": getString("updateChannelsFailedChannelPrefix"),
+		"update_channels_failed_channel_suffix": getString("updateChannelsFailedChannelSuffix"),
+		"add_channel_init": getString("addChannelInit"),
+		"add_channel_failed": getString("addChannelFailed"),
 		"log_color_prefix": "%c",
 		"log_color_green": "font-weight: bold; color: #2E7D32",
 		"log_color_red": "font-weight: bold; color: #B71C1C"
@@ -133,6 +133,16 @@ $(function(){
 	
 	checkYoutubeStatus();
 });
+
+/**
+ *  Gets the string from the locales appropriate to background.js
+ *  
+ *  @param {string} name A valid localized string which doesn't include 'settingsJs'
+ *  @returns {string} The localized string
+ */
+function getString(name) {
+	return chrome.i18n.getMessage("background_" + name);
+}
 
 /**
  *  Updates all channels stored's information
@@ -365,7 +375,7 @@ function checkYoutube(num, refresh, batch) {
 	
 	var channels = JSON.parse(localStorage.getItem("channels"));
 	//var url = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=5&playlistId=" + channels[num].playlistId + "&key=" + wyn.apiKey;
-	var url = "https://www.googleapis.com/youtube/v3/search?part=snippet&order=date&maxResults=1&channelId=" + channels[num].id + "&key=" + wyn.apiKey;
+	var url = "https://www.googleapis.com/youtube/v3/search?part=snippet&order=date&safeSearch=none&type=video&maxResults=1&channelId=" + channels[num].id + "&key=" + wyn.apiKey;
 	
 	console.log(wyn.strings.notification_log_check + channels[num].name);
 	$.ajax({
@@ -404,17 +414,26 @@ function checkYoutube(num, refresh, batch) {
 				localStorage.setItem("channels", JSON.stringify(channels2));
 				
 				wyn.activeCheckings[num] = false;
-				
-				wyn.activeBatchCheckings[num] = false;
-				for(var i = 0; i < wyn.activeBatchCheckings.length; i++)
-					if(wyn.activeBatchCheckings[i])
-						return;
-				wyn.batchChecking = false;
-				if(wyn.hasBatchChanged){
+				if(!batch){
+					for(var i = 0; i < wyn.activeCheckings.length; i++)
+						if(wyn.activeCheckings[i])
+							return;
 					if(refresh)
 						chrome.extension.sendMessage({type: "refreshPage"});
-				}else
-					chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.snackbar_nonewvideos});
+					else
+						chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.snackbar_nonewvideos});
+				}else{
+					wyn.activeBatchCheckings[num] = false;
+					for(var i = 0; i < wyn.activeBatchCheckings.length; i++)
+						if(wyn.activeBatchCheckings[i])
+							return;
+					wyn.batchChecking = false;
+					if(wyn.hasBatchChanged){
+						if(refresh)
+							chrome.extension.sendMessage({type: "refreshPage"});
+					}else
+						chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.snackbar_nonewvideos});
+				}
 				return;
 			}
 			$.ajax({
