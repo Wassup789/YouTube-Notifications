@@ -254,7 +254,7 @@ main {
 	right: 5px;
 }
 #popup_card[data-toggle="true"] .channelColumn:nth-child(5) .channel_remove_btn {
-	display: none;
+	position: absolute;
 }
 #popup_card[data-toggle="false"] #popup_videoList {
 	display: none;
