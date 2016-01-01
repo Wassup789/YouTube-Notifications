@@ -4,7 +4,8 @@ var wyns = {};
 		"connect_failed": chrome.extension.getBackgroundPage().wyn.strings.connect_failed,
 		"updating": "Updating...",
 		"saved": "Saved",
-		"user_remove_chanel": "Removed YouTube Channel: "
+		"user_remove_chanel": "Removed YouTube Channel: ",
+		"add_channels_failed": "Could not add any channels entered"
 	};
 $(function(){
 	if(!chrome.extension.getBackgroundPage().wyn.isConnected)
@@ -102,17 +103,18 @@ function registerListeners(){
 	$("#add_channels-add-button").on("click", function(){
 		$("#add_channels-dialog").fadeOut("slow");
 		$("#loading").fadeIn("slow");
-		var i = 0;
+		var num = 0;
 		$(".add_channel_input").each(function(i){
 			if($($(".add_channel_input")[i]).val() != ""){
 				chrome.extension.sendMessage({type: "setYoutube", name: $($(".add_channel_input")[i]).val(), refresh: true});
-				i++;
+				num++;
 			}
 		});
-		if(i > 0){
+		if(num < 1){
 			$("#loading").stop().hide();
 			$("#add_channels-dialog").stop().show();
 			$("#add_channels-container").attr("data-toggle", "false");
+			createSnackbar(wyns.strings.add_channels_failed);
 		}
 	});
 	$(".add_channel_input").on("keyup", function(e){
@@ -499,7 +501,7 @@ function setChannelVideos(data){
 /**
  *  Returns the time difference from today
  *  
- *  @param {number} date A UNIX timestamp
+ *  @param {number} date A valid UNIX timestamp
  *  @returns {string} The time difference in user-friendly format
  */
 function timeSince(date){
@@ -555,82 +557,16 @@ function timeSince(date){
  *  @param {number} num The number to add commas to
  *  @returns {string} Number inputted with commas
  */
-function addCommas(num) {
-	return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
+function addCommas(num) {return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");}
 
 /**
  *  Converts an ISO-8601 formatted string to a different timestamp format (HH:MM:SS)
+ *  Script by Mikolaj Lukasik on stackoverflow.com
  *  
- *  @param {string} t The ISO-8601 formmated string
+ *  @param {string} r The ISO-8601 formmated string
  *  @returns {string} Returns duration in HH:MM:SS format
  */
-function convertISO8601Duration(t){ 
-    //dividing period from time
-    var x = t.split('T'),
-        duration = '',
-        time = {},
-        period = {},
-        //just shortcuts
-        s = 'string',
-        v = 'variables',
-        l = 'letters',
-        // store the information about ISO8601 duration format and the divided strings
-        d = {
-            period: {
-                string: x[0].substring(1,x[0].length),
-                len: 4,
-                // years, months, weeks, days
-                letters: ['Y', 'M', 'W', 'D'],
-                variables: {}
-            },
-            time: {
-                string: x[1],
-                len: 3,
-                // hours, minutes, seconds
-                letters: ['H', 'M', 'S'],
-                variables: {}
-            }
-        };
-    //in case the duration is a multiple of one day
-    if (!d.time.string) {
-        d.time.string = '';
-    }
-
-    for (var i in d) {
-        var len = d[i].len;
-        for (var j = 0; j < len; j++) {
-            d[i][s] = d[i][s].split(d[i][l][j]);
-            if (d[i][s].length>1) {
-                d[i][v][d[i][l][j]] = parseInt(d[i][s][0], 10);
-                d[i][s] = d[i][s][1];
-            } else {
-                d[i][v][d[i][l][j]] = 0;
-                d[i][s] = d[i][s][0];
-            }
-        }
-    } 
-    period = d.period.variables;
-    time = d.time.variables;
-    time.H +=   24 * period.D + 
-                            24 * 7 * period.W +
-                            24 * 7 * 4 * period.M + 
-                            24 * 7 * 4 * 12 * period.Y;
-
-    if (time.H) {
-        duration = time.H + ':';
-        if (time.M < 10) {
-            time.M = '0' + time.M;
-        }
-    }
-
-    if (time.S < 10) {
-        time.S = '0' + time.S;
-    }
-
-    duration += time.M + ':' + time.S;
-    return duration;
-}
+function convertISO8601Duration(r){var e=r.split("T"),t="",i={},n={},s="string",a="variables",l="letters",v={period:{string:e[0].substring(1,e[0].length),len:4,letters:["Y","M","W","D"],variables:{}},time:{string:e[1],len:3,letters:["H","M","S"],variables:{}}};v.time.string||(v.time.string="");for(var g in v)for(var o=v[g].len,M=0;o>M;M++)v[g][s]=v[g][s].split(v[g][l][M]),v[g][s].length>1?(v[g][a][v[g][l][M]]=parseInt(v[g][s][0],10),v[g][s]=v[g][s][1]):(v[g][a][v[g][l][M]]=0,v[g][s]=v[g][s][0]);return n=v.period.variables,i=v.time.variables,i.H+=24*n.D+168*n.W+672*n.M+8064*n.Y,i.H&&(t=i.H+":",i.M<10&&(i.M="0"+i.M)),i.S<10&&(i.S="0"+i.S),t+=i.M+":"+i.S}
 
 
 // SNACKBAR
