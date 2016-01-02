@@ -26,9 +26,14 @@ var wyn = {};
 		"update_channels_failed_channel_suffix": getString("updateChannelsFailedChannelSuffix"),
 		"add_channel_init": getString("addChannelInit"),
 		"add_channel_failed": getString("addChannelFailed"),
+		"removed_channel": getString("removedChannel"),
+		"remove_channel": getString("removeChannel"),
 		"log_color_prefix": "%c",
 		"log_color_green": "font-weight: bold; color: #2E7D32",
-		"log_color_red": "font-weight: bold; color: #B71C1C"
+		"log_color_red": "font-weight: bold; color: #B71C1C",
+		"info_views": getCommonString("views"),
+		"info_likes": getCommonString("likes"),
+		"info_dislikes": getCommonString("dislikes"),
 	},
 	wyn.apiKey = "AIzaSyA8W5tYDVst9tnMpnV56OSjMvHSD70T7oU";// CHANGE THIS API KEY TO YOUR OWN
 
@@ -79,11 +84,13 @@ chrome.runtime.onInstalled.addListener(function(details){
 		wyn.firstLaunch();
     }else if(details.reason == "update"){
         var thisVersion = chrome.runtime.getManifest().version;
-        console.log("Updated from " + details.previousVersion + " to " + thisVersion + "!");
-		
-		var settings = JSON.parse(localStorage.getItem("settings"));
-		settings.updated.enabled = true;
-		localStorage.setItem("settings", JSON.stringify(settings));
+		if(details.previousVersion != thisVersion){
+			console.log("Updated from " + details.previousVersion + " to " + thisVersion + "!");
+			
+			var settings = JSON.parse(localStorage.getItem("settings"));
+			settings.updated.enabled = true;
+			localStorage.setItem("settings", JSON.stringify(settings));
+		}
     }
 });
 
@@ -142,6 +149,16 @@ $(function(){
  */
 function getString(name) {
 	return chrome.i18n.getMessage("background_" + name);
+}
+
+/**
+ *  Gets the string from the locales
+ *  
+ *  @param {string} name A valid localized string which doesn't include 'common'
+ *  @returns {string} The localized string
+ */
+function getCommonString(name) {
+	return chrome.i18n.getMessage("common_" + name);
 }
 
 /**
@@ -260,6 +277,8 @@ function setYoutube(name, refresh, fromContentScript){
 		url: url,
 		error: function(data) {
 			console.log(wyn.strings.add_channel_failed + "\"" + name + "\"");
+			if(!fromContentScript)
+				chrome.extension.sendMessage({type: "addChannelFailed"});
 		},
 		success: function(data) {
 			if(data.items.length == 1){
@@ -293,6 +312,10 @@ function setYoutube(name, refresh, fromContentScript){
 						checkYoutube(arr.length-1, refresh);
 					}
 				});
+			}else{
+				console.log(wyn.strings.add_channel_failed + "\"" + name + "\"");
+				if(!fromContentScript)
+					chrome.extension.sendMessage({type: "addChannelFailed"});
 			}
 		}
 	});
@@ -321,22 +344,31 @@ function removeYoutube(type, name, refresh, fromContentScript){
 	
 	type = parseInt(type);
 	if(type == 0){
-		var id = parseInt(name);
-		var channels = JSON.parse(localStorage.getItem("channels"));
+		var id = parseInt(name),
+			channels = JSON.parse(localStorage.getItem("channels")),
+			channelName = channels[id].name;
+		console.log(wyn.strings.remove_channel + "\"" + channelName + "\"");
 		channels.splice(id, 1);
 		localStorage.setItem("channels", JSON.stringify(channels));
+		
 		if(refresh)
 			chrome.extension.sendMessage({type: "refreshPage"});
+		else
+			chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.removed_channel + "\"" + channelName + "\""});
 		if(fromContentScript)
 			return true;
 	}else if(type == 1){
 		var channels = JSON.parse(localStorage.getItem("channels"));
 		for(var i = 0; i < channels.length; i++){
 			if(channels[i].id == name){
+				var channelName = channels[i].name;
 				channels.splice(i, 1);
+				console.log(wyn.strings.remove_channel + "\"" + channelName + "\"");
 				localStorage.setItem("channels", JSON.stringify(channels));
 				if(refresh)
 					chrome.extension.sendMessage({type: "refreshPage"});
+				else
+					chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.removed_channel + "\"" + channelName + "\""});
 				if(fromContentScript)
 					return true;
 				return;
@@ -476,7 +508,7 @@ function checkYoutube(num, refresh, batch) {
 						message: info.latestVideo.description,
 						imageUrl: info.latestVideo.thumbnail,
 						iconUrl: wyn.strings.notification_main_icon,
-						contextMessage: info.latestVideo.duration + " | "+ addCommas(info.latestVideo.views) + " views | " + likesa + "% likes | " + dislikesa + "% dislikes",
+						contextMessage: info.latestVideo.duration + " | "+ addCommas(info.latestVideo.views) + " " + wyn.strings.info_views + " | " + likesa + "% " + wyn.strings.info_likes + " | " + dislikesa + "% " + wyn.strings.info_dislikes,
 						buttons: [{
 							title: wyn.strings.notification_watch,
 							iconUrl: wyn.strings.notification_watch_icon

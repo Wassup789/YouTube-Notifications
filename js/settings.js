@@ -1,11 +1,28 @@
 var wyns = {};
 	wyns.apiKey = chrome.extension.getBackgroundPage().wyn.apiKey,
+	wyns.channelsToAdd = 0,
+	wyns.channelsToAdd2 = -1,
 	wyns.strings = {
 		"connect_failed": chrome.extension.getBackgroundPage().wyn.strings.connect_failed,
 		"updating": getString("updating"),
 		"saved": getString("saved"),
 		"user_remove_channel": getString("userRemoveChannel"),
-		"add_channels_failed": getString("addChannelsFailed")
+		"add_channels_failed": getString("addChannelsFailed"),
+		"info_published": getCommonString("published"),
+		"info_subscribers": getCommonString("subscribers"),
+		"info_views": getCommonString("views"),
+		"info_likes": getCommonString("likes"),
+		"info_dislikes": getCommonString("dislikes"),
+		"info_ago": getCommonString("ago"),
+		"info_on": getCommonString("on"),
+		"date_day": getCommonString("dateDay"),
+		"date_days": getCommonString("dateDays"),
+		"date_hour": getCommonString("dateHour"),
+		"date_hours": getCommonString("dateHours"),
+		"date_minute": getCommonString("dateMinute"),
+		"date_minutes": getCommonString("dateMinutes"),
+		"date_second": getCommonString("dateSecond"),
+		"date_seconds": getCommonString("dateSeconds"),
 	};
 $(function(){
 	setLocales();
@@ -16,13 +33,24 @@ $(function(){
 	chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 		switch (request.type) {
 			case "refreshPage":
-				sendResponse(refreshPage());
+				refreshPage();
 				break;
-			case "refreshStart":
-				sendResponse(addLoading());
-				break;
-			case "refreshEnd":
-				sendResponse(remLoading());
+			case "addChannelFailed":
+				if(wyns.channelsToAdd2 == -1)
+					wyns.channelsToAdd2 += 2;
+				else
+					wyns.channelsToAdd2++;
+				
+				if(wyns.channelsToAdd == wyns.channelsToAdd2){
+					$("#loading").stop().hide();
+					$("#add_channels-dialog").stop().show().css("opacity", 1);
+					$("#add_channels-container").attr("data-toggle", "false");
+					createSnackbar(wyns.strings.add_channels_failed);
+					
+					$("#add_channels-dialog .mdl-card__supporting-text").children().not(":first").remove();
+					$("#add_channels-dialog .mdl-card__supporting-text .mdl-textfield input").val("");
+					wyns.channelsToAdd2 = -1;
+				}
 				break;
 			case "createSnackbar":
 				createSnackbar(request.message);
@@ -66,6 +94,16 @@ function getString(name) {
 }
 
 /**
+ *  Gets the string from the locales
+ *  
+ *  @param {string} name A valid localized string which doesn't include 'common'
+ *  @returns {string} The localized string
+ */
+function getCommonString(name) {
+	return chrome.i18n.getMessage("common_" + name);
+}
+
+/**
  *  Gets information of all YouTube channels and displays it in the options menu
  */
 function getVideoList() {
@@ -74,9 +112,9 @@ function getVideoList() {
 		var date = new Date(parseInt(channels[i].latestVideo.timestamp)*1000);
 		date = timeSince(date);
 		if(date.indexOf("/") != -1)
-			date = "Published on " + date;
+			date = wyns.strings.info_published + " " + wyns.strings.info_on + " " + date;
 		else
-			date = "Published " + date + " ago";
+			date = wyns.strings.info_published + " " + date + " " + wyns.strings.info_ago;
 		
 		var elem = $("#masterChannelRow").clone().appendTo("#channels");
 		elem.removeAttr("id");
@@ -85,7 +123,7 @@ function getVideoList() {
 		elem.find(".channelColumn:nth-child(1) .channel_img").attr("src", channels[i].thumbnail);
 		elem.find(".channelColumn:nth-child(1) .channel_a").attr("href", "https://www.youtube.com/channel/" + channels[i].id);
 		elem.find(".channelColumn:nth-child(2) .channel_author").text(channels[i].name);
-		elem.find(".channelColumn:nth-child(2) .channel_author_info").text(addCommas(channels[i].subscriberCount) + " subscribers \u2022 " + addCommas(channels[i].viewCount) + " views");
+		elem.find(".channelColumn:nth-child(2) .channel_author_info").text(addCommas(channels[i].subscriberCount) + " " + wyns.strings.info_subscribers + " \u2022 " + addCommas(channels[i].viewCount) + " " + wyns.strings.info_views);
 		elem.find(".channelColumn:nth-child(2) .channel_a").attr("href", "https://www.youtube.com/channel/" + channels[i].id);
 		elem.find(".channelColumn:nth-child(2) .channel_a").attr("title",  channels[i].name);
 		elem.find(".channelColumn:nth-child(3) .channel_video_img").attr("src", channels[i].latestVideo.thumbnail);
@@ -134,12 +172,16 @@ function registerListeners(){
 		});
 		if(num < 1){
 			$("#loading").stop().hide();
-			$("#add_channels-dialog").stop().show();
+			$("#add_channels-dialog").stop().show().css("opacity", 1);
 			$("#add_channels-container").attr("data-toggle", "false");
 			createSnackbar(wyns.strings.add_channels_failed);
-		}
+					
+			$("#add_channels-dialog .mdl-card__supporting-text").children().not(":first").remove();
+			$("#add_channels-dialog .mdl-card__supporting-text .mdl-textfield input").val("");
+		}else
+			wyns.channelsToAdd = num;
 	});
-	$(".add_channel_input").on("keyup", function(e){
+	$("body").on("keyup", ".add_channel_input", function(e){
 		if(e.keyCode == 13)
 			$("#add_channels-add-button").click();
 	});
@@ -155,6 +197,7 @@ function registerListeners(){
 			$(".channelRow:not(#masterChannelRow)").each(function(i){
 				$(this).attr("data-id", i);
 			});
+			createSnackbar(wyns.strings.user_remove_channel + "\"" + name + "\"");
 			console.log(wyns.strings.user_remove_channel + name);
 		}
 	});
@@ -494,9 +537,9 @@ function setChannelVideos(data){
 		var date = new Date(parseInt(data[i].timestamp)*1000);
 		date = timeSince(date);
 		if(date.indexOf("/") != -1)
-			date = "Published on " + date;
+			date = wyns.strings.info_published + " on " + date;
 		else
-			date = "Published " + date + " ago";
+			date = wyns.strings.info_published + " " + date + " " + wyns.strings.info_ago;
 		
 		if(data[i].views == "301")
 			data[i].views = "301+";
@@ -515,7 +558,7 @@ function setChannelVideos(data){
 		elem.find("a .videoListColumn:nth-child(1) .videoList_img").attr("src", data[i].thumbnail);
 		elem.find("a .videoListColumn:nth-child(2) .videoList_title").text(data[i].title);
 		elem.find("a .videoListColumn:nth-child(2) .videoList_sub").text(date);
-		elem.find("a .videoListColumn:nth-child(3) .videoList_title").text(addCommas(data[i].views) + " views | " + likesa + "% likes | " + dislikesa + "% dislikes");
+		elem.find("a .videoListColumn:nth-child(3) .videoList_title").text(addCommas(data[i].views) + " " + wyns.strings.info_views + " | " + likesa + "% " + wyns.strings.info_likes + " | " + dislikesa + "% " + wyns.strings.info_dislikes);
 		elem.find("a .videoListColumn:nth-child(3) .videoList_sub").text(data[i].duration);
 	}
 }
@@ -544,14 +587,14 @@ function timeSince(date){
 	
 	interval = Math.floor(seconds / 86400);
 	if (interval > 1) 
-		return interval + " days";
+		return interval + " " + wyns.strings.date_days;
 	
 	interval = Math.floor(seconds / 3600);
 	if (interval > 1){
 		if(interval > 23)
-			return "1 day";
+			return "1 " + wyns.strings.date_day;
 		else
-			return interval + " hours";
+			return interval + " " + wyns.strings.date_hours;
 	}
 	
 	interval = Math.floor(seconds / 60);
@@ -559,17 +602,17 @@ function timeSince(date){
 		if(interval > 59)
 			return "1 hour";
 		else
-			return interval + " minutes";
+			return interval + " " + wyns.strings.date_minutes;
 	}
 	
 	interval = Math.floor(seconds);
 	if (interval > 1){
 		if(interval > 59)
-			return "1 minute";
+			return "1 " + wyns.strings.date_minute;
 		else
-			return interval + " seconds";
+			return interval + " " + wyns.strings.date_seconds;
 	}else
-		return interval + " second";
+		return interval + " " + wyns.strings.date_second;
 }
 
 /**

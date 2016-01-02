@@ -99,6 +99,66 @@
 		"description": "",
 		"message": "Could not add any channels entered"
 	},
+	"common_published": {
+		"description": "",
+		"message": "Published"
+	},
+	"common_subscribers": {
+		"description": "",
+		"message": "subscribers"
+	},
+	"common_views": {
+		"description": "",
+		"message": "views"
+	},
+	"common_likes": {
+		"description": "",
+		"message": "likes"
+	},
+	"common_dislikes": {
+		"description": "",
+		"message": "dislikes"
+	},
+	"common_ago": {
+		"description": "Ex: Published 12 hours ago",
+		"message": "ago"
+	},
+	"common_on": {
+		"description": "Ex: Published on January 1st",
+		"message": "on"
+	},
+	"common_dateDay": {
+		"description": "",
+		"message": "day"
+	},
+	"common_dateDays": {
+		"description": "",
+		"message": "days"
+	},
+	"common_dateHour": {
+		"description": "",
+		"message": "hour"
+	},
+	"common_dateHours": {
+		"description": "",
+		"message": "hours"
+	},
+	"common_dateMinute": {
+		"description": "",
+		"message": "minute"
+	},
+	"common_dateMinutes": {
+		"description": "",
+		"message": "minutes"
+	},
+	"common_dateSecond": {
+		"description": "",
+		"message": "second"
+	},
+	"common_dateSeconds": {
+		"description": "",
+		"message": "seconds"
+	},
 	"background_notificationWatch": {
 		"description": "",
 		"message": "Watch Video"
@@ -154,5 +214,13 @@
 	"background_addChannelFailed": {
 		"description": "",
 		"message": "Could not add channel: "
+	},
+	"background_removeChannel": {
+		"description": "",
+		"message": "Removing channel: "
+	},
+	"background_removedChannel": {
+		"description": "",
+		"message": "Removed channel: "
 	}
 }
