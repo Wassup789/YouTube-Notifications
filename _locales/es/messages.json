@@ -5,31 +5,31 @@
 	},
 	"appDesc": {
 		"description": "App description.",
-		"message": "Get notifications when selected YouTube users upload a new video."
+		"message": "Recibe notificaciones cuando los usuarios de YouTube subir un nuevo video."
 	},
 	"settings_newVersion": {
 		"description": "The button displayed when there is a new version",
-		"message": "New Version!"
+		"message": "¡Nueva versión!"
 	},
 	"settings_headerTabs1": {
 		"description": "The first tab text: Newest Uploads",
-		"message": "Latest Uploads"
+		"message": "Últimas cargas"
 	},
 	"settings_headerTabs2": {
 		"description": "The second tab text: Edit Settings",
-		"message": "Edit Settings"
+		"message": "Editar ajustes"
 	},
 	"settings_editSettings_useNotifications": {
 		"description": "The label for the enable notifications checkbox",
-		"message": "Use Notifications"
+		"message": "Use Notificaciones"
 	},
 	"settings_editSettings_notificationVolume": {
 		"description": "The label for the notification volume slider",
-		"message": "Notification Volume"
+		"message": "Volumen de Notificación"
 	},
 	"settings_editSettings_notificationTest": {
 		"description": "The label for the notification test button",
-		"message": "Test"
+		"message": "Prueba"
 	},
 	"settings_editSettings_tts": {
 		"description": "The label for the enable text-to-speech checkbox",
@@ -37,167 +37,167 @@
 	},
 	"settings_editSettings_ttsVoice": {
 		"description": "The label for the text-to-speech selector",
-		"message": "Text-To-Speech Voice"
+		"message": "Text-To-Speech Voz"
 	},
 	"settings_editSettings_addButtons": {
 		"description": "The label for the enable add buttons checkbox",
-		"message": "Enable Add buttons on YouTube"
+		"message": "Agrega botones en YouTube"
 	},
 	"settings_editSettings_manualRefresh": {
 		"description": "The label for the manual refresh button",
-		"message": "Manual Refresh"
+		"message": "Actualizar Manual"
 	},
 	"settings_vertSettings_help": {
 		"description": "The label for the help button",
-		"message": "Help"
+		"message": "Ayuda"
 	},
 	"settings_vertSettings_channelAlignment": {
 		"description": "The label for the edit channel layout button",
-		"message": "Edit Channel Layout"
+		"message": "Editar dise\\00f1o"
 	},
 	"settings_vertSettings_channelAlignment2": {
 		"description": "The label for the edit channel layout finish button",
-		"message": "Save Changes"
+		"message": "Guardar cambios"
 	},
 	"settings_addChannel_title": {
 		"description": "The label for the title of the add channel popup",
-		"message": "Add Channels"
+		"message": "Añadir canales"
 	},
 	"settings_addChannel_placeholder": {
 		"description": "The placeholder label for the add channel textbox",
-		"message": "Channel name, ID or URL"
+		"message": "Nombre de canal, ID o URL"
 	},
 	"settings_addChannel_add": {
 		"description": "The label for the add channel's add button",
-		"message": "Add"
+		"message": "Añadir"
 	},
 	"settings_addChannel_addMore": {
 		"description": "The label for the add channel's add more button",
-		"message": "Add More"
+		"message": "Añadir más"
 	},
 	"settings_changelog_title": {
 		"description": "The label for the title of the changelog popup",
-		"message": "Changelog"
+		"message": "Historial de cambios"
 	},
 	"settings_changelog_close": {
 		"description": "The label for the changelog's close button",
-		"message": "Close"
+		"message": "Cerca"
 	},
 	"settingsJs_updating": {
 		"description": "",
-		"message": "Updating..."
+		"message": "Actualización..."
 	},
 	"settingsJs_saved": {
 		"description": "",
-		"message": "Saved"
+		"message": "Salvado"
 	},
 	"settingsJs_userRemoveChannel": {
 		"description": "",
-		"message": "Removed YouTube Channel: "
+		"message": "Eliminada canal de YouTube: "
 	},
 	"settingsJs_addChannelsFailed": {
 		"description": "",
-		"message": "Could not add any channels entered"
+		"message": "No se pudo agregar cualquier canal"
 	},
 	"common_published": {
 		"description": "First letter is capitalized",
-		"message": "Published"
+		"message": "Publicado hace"
 	},
 	"common_subscribers": {
 		"description": "",
-		"message": "subscribers"
+		"message": "suscriptores"
 	},
 	"common_views": {
 		"description": "",
-		"message": "views"
+		"message": "visualizaciones"
 	},
 	"common_likes": {
 		"description": "",
-		"message": "likes"
+		"message": "gustos"
 	},
 	"common_dislikes": {
 		"description": "",
-		"message": "dislikes"
+		"message": "disgusto"
 	},
 	"common_ago": {
 		"description": "Ex: Published 12 hours ago",
-		"message": "ago"
+		"message": ""
 	},
 	"common_publishedOn": {
 		"description": "Ex: Published on January 1st",
-		"message": "Published on"
+		"message": "Publicado en"
 	},
 	"common_by": {
 		"description": "Ex: Video created by",
-		"message": "by"
+		"message": "por"
 	},
 	"common_version": {
 		"description": "First letter is capitalized",
-		"message": "Version"
+		"message": "Versión"
 	},
 	"common_dateDay": {
 		"description": "",
-		"message": "day"
+		"message": "día"
 	},
 	"common_dateDays": {
 		"description": "",
-		"message": "days"
+		"message": "días"
 	},
 	"common_dateHour": {
 		"description": "",
-		"message": "hour"
+		"message": "hora"
 	},
 	"common_dateHours": {
 		"description": "",
-		"message": "hours"
+		"message": "horas"
 	},
 	"common_dateMinute": {
 		"description": "",
-		"message": "minute"
+		"message": "minuto"
 	},
 	"common_dateMinutes": {
 		"description": "",
-		"message": "minutes"
+		"message": "minutos"
 	},
 	"common_dateSecond": {
 		"description": "",
-		"message": "second"
+		"message": "segundo"
 	},
 	"common_dateSeconds": {
 		"description": "",
-		"message": "seconds"
+		"message": "segundos"
 	},
 	"background_notificationWatch": {
 		"description": "",
-		"message": "Watch Video"
+		"message": "Ver video"
 	},
 	"background_notificationClose": {
 		"description": "",
-		"message": "Dismiss"
+		"message": "Cerca"
 	},
 	"background_notificationLogCheck": {
 		"description": "",
-		"message": "Checking YouTube User: "
+		"message": "Comprobación de YouTube del usuario: "
 	},
 	"background_notificationLogNew": {
 		"description": "",
-		"message": "Found new YouTube video for: "
+		"message": "Encontrado nuevo vídeo de YouTube para: "
 	},
 	"background_snackbarNoNewVideos": {
 		"description": "",
-		"message": "No new videos found"
+		"message": "No hay nuevos se han encontrado vídeos"
 	},
 	"background_connectSuccess": {
 		"description": "",
-		"message": "Connected to YouTube's Servers"
+		"message": "Conectados a los YouTube servidores"
 	},
 	"background_connectFailed": {
 		"description": "",
-		"message": "Could not connect to YouTube's Servers"
+		"message": "No se pudo conectar a los servidores de YouTube"
 	},
 	"background_updateChannelsInit": {
 		"description": "",
-		"message": "Updating YouTube channels"
+		"message": "Actualización de YouTube de canales"
 	},
 	"background_updateChannelsComplete": {
 		"description": "",
@@ -205,30 +205,30 @@
 	},
 	"background_updateChannelsFailed": {
 		"description": "",
-		"message": "Could not update YouTube channels"
+		"message": "No se pudo actualizar canales de YouTube"
 	},
 	"background_updateChannelsFailedChannelPrefix": {
 		"description": "",
-		"message": "Youtube channel: "
+		"message": "Canal de YouTube: "
 	},
 	"background_updateChannelsFailedChannelSuffix": {
 		"description": "",
-		"message": " could not be verified"
+		"message": " ,no pudo ser verificada"
 	},
 	"background_addChannelInit": {
 		"description": "",
-		"message": "Adding channel: "
+		"message": "Adición de canal: "
 	},
 	"background_addChannelFailed": {
 		"description": "",
-		"message": "Could not add channel: "
+		"message": "No se pudo agregar el canal: "
 	},
 	"background_removeChannel": {
 		"description": "",
-		"message": "Removing channel: "
+		"message": "Canal de extracción: "
 	},
 	"background_removedChannel": {
 		"description": "",
-		"message": "Removed channel: "
+		"message": "Canal eliminada: "
 	}
 }

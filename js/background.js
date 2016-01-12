@@ -34,6 +34,7 @@ var wyn = {};
 		"info_views": getCommonString("views"),
 		"info_likes": getCommonString("likes"),
 		"info_dislikes": getCommonString("dislikes"),
+		"info_by": getCommonString("by"),
 	},
 	wyn.apiKey = "AIzaSyA8W5tYDVst9tnMpnV56OSjMvHSD70T7oU";// CHANGE THIS API KEY TO YOUR OWN
 
@@ -433,14 +434,15 @@ function checkYoutube(num, refresh, batch) {
 			//var videoId = data.items[0].snippet.resourceId.videoId,
 			var videoId = data.items[0].id.videoId,
 				url = "https://www.googleapis.com/youtube/v3/videos?part=statistics,contentDetails&maxResults=1&id=" + videoId + "&key=" + wyn.apiKey,
-				prevVideoId = channels[num].latestVideo.id;
+				prevVideoId = channels[num].latestVideo.id,
+				prevTimestamp = channels[num].latestVideo.timestamp;
 			channels[num].latestVideo.id = videoId;
 			channels[num].latestVideo.title = data.items[0].snippet.title;
 			channels[num].latestVideo.description = data.items[0].snippet.description.substring(0,100).replace(/(\r\n|\n|\r)/gm," ");
 			channels[num].latestVideo.timestamp = Date.parse(data.items[0].snippet.publishedAt)/1000;
 			channels[num].latestVideo.thumbnail = data.items[0].snippet.thumbnails.high.url.replace("https:/", "http://");
 			
-			if(prevVideoId == channels[num].latestVideo.id){
+			if(prevTimestamp >= channels[num].latestVideo.timestamp){
 				var channels2 = JSON.parse(localStorage.getItem("channels"));
 				channels2[num] = channels[num];
 				localStorage.setItem("channels", JSON.stringify(channels2));
@@ -504,7 +506,7 @@ function checkYoutube(num, refresh, batch) {
 					var options = {
 						type: "image",
 						priority: 0,
-						title: info.latestVideo.title + " by " + info.name,
+						title: info.latestVideo.title + " " + wyn.strings.info_by + " " + info.name,
 						message: info.latestVideo.description,
 						imageUrl: info.latestVideo.thumbnail,
 						iconUrl: wyn.strings.notification_main_icon,
@@ -694,8 +696,8 @@ function onNotificationClick(ntID){
 		createTab("https://www.youtube.com/watch?v=" + channels[ntID.split("-")[4]].latestVideo.id);
 		console.log("User clicked on notification; NTID: " + ntID);
 		console.log("Sending user to https://www.youtube.com/watch?v=" + channels[ntID.split("-")[4]].latestVideo.id);
-		chrome.notifications.clear(ntID);
 	}
+	chrome.notifications.clear(ntID);
 }
 
 /**
@@ -713,8 +715,8 @@ function onNotificationButtonClick(ntID, btnID){
 		}else if(btnID == 1){
 			console.log("User clicked on \"" + wyn.strings.notification_close + "\" button; NTID: " + ntID);
 		}
-		chrome.notifications.clear(ntID);
 	}
+	chrome.notifications.clear(ntID);
 }
 
 /**
@@ -753,11 +755,11 @@ wyn.testNotify = function(){
 	var options = {
 		type: "image",
 		priority: 0,
-		title: "Video by Youtube Creator",
+		title: "Video " + wyn.strings.info_by + " YouTube Creator",
 		message: "Insert Description Here",
 		imageUrl: "img/notification_placeholder.png",
 		iconUrl: wyn.strings.notification_main_icon,
-		contextMessage: "12:34 | 5,678 views | 90% likes | 10% dislikes",
+		contextMessage: "12:34 | 5,678 " + wyn.strings.info_views + " | 90% " + wyn.strings.info_likes + " | 10% " + wyn.strings.info_dislikes,
 		buttons: [{
 			title: wyn.strings.notification_watch,
 			iconUrl: wyn.strings.notification_watch_icon
@@ -808,11 +810,11 @@ wyn.forceNotification = function(id) {
 	var options = {
 		type: "image",
 		priority: 0,
-		title: info.latestVideo.title + " by " + info.name,
+		title: info.latestVideo.title + " " + wyn.strings.info_by + " " + info.name,
 		message: info.latestVideo.description,
 		imageUrl: info.latestVideo.thumbnail,
 		iconUrl: wyn.strings.notification_main_icon,
-		contextMessage: info.latestVideo.duration + " | "+ addCommas(info.latestVideo.views) + " views | " + likesa + "% likes | " + dislikesa + "% dislikes",
+		contextMessage: info.latestVideo.duration + " | "+ addCommas(info.latestVideo.views) + " " + wyn.strings.info_views + " | " + likesa + "% " + wyn.strings.info_likes + " | " + dislikesa + "% " + wyn.strings.info_dislikes,
 		buttons: [{
 			title: wyn.strings.notification_watch,
 			iconUrl: wyn.strings.notification_watch_icon

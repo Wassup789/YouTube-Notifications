@@ -14,7 +14,9 @@ var wyns = {};
 		"info_likes": getCommonString("likes"),
 		"info_dislikes": getCommonString("dislikes"),
 		"info_ago": getCommonString("ago"),
-		"info_on": getCommonString("on"),
+		"info_publishedOn": getCommonString("publishedOn"),
+		"info_by": getCommonString("by"),
+		"info_version": getCommonString("version"),
 		"date_day": getCommonString("dateDay"),
 		"date_days": getCommonString("dateDays"),
 		"date_hour": getCommonString("dateHour"),
@@ -60,7 +62,7 @@ $(function(){
 	
 	var manifest = chrome.runtime.getManifest(),
 		homeUrl = "https://github.com/Wassup789";
-	$("#version").html("Version " + manifest.version + "<br/>by <a href=\"" + homeUrl + "\">Wassup789</a>");
+	$("#version").html(wyns.strings.info_version + " " + manifest.version + "<br/>" + wyns.strings.info_by + " <a href=\"" + homeUrl + "\">Wassup789</a>");
 	
 	var settings = JSON.parse(localStorage.getItem("settings"));
 	if(settings.updated.enabled)
@@ -112,7 +114,7 @@ function getVideoList() {
 		var date = new Date(parseInt(channels[i].latestVideo.timestamp)*1000);
 		date = timeSince(date);
 		if(date.indexOf("/") != -1)
-			date = wyns.strings.info_published + " " + wyns.strings.info_on + " " + date;
+			date = wyns.strings.info_publishedOn + " " + date;
 		else
 			date = wyns.strings.info_published + " " + date + " " + wyns.strings.info_ago;
 		
@@ -537,7 +539,7 @@ function setChannelVideos(data){
 		var date = new Date(parseInt(data[i].timestamp)*1000);
 		date = timeSince(date);
 		if(date.indexOf("/") != -1)
-			date = wyns.strings.info_published + " on " + date;
+			date = wyns.strings.info_publishedOn + " " + date;
 		else
 			date = wyns.strings.info_published + " " + date + " " + wyns.strings.info_ago;
 		
