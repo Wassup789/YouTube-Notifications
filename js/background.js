@@ -442,11 +442,15 @@ function checkYoutube(num, refresh, batch) {
 			channels[num].latestVideo.timestamp = Date.parse(data.items[0].snippet.publishedAt)/1000;
 			channels[num].latestVideo.thumbnail = data.items[0].snippet.thumbnails.high.url.replace("https:/", "http://");
 			
+			console.log("=====START OF " + channels[num].name + "=====");
+			console.log("Previous Stamp: " + prevTimestamp);
+			console.log("New Stamp: " + channels[num].latestVideo.timestamp);
+			console.log("Previous ID: " + prevVideoId);
+			console.log("New ID: " + channels[num].latestVideo.id);
+			console.log("Change? " + (prevTimestamp >= channels[num].latestVideo.timestamp ? "true": "false"));
+			console.log("=====END OF " + channels[num].name + "=====");
+			
 			if(prevTimestamp >= channels[num].latestVideo.timestamp){
-				var channels2 = JSON.parse(localStorage.getItem("channels"));
-				channels2[num] = channels[num];
-				localStorage.setItem("channels", JSON.stringify(channels2));
-				
 				wyn.activeCheckings[num] = false;
 				if(!batch){
 					for(var i = 0; i < wyn.activeCheckings.length; i++)
@@ -637,8 +641,11 @@ function checkYoutubeBatch(refresh){
 	console.log("Initializing YouTube channel check");
 	var channels = JSON.parse(localStorage.getItem("channels"));
 	for(var i = 0; i < channels.length; i++){
-		wyn.activeBatchCheckings[i] = true;
-		checkYoutube(i, true, true);
+		setTimeout(function(i){// Debug timeout; Bug: Notifications not saving, repeated notifications; Assumption: Other channel updates overwriting
+			wyn.activeBatchCheckings[i] = true;
+			console.log(i);
+			checkYoutube(i, true, true);
+		}, 50*i, i);
 	}
 }
 
