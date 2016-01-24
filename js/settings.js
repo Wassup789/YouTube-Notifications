@@ -277,6 +277,9 @@ function registerListeners(){
 		if(!$("#loading").is(":visible"))
 			$("#changelog-container").attr("data-toggle", false);
 	});
+	$("#popup_videoList_more").on("click", function(){
+		getChannelVideos(publishedBeforeDate);
+	});
 }
 
 /**
@@ -406,17 +409,19 @@ function launchSpeechSynthesis(){
  *  
  *  @param {number} num The channel's index
  */
-var popupId = -1, savedData = {};
+var popupId = -1, savedData = {}, publishedBeforeDate;
 function displayPopupCard(num){
 	if(typeof $("#channels .channelRow:not(#masterChannelRow)")[num] !== "undefined"){
 		if($("#popup_card").attr("data-toggle") != "true"){
 			popupId = num;
 			$("main").addClass("unscrollable");//Disable scrolling so popup_card doesn't look weird
 			$("#popup_card").children(":not(#popup_videoList):not(#popup_loading)").remove();//Remove items from popup before
-			$("#popup_card").children("#popup_videoList").children(":not(#masterVideoListRow)").remove();//Remove video list items from popup before
+			$("#popup_card").children("#popup_videoList").children(":not(#masterVideoListRow):not(#popup_videoList_more_container)").remove();//Remove video list items from popup before
 			$("#popup_card").prepend($("#channels .channelRow:not(#masterChannelRow)")[num].outerHTML);//Prepend clicked contents
 			$("#popup_card").css("top", $("#channels .channelRow:not(#masterChannelRow)")[num].getBoundingClientRect().top - parseInt($($(".main_card")[0]).css("marginTop")) - parseInt($("main").css("marginTop"))+1);//Align popup with clicked card
 			$("#popup_card").css("height", 70);
+			
+			$("#popup_videoList_more_container").hide();//Hides the display of the button whilst loading the popup
 			
 			$("#popup_card").fadeIn("fast");
 			$("#popup_card").animate({//Card appears to be lifted
@@ -469,14 +474,16 @@ function displayPopupCard(num){
 
 /**
  *  Recieves information about the popup channel
+ *  
+ *  @param {string} [publishedBefore=null] The videos to get before a certain date (RFC 3339 format required)
  */
-function getChannelVideos(){
+function getChannelVideos(publishedBefore){
 	var id = parseInt($("#popup_card .channelRow").attr("data-id")),
 		channelId = JSON.parse(localStorage.getItem("channels"))[id].id,
 		playlistId = JSON.parse(localStorage.getItem("channels"))[id].playlistId,
 		//url = "https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&maxResults=10&playlistId=" + playlistId + "&key=" + wyns.apiKey;
-		url = "https://www.googleapis.com/youtube/v3/search?part=snippet&order=date&safeSearch=none&type=video&maxResults=10&channelId=" + channelId + "&key=" + wyns.apiKey;
-	if(typeof savedData[channelId] !== "undefined")
+		url = "https://www.googleapis.com/youtube/v3/search?part=snippet&order=date&safeSearch=none&type=video&maxResults=10" + (typeof publishedBefore === "undefined" ? "" : "&publishedBefore=" + publishedBefore) + "&channelId=" + channelId + "&key=" + wyns.apiKey;
+	if(typeof savedData[channelId] !== "undefined" && typeof publishedBefore === "undefined")
 		setChannelVideos(savedData[channelId]);
 	else{
 		$("#popup_loading").delay(500).fadeIn("fast");//Fade in loading (will look strange without fades)
@@ -485,6 +492,9 @@ function getChannelVideos(){
 			dataType: "json",
 			url: url,
 			success: function(data) {
+				if(data.items.length < 10)
+					$("#popup_videoList_more_container").slideUp();
+				
 				var videos = "";
 				for(var i = 0; i < data.items.length; i++)
 					//videos += data.items[i].contentDetails.videoId + ",";
@@ -511,7 +521,10 @@ function getChannelVideos(){
 							output.push(outputAdd);
 						}
 						setChannelVideos(output);
-						savedData[channelId] = output;
+						if(typeof publishedBefore === "undefined")
+							savedData[channelId] = output;
+						else
+							savedData[channelId] = savedData[channelId].concat(output);
 						$("#popup_loading").fadeOut("slow");
 						$("#popup_videoList").fadeIn("slow");
 					}
@@ -552,7 +565,7 @@ function setChannelVideos(data){
 		if((likesa + dislikesa) > 100)
 			dislikesa--;
 		
-		var elem = $("#masterVideoListRow").clone().appendTo("#popup_videoList");
+		var elem = $("#masterVideoListRow").clone().insertBefore("#popup_videoList_more_container");
 		elem.removeAttr("id");
 		elem.css("display", "");
 		elem.children("a").attr("href", "https://www.youtube.com/watch?v=" + data[i].id);
@@ -562,7 +575,12 @@ function setChannelVideos(data){
 		elem.find("a .videoListColumn:nth-child(2) .videoList_sub").text(date);
 		elem.find("a .videoListColumn:nth-child(3) .videoList_title").text(addCommas(data[i].views) + " " + wyns.strings.info_views + " | " + likesa + "% " + wyns.strings.info_likes + " | " + dislikesa + "% " + wyns.strings.info_dislikes);
 		elem.find("a .videoListColumn:nth-child(3) .videoList_sub").text(data[i].duration);
+		
+		if(i == data.length - 1)
+			publishedBeforeDate = new Date(parseInt(data[i].timestamp)*1000 - 1000).toISOString();
 	}
+	
+	$("#popup_videoList_more_container").show();//Display the "load more" container incase the button is removed due to the lack of videos
 }
 
 /**

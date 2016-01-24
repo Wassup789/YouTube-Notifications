@@ -4,6 +4,7 @@ Changelog
  * Changed channel updater to use the search API instead of the channel's playlist API (This allows more up-to-date updating)
  * Fixed bug where channels would stop updating
  * Added locales/languages
+ * Added a 'load more' button in the information popup
 
 ## v1.1.0.4 (12-26-2015)
  * Decreased update interval from every 10 minutes to every 5 minutes

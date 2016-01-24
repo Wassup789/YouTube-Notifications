@@ -19,6 +19,10 @@
 		"description": "The second tab text: Edit Settings",
 		"message": "Editar ajustes"
 	},
+	"settings_videoList_more": {
+		"description": "The button to load more information in the popup: Load More",
+		"message": "Carga más"
+	},
 	"settings_editSettings_useNotifications": {
 		"description": "The label for the enable notifications checkbox",
 		"message": "Use Notificaciones"
