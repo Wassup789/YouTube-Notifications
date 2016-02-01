@@ -47,6 +47,10 @@
 		"description": "The label for the enable add buttons checkbox",
 		"message": "Enable Add buttons on YouTube"
 	},
+	"settings_editSettings_addButtonsSubs": {
+		"description": "The label for the view subscriptions button",
+		"message": "View Subscriptions"
+	},
 	"settings_editSettings_manualRefresh": {
 		"description": "The label for the manual refresh button",
 		"message": "Manual Refresh"

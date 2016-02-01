@@ -280,6 +280,9 @@ function registerListeners(){
 	$("#popup_videoList_more").on("click", function(){
 		getChannelVideos(publishedBeforeDate);
 	});
+	$("#settings_addbtn_viewsubs").on("click", function(){
+		chrome.tabs.create({url: "https://www.youtube.com/subscription_manager"});
+	});
 }
 
 /**
@@ -486,7 +489,7 @@ function getChannelVideos(publishedBefore){
 	if(typeof savedData[channelId] !== "undefined" && typeof publishedBefore === "undefined")
 		setChannelVideos(savedData[channelId]);
 	else{
-		$("#popup_loading").delay(500).fadeIn("fast");//Fade in loading (will look strange without fades)
+		$("#popup_loading").fadeIn("fast");//Fade in loading (will look strange without fades)
 		$.ajax({
 			type: "GET",
 			dataType: "json",
