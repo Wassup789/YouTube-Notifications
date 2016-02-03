@@ -7,7 +7,6 @@ var wyn = {};
 	wyn.hasBatchChanged = false,
 	wyn.activeBatchCheckings = [],
 	wyn.activeCheckings = [],
-	wyn.activeInfoCheckings = [],
 	wyn.strings = {
 		"notification_watch": getString("notificationWatch"),
 		"notification_watch_icon": "img/ic_play.png",
@@ -404,7 +403,7 @@ function removeYoutube(type, name, refresh, fromContentScript){
 function checkYoutube(num, refresh, batch) {
 	refresh = refresh || false;
 	batch = batch || false;
-	wyn.activeCheckings[num] = true;
+	//wyn.activeCheckings[num] = true;
 	
 	var channels = JSON.parse(localStorage.getItem("channels"));
 	//var url = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=5&playlistId=" + channels[num].playlistId + "&key=" + wyn.apiKey;
@@ -414,12 +413,12 @@ function checkYoutube(num, refresh, batch) {
 	$.ajax({
 		url: url,
 		error: function(data) {
-			wyn.activeCheckings[num] = false;
+			/*wyn.activeCheckings[num] = false;
 			wyn.activeBatchCheckings[num] = false;
 			for(var i = 0; i < wyn.activeBatchCheckings.length; i++)
 				if(wyn.activeBatchCheckings[i])
 					return;
-			wyn.batchChecking = false;
+			wyn.batchChecking = false;*/
 		},
 		success: function(data) {
 			//COMMENTED OUT = OLD
@@ -442,16 +441,16 @@ function checkYoutube(num, refresh, batch) {
 			channels[num].latestVideo.timestamp = Date.parse(data.items[0].snippet.publishedAt)/1000;
 			channels[num].latestVideo.thumbnail = data.items[0].snippet.thumbnails.high.url.replace("https:/", "http://");
 			
-			console.log("=====START OF " + channels[num].name + "=====");
+			/*console.log("=====START OF " + channels[num].name + "=====");
 			console.log("Previous Stamp: " + prevTimestamp);
 			console.log("New Stamp: " + channels[num].latestVideo.timestamp);
 			console.log("Previous ID: " + prevVideoId);
 			console.log("New ID: " + channels[num].latestVideo.id);
 			console.log("Change? " + (prevTimestamp >= channels[num].latestVideo.timestamp ? "true": "false"));
-			console.log("=====END OF " + channels[num].name + "=====");
+			console.log("=====END OF " + channels[num].name + "=====");*/
 			
 			if(prevTimestamp >= channels[num].latestVideo.timestamp){
-				wyn.activeCheckings[num] = false;
+				/*wyn.activeCheckings[num] = false;
 				if(!batch){
 					for(var i = 0; i < wyn.activeCheckings.length; i++)
 						if(wyn.activeCheckings[i])
@@ -471,18 +470,18 @@ function checkYoutube(num, refresh, batch) {
 							chrome.extension.sendMessage({type: "refreshPage"});
 					}else
 						chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.snackbar_nonewvideos});
-				}
+				}*/
 				return;
 			}
 			$.ajax({
 				url: url,
 				error: function(data) {
-					wyn.activeCheckings[num] = false;
+					/*wyn.activeCheckings[num] = false;
 					wyn.activeBatchCheckings[num] = false;
 					for(var i = 0; i < wyn.activeBatchCheckings.length; i++)
 						if(wyn.activeBatchCheckings[i])
 							return;
-					wyn.batchChecking = false;
+					wyn.batchChecking = false;*/
 				},
 				success: function(data) {
 					channels[num].latestVideo.views = data.items[0].statistics.viewCount;
@@ -527,7 +526,7 @@ function checkYoutube(num, refresh, batch) {
 					console.log(wyn.strings.log_color_prefix + wyn.strings.notification_log_new + info.name, wyn.strings.log_color_green);
 					notify(ntID, options);
 					
-					wyn.activeCheckings[num] = false;
+					/*wyn.activeCheckings[num] = false;
 					if(!batch){
 						for(var i = 0; i < wyn.activeCheckings.length; i++)
 							if(wyn.activeCheckings[i])
@@ -545,7 +544,7 @@ function checkYoutube(num, refresh, batch) {
 								chrome.extension.sendMessage({type: "refreshPage"});
 						}else
 							chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.snackbar_nonewvideos});
-					}
+					}*/
 				}
 			});
 		}
@@ -635,19 +634,19 @@ function checkYoutubeBatch(refresh){
 	
 	if(wyn.batchChecking)
 		return;
-	wyn.batchChecking = true;
+	//wyn.batchChecking = true;
 	wyn.hasBatchChanged = false;
 	
 	console.log("Initializing YouTube channel check");
 	var channels = JSON.parse(localStorage.getItem("channels"));
 	for(var i = 0; i < channels.length; i++){
 		setTimeout(function(i){// Debug timeout; Bug: Notifications not saving, repeated notifications; Assumption: Other channel updates overwriting
-			wyn.activeBatchCheckings[i] = true;
-			console.log(i);
+			//wyn.activeBatchCheckings[i] = true;
 			checkYoutube(i, true, true);
-		}, 50*i, i);
+		}, 100*i, i);
 	}
 }
+wyn.forceRefresh = function(){checkYoutubeBatch(true)};
 
 /**
  *  Add commas to numbers > 3
@@ -833,4 +832,12 @@ wyn.forceNotification = function(id) {
 	var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + id;
 	console.log(wyn.strings.log_color_prefix + wyn.strings.notification_log_new + info.name, wyn.strings.log_color_green);
 	notify(ntID, options);
+}
+
+wyn.resetVideos = function(){
+	var channels = JSON.parse(localStorage.getItem("channels"));
+	for(var i = 0; i < channels.length; i++){
+		channels[i].latestVideo.timestamp = 0;
+	}
+	localStorage.setItem("channels", JSON.stringify(channels));
 }
