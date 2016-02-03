@@ -172,7 +172,7 @@ main {
 #add_channels-dialog > .mdl-card__title, #changelog-dialog > .mdl-card__title {
 	color: #fff;
 	height: 176px;
-	background: url('http://www.getmdl.io/assets/demos/welcome_card.jpg') center / cover;
+	background: url("../img/welcome_card.jpg") center / cover;
 }
 #add_channels-dialog > .mdl-card__menu, #changelog-dialog > .mdl-card__menu {color: #fff;}
 #add_channels-more-button, #changelog-close-button {

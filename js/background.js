@@ -403,7 +403,7 @@ function removeYoutube(type, name, refresh, fromContentScript){
 function checkYoutube(num, refresh, batch) {
 	refresh = refresh || false;
 	batch = batch || false;
-	//wyn.activeCheckings[num] = true;
+	wyn.activeCheckings[num] = true;
 	
 	var channels = JSON.parse(localStorage.getItem("channels"));
 	//var url = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=5&playlistId=" + channels[num].playlistId + "&key=" + wyn.apiKey;
@@ -413,8 +413,8 @@ function checkYoutube(num, refresh, batch) {
 	$.ajax({
 		url: url,
 		error: function(data) {
-			/*wyn.activeCheckings[num] = false;
-			wyn.activeBatchCheckings[num] = false;
+			wyn.activeCheckings[num] = false;
+			/*wyn.activeBatchCheckings[num] = false;
 			for(var i = 0; i < wyn.activeBatchCheckings.length; i++)
 				if(wyn.activeBatchCheckings[i])
 					return;
@@ -450,7 +450,7 @@ function checkYoutube(num, refresh, batch) {
 			console.log("=====END OF " + channels[num].name + "=====");*/
 			
 			if(prevTimestamp >= channels[num].latestVideo.timestamp){
-				/*wyn.activeCheckings[num] = false;
+				wyn.activeCheckings[num] = false;
 				if(!batch){
 					for(var i = 0; i < wyn.activeCheckings.length; i++)
 						if(wyn.activeCheckings[i])
@@ -459,7 +459,7 @@ function checkYoutube(num, refresh, batch) {
 						chrome.extension.sendMessage({type: "refreshPage"});
 					else
 						chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.snackbar_nonewvideos});
-				}else{
+				}/*else{
 					wyn.activeBatchCheckings[num] = false;
 					for(var i = 0; i < wyn.activeBatchCheckings.length; i++)
 						if(wyn.activeBatchCheckings[i])
@@ -476,8 +476,8 @@ function checkYoutube(num, refresh, batch) {
 			$.ajax({
 				url: url,
 				error: function(data) {
-					/*wyn.activeCheckings[num] = false;
-					wyn.activeBatchCheckings[num] = false;
+					wyn.activeCheckings[num] = false;
+					/*wyn.activeBatchCheckings[num] = false;
 					for(var i = 0; i < wyn.activeBatchCheckings.length; i++)
 						if(wyn.activeBatchCheckings[i])
 							return;
@@ -526,14 +526,14 @@ function checkYoutube(num, refresh, batch) {
 					console.log(wyn.strings.log_color_prefix + wyn.strings.notification_log_new + info.name, wyn.strings.log_color_green);
 					notify(ntID, options);
 					
-					/*wyn.activeCheckings[num] = false;
+					wyn.activeCheckings[num] = false;
 					if(!batch){
 						for(var i = 0; i < wyn.activeCheckings.length; i++)
 							if(wyn.activeCheckings[i])
 								return;
 						if(refresh)
 							chrome.extension.sendMessage({type: "refreshPage"});
-					}else{
+					}/*else{
 						wyn.activeBatchCheckings[num] = false;
 						for(var i = 0; i < wyn.activeBatchCheckings.length; i++)
 							if(wyn.activeBatchCheckings[i])
