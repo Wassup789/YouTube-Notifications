@@ -5,7 +5,7 @@
   },
   "name": "__MSG_appName__",
   "description": "__MSG_appDesc__",
-  "version": "1.1.0.5",
+  "version": "1.1.0.6",
   "permissions": [ "notifications", "unlimitedStorage", "*://*.youtube.com/*", "*://*.ytimg.com/*"],
   "browser_action": {
     "default_icon": "img/48.png",

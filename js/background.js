@@ -35,7 +35,16 @@ var wyn = {};
 		"info_dislikes": getCommonString("dislikes"),
 		"info_by": getCommonString("by"),
 	},
-	wyn.apiKey = "AIzaSyA8W5tYDVst9tnMpnV56OSjMvHSD70T7oU";// CHANGE THIS API KEY TO YOUR OWN
+	wyn.apiKeys = [
+		"AIzaSyA8W5tYDVst9tnMpnV56OSjMvHSD70T7oU",
+		"AIzaSyBAtN5QYKFQnk9Rgjjn6FrTl48UsS2mm34",
+		"AIzaSyDA1LJAP5d9tUQAn_liibpCsdtgAgqOB20",
+		"AIzaSyBi6pSx4oym_xjxmswbIT-4eQyUW9t27G8",
+		"AIzaSyBo6e-Ea_nIaf6dEd4NMJo4x5IXYd64nUw",
+	];
+	var apiKeyIndex = Math.floor(Math.random() * wyn.apiKeys.length);
+	console.log("Using API Key #" + (apiKeyIndex + 1));
+	wyn.apiKey = wyn.apiKeys[apiKeyIndex];
 
 if(localStorage.getItem("channels") == null)
 	localStorage.setItem("channels", JSON.stringify([]));
@@ -80,12 +89,12 @@ chrome.notifications.onClosed.addListener(onNotificationClosed);
 
 chrome.runtime.onInstalled.addListener(function(details){
     if(details.reason == "install"){
-        console.log("First launch!");
+        console.log("First Launch!");
 		wyn.firstLaunch();
     }else if(details.reason == "update"){
         var thisVersion = chrome.runtime.getManifest().version;
 		if(details.previousVersion != thisVersion){
-			console.log("Updated from " + details.previousVersion + " to " + thisVersion + "!");
+			console.log("Updated from " + details.previousVersion + " to " + thisVersion);
 			
 			var settings = JSON.parse(localStorage.getItem("settings"));
 			settings.updated.enabled = true;
@@ -205,11 +214,11 @@ function updateChannelsInfo(refresh){
  *  Pings the YouTube Data API servers
  */
 function checkYoutubeStatus(){
-	var url = "https://www.googleapis.com/youtube/v3/";
+	var url = "https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&key=" + wyn.apiKey;
 	$.ajax({
 		url: url,
 		statusCode: {
-			404: function() {
+			400: function() {
 				wyn.isConnected = true;
 				chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.connect_success});
 				console.log(wyn.strings.log_color_prefix + wyn.strings.connect_success, wyn.strings.log_color_green);
@@ -218,10 +227,25 @@ function checkYoutubeStatus(){
 				setInterval(function(){
 					checkYoutubeBatch(true);
 				}, 1000*60*5);
+			},
+			403: function() {
+				var apiKeyIndex = Math.floor(Math.random() * wyn.apiKeys.length);
+				console.log("Using API Key #" + (apiKeyIndex + 1) + " due to limited quota");
+				wyn.apiKey = wyn.apiKeys[apiKeyIndex];
+				checkYoutubeStatus();
+				return;
 			}
 		},
 		error: function(XMLHttpRequest, textStatus, error) {
-			if(XMLHttpRequest.statusText != "OK" && XMLHttpRequest.status != 404){
+			if(XMLHttpRequest.status == 403){
+				var apiKeyIndex = Math.floor(Math.random() * wyn.apiKeys.length);
+				console.log("Using API Key #" + (apiKeyIndex + 1) + " due to limited quota");
+				wyn.apiKey = wyn.apiKeys[apiKeyIndex];
+				checkYoutubeStatus();
+				return;
+			}
+			
+			if(XMLHttpRequest.statusText != "OK" && XMLHttpRequest.status != 400){
 				wyn.isConnected = false;
 				chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.connect_failed});
 				console.log(wyn.strings.log_color_prefix + wyn.strings.connect_failed, wyn.strings.log_color_green);
@@ -406,8 +430,8 @@ function checkYoutube(num, refresh, batch) {
 	wyn.activeCheckings[num] = true;
 	
 	var channels = JSON.parse(localStorage.getItem("channels"));
-	//var url = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=5&playlistId=" + channels[num].playlistId + "&key=" + wyn.apiKey;
-	var url = "https://www.googleapis.com/youtube/v3/search?part=snippet&order=date&safeSearch=none&type=video&maxResults=1&channelId=" + channels[num].id + "&key=" + wyn.apiKey;
+	var url = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=5&playlistId=" + channels[num].playlistId + "&key=" + wyn.apiKey;
+	//var url = "https://www.googleapis.com/youtube/v3/search?part=snippet&order=date&safeSearch=none&type=video&maxResults=1&channelId=" + channels[num].id + "&key=" + wyn.apiKey;//Old
 	
 	console.log(wyn.strings.notification_log_check + channels[num].name);
 	$.ajax({
@@ -421,17 +445,22 @@ function checkYoutube(num, refresh, batch) {
 			wyn.batchChecking = false;*/
 		},
 		success: function(data) {
-			//COMMENTED OUT = OLD
-			/*data.items.sort(function(a, b){
+			/*
+			Why the use of playlistItems instead of search
+			playlistItems = 3 quota
+			search = 100 quota (33x more quota per request)
+			*/
+			
+			data.items.sort(function(a, b){//START OF OLD
 				var a = new Date(a.snippet.publishedAt),
 					b = new Date(b.snippet.publishedAt);
 				if(a > b) return -1;
 				if(a < b) return 1;
 				return 0;
-			});*/
+			});//END OF OLD
 			
-			//var videoId = data.items[0].snippet.resourceId.videoId,
-			var videoId = data.items[0].id.videoId,
+			var videoId = data.items[0].snippet.resourceId.videoId,//OLD
+			//var videoId = data.items[0].id.videoId,
 				url = "https://www.googleapis.com/youtube/v3/videos?part=statistics,contentDetails&maxResults=1&id=" + videoId + "&key=" + wyn.apiKey,
 				prevVideoId = channels[num].latestVideo.id,
 				prevTimestamp = channels[num].latestVideo.timestamp;
