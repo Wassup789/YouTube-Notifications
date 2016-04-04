@@ -25,7 +25,8 @@ var wyns = {};
 		"date_minutes": getCommonString("dateMinutes"),
 		"date_second": getCommonString("dateSecond"),
 		"date_seconds": getCommonString("dateSeconds"),
-	};
+	},
+	wyns.previousLastListItem;
 $(function(){
 	setLocales();
 	
@@ -71,6 +72,7 @@ $(function(){
 	getVideoList();
 	registerListeners();
 	setTimeout(function(){
+		initSearch();// This includes the listener for search
 		configureSettings();
 	}, 500);
 });
@@ -273,9 +275,15 @@ function registerListeners(){
 	$("#changelog-close-button").on("click", function(){
 		$("#changelog-container").attr("data-toggle", false);
 	});
-	$("#changelog-container .overlay").on("click", function(){
+	$("#changelog-container .overlay, #import_channels-container .overlay").on("click", function(){
 		if(!$("#loading").is(":visible"))
-			$("#changelog-container").attr("data-toggle", false);
+			$(this).parent().attr("data-toggle", false);
+	});
+	$("#import_channels-close-button").on("click", function(){
+		$("#import_channels-container").attr("data-toggle", false);
+	});
+	$("#import_channels-import-button").on("click", function(){
+		$("#import_channels-container").attr("data-toggle", false);
 	});
 	$("#popup_videoList_more").on("click", function(){
 		getChannelVideos(publishedBeforeDate);
@@ -584,6 +592,62 @@ function setChannelVideos(data){
 	}
 	
 	$("#popup_videoList_more_container").show();//Display the "load more" container incase the button is removed due to the lack of videos
+}
+
+
+/**
+ *  Focuses on the header search textbox so users can start typing upon load
+ *  This includes the listener
+ */
+function initSearch() {
+	$("#search-input").focus();
+	
+	$("#search-input").on("keyup", function(e) {
+		if(e.which == 13)
+			updateSearchExact();
+		else
+			updateSearch();
+	});
+	$("#search-btn").on("click", updateSearchExact);
+}
+
+/**
+ *  Updates the search items
+ */
+function updateSearch() {
+	if(popupId != -1)
+		return;
+	
+	var val = $("#search-input").val().toLowerCase().trim();
+	var max = 0;
+	
+	$(".channelRow:not(#masterChannelRow)").show().filter(function() {
+		var text = $(this).find(".channel_author").text().toLowerCase();
+		if(text.indexOf(val) < 0) max++;
+		return !~text.indexOf(val);
+	}).hide();
+	
+	if(typeof wyns.previousLastListItem !== "undefined")
+		wyns.previousLastListItem.css("border-bottom", "");
+	wyns.previousLastListItem = $(".channelRow:not(#masterChannelRow):visible:last");
+	wyns.previousLastListItem.css("border-bottom", "none");
+}
+
+/**
+ *  If only one item exists, open the popup when the user presses enter or the search button
+ */
+function updateSearchExact() {
+	if(popupId != -1)
+		return;
+	
+	var val = $("#search-input").val().toLowerCase().trim();
+	var list = $(".channelRow:not(#masterChannelRow):visible");
+	if(list.length == 1)
+		displayPopupCard(parseInt(list.attr("data-id")));
+	list.filter(function(){
+		if($(this).find(".channel_author").text().toLowerCase().trim() == val)
+			displayPopupCard(parseInt($(this).attr("data-id")));
+	});
 }
 
 /**

@@ -3,6 +3,7 @@ Changelog
 ## v1.1.0.6 (XX-XX-2015)
  * Reverted to old video uploads method due to quota exhaustion
  * Added four additional API keys
+ * Implemented search functionality
 
 ## v1.1.0.5 (02-02-2015)
  * Changed channel updater to use the search API instead of the channel's playlist API (This allows more up-to-date updating)

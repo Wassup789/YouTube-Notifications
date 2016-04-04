@@ -91,6 +91,18 @@
 		"description": "The label for the changelog's close button",
 		"message": "Close"
 	},
+	"settings_importChannels_title": {
+		"description": "The label for the title of the import channels popup",
+		"message": "Import Channels"
+	},
+	"settings_importChannels_cancel": {
+		"description": "The label for the change channel's cancel button",
+		"message": "Cancel"
+	},
+	"settings_importChannels_import": {
+		"description": "The label for the change channel's import button",
+		"message": "Import"
+	},
 	"settingsJs_updating": {
 		"description": "",
 		"message": "Updating..."

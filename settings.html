@@ -18,6 +18,13 @@
 				<span class="mdl-layout-title">Notifications</span>
 				<button id="version-updated" class="mdl-button mdl-js-button mdl-js-ripple-effect" i18n="settings_newVersion"></button>
 				<div id="button-menu-container">
+					<div id="search-textbox" class="mdl-textfield mdl-js-textfield">
+						<input class="mdl-textfield__input" type="text" id="search-input">
+						<label class="mdl-textfield__label" for="search-input">Search...</label>
+					</div>
+					<button id="search-btn" class="mdl-button mdl-js-button mdl-button--icon">
+						<i class="material-icons">search</i>
+					</button>
 					<button id="demo-menu-lower-right" class="mdl-button mdl-js-button mdl-button--icon">
 						<i class="material-icons">more_vert</i>
 					</button>
@@ -181,11 +188,32 @@
 			<div class="mdl-card__supporting-text">
 				<div class="card-header">vX.X.X.X</div>
 				<ul>
-					<li>Reverted to old video uploads method due to quota exhaustion</li>
+					<li>Implemented search functionality</li>
 				</ul>
 			</div>
 			<div class="mdl-card__actions mdl-card--border">
 				<a id="changelog-close-button" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" i18n="settings_changelog_close"></a>
+			</div>
+		</div>
+	</div>
+	<div id="import_channels-container" data-toggle="false">
+		<div class="overlay"></div>
+		<div id="import_channels-dialog" class="mdl-card mdl-shadow--2dp">
+			<div class="mdl-card__title">
+				<h2 class="mdl-card__title-text" i18n="settings_importChannels_title"></h2>
+			</div>
+			<div class="mdl-card__supporting-text">
+				<span id="import_channels-contentTitle">Importing <span></span> total channels</span>
+				<span id="import_channels-overRecommended">This exceeds the recommended amount.</span>
+				<span id="import_channels-statisticsTitle">Every 5 minutes, this will result in...</span>
+				<ul>
+					<li><span></span> requests</li>
+					<li><span></span>MB of downloads</li>
+				</ul>
+			</div>
+			<div class="mdl-card__actions mdl-card--border">
+				<a id="import_channels-close-button" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" i18n="settings_importChannels_cancel"></a>
+				<a id="import_channels-import-button" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" i18n="settings_importChannels_import"></a>
 			</div>
 		</div>
 	</div>
