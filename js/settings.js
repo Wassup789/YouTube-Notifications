@@ -8,6 +8,8 @@ var wyns = {};
 		"saved": getString("saved"),
 		"user_remove_channel": getString("userRemoveChannel"),
 		"add_channels_failed": getString("addChannelsFailed"),
+		"please_wait": getString("pleaseWait"),
+		"please_wait_while": getString("pleaseWaitWhile"),
 		"info_published": getCommonString("published"),
 		"info_subscribers": getCommonString("subscribers"),
 		"info_views": getCommonString("views"),
@@ -58,6 +60,9 @@ $(function(){
 			case "createSnackbar":
 				createSnackbar(request.message);
 				break;
+			case "showImportPopup":
+				showImportPopup(request.message);
+				break;
 		}
 	});
 	
@@ -75,7 +80,28 @@ $(function(){
 		initSearch();// This includes the listener for search
 		configureSettings();
 	}, 500);
+	
+	checkToken();
 });
+
+var timesFailed = 0;
+function checkToken(){
+	chrome.identity.getAuthToken({ interactive: false },
+		function(current_token) {
+			var error = chrome.runtime.lastError;
+			if(error && error.message == "OAuth2 not granted or revoked." && timesFailed < 4){
+				setTimeout(function(){checkToken()}, 200);
+				timesFailed++;
+				return;
+			}
+			
+			if (error) {
+				$("#settings_import_changeUser").hide();
+			}else
+				$("#settings_import").addClass("double");
+		}
+	);
+}
 
 /**
  *  Sets the appropriate text to all html tags with the attribute 'i18n'
@@ -284,12 +310,20 @@ function registerListeners(){
 	});
 	$("#import_channels-import-button").on("click", function(){
 		$("#import_channels-container").attr("data-toggle", false);
+		createSnackbar(wyns.strings.please_wait_while);
+		chrome.extension.sendMessage({type: "importApproved"});
 	});
 	$("#popup_videoList_more").on("click", function(){
 		getChannelVideos(publishedBeforeDate);
 	});
 	$("#settings_addbtn_viewsubs").on("click", function(){
 		chrome.tabs.create({url: "https://www.youtube.com/subscription_manager"});
+	});
+	$("#settings_import").on("click", function(){
+		requestToken();
+	});
+	$("#settings_import_changeUser").on("click", function(){
+		changeOAuthToken();
 	});
 }
 
@@ -648,6 +682,61 @@ function updateSearchExact() {
 		if($(this).find(".channel_author").text().toLowerCase().trim() == val)
 			displayPopupCard(parseInt($(this).attr("data-id")));
 	});
+}
+
+/**
+ *  Requests the user to approve the OAuth request
+ */
+function requestToken() {
+	createSnackbar(wyns.strings.please_wait);
+	chrome.identity.getAuthToken({ interactive: true }, function(token){
+		if(chrome.runtime.lastError){
+			console.log(chrome.runtime.lastError);
+			createSnackbar("Error: " + chrome.runtime.lastError.message);
+		}else{
+			chrome.extension.sendMessage({type: "receivedToken"});
+		}
+	});
+}
+
+/**
+ *  Displays the correct information for the import channels popup
+ */
+function showImportPopup(channelsNum) {
+	if(channelsNum > 50)
+		$("#import_channels-overRecommended").show();
+	else
+		$("#import_channels-overRecommended").hide();
+	
+	$("#import_channels-contentTitle").children("span").text(channelsNum)
+	$("#import_channels-requests").text("~" + channelsNum);
+	
+	var downloadSize = 0.00275 * channelsNum;
+	if(downloadSize < 0.1)
+		$("#import_channels-downloadsSuffix").text("KB of downloads");
+	else
+		$("#import_channels-downloadsSuffix").text("MB of downloads");
+	$("#import_channels-downloads").text("~" + (0.00275 * channelsNum));
+	$("#import_channels-container").attr("data-toggle", true);
+}
+
+
+/**
+ *  Change user token
+ */
+function changeOAuthToken() {
+	createSnackbar(wyns.strings.please_wait);
+	chrome.identity.getAuthToken({ interactive: false },
+		function(current_token) {
+			if (!chrome.runtime.lastError) {
+				chrome.identity.removeCachedAuthToken({ token: current_token });
+				var xhr = new XMLHttpRequest();
+				xhr.open("GET", "https://accounts.google.com/o/oauth2/revoke?token=" + current_token);
+				xhr.send();
+			}
+			requestToken();
+		}
+	);
 }
 
 /**

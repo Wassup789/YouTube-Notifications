@@ -1,12 +1,18 @@
 {
   "manifest_version": 2,
   "background": {
-      "scripts": [ "js/jquery.min.js", "js/background.js" ]
+      "page": "background.html"
   },
   "name": "__MSG_appName__",
   "description": "__MSG_appDesc__",
   "version": "1.1.0.6",
-  "permissions": [ "notifications", "unlimitedStorage", "*://*.youtube.com/*", "*://*.ytimg.com/*"],
+  "permissions": [
+    "notifications",
+	"unlimitedStorage",
+	"identity",
+	"*://*.youtube.com/*",
+	"*://*.ytimg.com/*"
+  ],
   "browser_action": {
     "default_icon": "img/48.png",
     "default_popup": "settings.html"
@@ -24,5 +30,11 @@
       "16": "img/16.png",
       "48": "img/48.png",
       "128": "img/128.png"
-   }
+   },
+   "oauth2": {
+    "client_id": "836337899077-9v0uf16i106obm32lkhc85ubr90h685u.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/youtube.readonly"
+    ]
+  }
 }

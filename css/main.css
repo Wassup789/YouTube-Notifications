@@ -185,7 +185,7 @@ main {
 	width: 100%;
 	height: 151px;
 }
-#import_channels-contentTitle, #import_channels-overRecommended {
+#import_channels-contentTitle, #import_channels-overRecommended, #import_channels-duplicateInfo{
 	display: block;
 }
 #import_channels-contentTitle {
@@ -195,6 +195,10 @@ main {
 	text-align: center;
 }
 #import_channels-overRecommended:after {
+	content: "\a\a";
+	white-space: pre;
+}
+#import_channels-duplicateInfo:after {
 	content: "\a\a";
 	white-space: pre;
 }
@@ -209,10 +213,10 @@ main {
 #settings_notifications .settingColumn:nth-child(3) {padding-left: 40px;}
 #tts_notifications .settingColumn:nth-child(3) {padding-left: 23px;}
 #settings_notifications .settingColumn:nth-child(4) .mdl-slider__container {width: 135px;}
-#settings_refresh {
-	width: 100%;
-	background: #8BC34A;
-}
+#settings_refresh, #settings_import {width: 100%;}
+#settings_import.double, #settings_import_changeUser {width: 49.5%}
+#settings_refresh, #settings_import {background: #8BC34A;}
+#settings_import_changeUser {background: #6C6AEC;}
 #settings_notifications_toggle {
 	width: initial;
 	margin-left: 5px;
@@ -384,7 +388,7 @@ main {
 }
 #search-input {
 	padding: 0 30px 0 0;
-	padding-right: 30px;
+	border-bottom: 1px solid #FFFFFF;
 }
 #search-textbox .mdl-textfield__label {
 	top: initial;

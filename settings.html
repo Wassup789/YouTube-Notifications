@@ -152,6 +152,10 @@
 								</div>
 							</div>
 							<div class="settingRow">
+								<button id="settings_import" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect" i18n="settings_editSettings_importSubscription"></button>
+								<button id="settings_import_changeUser" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect" i18n="settings_editSettings_importSubscriptionChange"></button>
+							</div>
+							<div class="settingRow">
 								<button id="settings_refresh" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect" i18n="settings_editSettings_manualRefresh"></button>
 							</div>
 						</div>
@@ -205,10 +209,11 @@
 			<div class="mdl-card__supporting-text">
 				<span id="import_channels-contentTitle">Importing <span></span> total channels</span>
 				<span id="import_channels-overRecommended">This exceeds the recommended amount.</span>
+				<span id="import_channels-duplicateInfo">Duplicate channels will not be added.</span>
 				<span id="import_channels-statisticsTitle">Every 5 minutes, this will result in...</span>
 				<ul>
-					<li><span></span> requests</li>
-					<li><span></span>MB of downloads</li>
+					<li><span id="import_channels-requests"></span> requests</li>
+					<li><span id="import_channels-downloads"></span><span id="import_channels-downloadsSuffix">MB of downloads</span></li>
 				</ul>
 			</div>
 			<div class="mdl-card__actions mdl-card--border">

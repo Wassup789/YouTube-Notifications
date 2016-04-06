@@ -55,6 +55,14 @@
 		"description": "The label for the manual refresh button",
 		"message": "Actualiser Manuel"
 	},
+	"settings_editSettings_importSubscription": {
+		"description": "The label for the manual refresh button",
+		"message": "Abonnements d'Importation"
+	},
+	"settings_editSettings_importSubscriptionChange": {
+		"description": "The label for the change user subscription button",
+		"message": "Changer d'utilisateur"
+	},
 	"settings_vertSettings_help": {
 		"description": "The label for the help button",
 		"message": "Aider"
@@ -106,6 +114,14 @@
 	"settingsJs_addChannelsFailed": {
 		"description": "",
 		"message": "Impossible d'ajouter tous les canaux entrés"
+	},
+	"settingsJs_pleaseWait": {
+		"description": "",
+		"message": "S'il vous plaît, attendez..."
+	},
+	"settingsJs_pleaseWaitWhile": {
+		"description": "",
+		"message": "S'il vous plaît patienter, cela peut prendre un certain temps..."
 	},
 	"common_published": {
 		"description": "First letter is capitalized",
@@ -238,5 +254,9 @@
 	"background_removedChannel": {
 		"description": "",
 		"message": "Canal enlevé: "
+	},
+	"background_importFailed": {
+		"description": "",
+		"message": "Échec de l'importation, s'il vous plaît essayer à nouveau..."
 	}
 }

@@ -64,7 +64,7 @@ a:hover {
 #content-1, #content-2 {
 	vertical-align: top;
 }
-#get-started, #content-1-next, #content-2-next, #content-3-next, #content-4-close {
+#get-started, #content-1-next, #content-2-next, #content-3-next, #content-4-next {
 	cursor: pointer;
 	font-size: 60px;
 	font-weight: 300;
@@ -73,14 +73,14 @@ a:hover {
 #add-channel-1 {
 	height: 750px;
 }
-#content-1-rightnext, #content-2-rightnext, #content-3-rightnext {
+#content-1-rightnext, #content-2-rightnext, #content-3-rightnext, #content-4-rightnext {
 	cursor: pointer;
 	margin-left: 20px;
 	font-size: 64px;
 	color: #AAA;
 	-webkit-transition: color 0.3s;
 }
-#content-1-rightnext:hover, #content-2-rightnext:hover, #content-3-rightnext:hover {
+#content-1-rightnext:hover, #content-2-rightnext:hover, #content-3-rightnext:hover, #content-4-rightnext:hover {
     color: #353535;
 }
 .content-header {

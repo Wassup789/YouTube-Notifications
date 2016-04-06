@@ -27,6 +27,7 @@ var wyn = {};
 		"add_channel_failed": getString("addChannelFailed"),
 		"removed_channel": getString("removedChannel"),
 		"remove_channel": getString("removeChannel"),
+		"import_failed": getString("importFailed"),
 		"log_color_prefix": "%c",
 		"log_color_green": "font-weight: bold; color: #2E7D32",
 		"log_color_red": "font-weight: bold; color: #B71C1C",
@@ -144,6 +145,12 @@ $(function(){
 				var settings = JSON.parse(localStorage.getItem("settings"));
 				sendResponse(settings.addBtn.enabled);
 				break;
+			case "receivedToken":
+				sendResponse(onReceivedToken());
+				break;
+			case "importApproved":
+				sendResponse(onImportApproved());
+				break;
 		}
 	});
 	
@@ -214,7 +221,7 @@ function updateChannelsInfo(refresh){
  *  Pings the YouTube Data API servers
  */
 function checkYoutubeStatus(){
-	var url = "https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&key=" + wyn.apiKey;
+	var url = "https://www.googleapis.com/youtube/v3/videos";
 	$.ajax({
 		url: url,
 		statusCode: {
@@ -290,12 +297,17 @@ function checkYoutubeStatus(){
  *  @param {string} name The name of the channel to get information from.
  *  @param {boolean} [refresh=false] Refreshes the options page after execution
  *  @param {boolean} [fromContentScript=false] If the request was from a content script
+ *  @param {boolean} [isChannelId=false] If 'name' is a channel ID
  */
-function setYoutube(name, refresh, fromContentScript){
+function setYoutube(name, refresh, fromContentScript, isChannelId){
 	refresh = refresh || false;
 	fromContentScript = fromContentScript || false;
+	isChannelId = isChannelId || false;
 	
-	var url = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&maxResults=1&q=" + name + "&key=" + wyn.apiKey;
+	if(isChannelId)
+		var url = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&maxResults=1&channelId=" + name + "&key=" + wyn.apiKey;
+	else
+		var url = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&maxResults=1&q=" + name + "&key=" + wyn.apiKey;
 	console.log(wyn.strings.add_channel_init + "\"" + name + "\"");
 	$.ajax({
 		url: url,
@@ -458,6 +470,9 @@ function checkYoutube(num, refresh, batch) {
 				if(a < b) return 1;
 				return 0;
 			});//END OF OLD
+			
+			if(data.items.length < 1)
+				return;
 			
 			var videoId = data.items[0].snippet.resourceId.videoId,//OLD
 			//var videoId = data.items[0].id.videoId,
@@ -869,4 +884,110 @@ wyn.resetVideos = function(){
 		channels[i].latestVideo.timestamp = 0;
 	}
 	localStorage.setItem("channels", JSON.stringify(channels));
+}
+
+/**
+ *  Ran when the subscription import has been approved
+ */
+function onReceivedToken() {
+	chrome.identity.getAuthToken({ interactive: false }, function(access_token) {
+		if(chrome.runtime.lastError)
+			return;
+		
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", "https://www.googleapis.com/youtube/v3/subscriptions?part=id&maxresults=0&mine=true");
+		xhr.setRequestHeader("Authorization", "Bearer " + access_token);
+		xhr.onload = function(){
+			var data = JSON.parse(this.response);
+			console.log(data);
+			if(data.error)
+				chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.import_failed + " \"" + data.error.message + "\""});
+			else
+				chrome.extension.sendMessage({type: "showImportPopup", message: data.pageInfo.totalResults});
+		};
+		xhr.send();
+	});
+}
+
+/**
+ *  Run when the import channels dialog was approved by the user
+ */
+function onImportApproved(){
+	chrome.identity.getAuthToken({ interactive: false }, function(access_token) {
+		if(chrome.runtime.lastError)
+			return;
+		
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", "https://www.googleapis.com/youtube/v3/subscriptions?part=snippet&maxResults=50&mine=true");
+		xhr.setRequestHeader("Authorization", "Bearer " + access_token);
+		xhr.onload = function(){
+			var data = JSON.parse(this.response);
+			if(data.error)
+				chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.import_failed + " \"" + data.error.message + "\""});
+			else{
+				for(var i = 0; i < data.items.length; i++){
+					var duplicate = false,
+						channels = JSON.parse(localStorage.getItem("channels"));
+					for(var j = 0; j < channels.length; j++){
+						if(channels[j].id == data.items[i].snippet.resourceId.channelId){
+							duplicate = true;
+							break;
+						}
+					}
+					if(!duplicate)
+						setYoutube(data.items[i].snippet.resourceId.channelId, false, false, true);
+				}
+				
+				if(data.items.length == 50 && data.items.length != data.pageInfo.totalResults)
+					importChannelsContinued(access_token, data.nextPageToken, channels);
+				else
+					importChannelsPost();
+			}
+		};
+		xhr.send();
+	});
+}
+
+/**
+ *  Import channels continued through page token
+ */
+function importChannelsContinued(access_token, nextPageToken, channels) {
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", "https://www.googleapis.com/youtube/v3/subscriptions?part=snippet&maxResults=50&mine=true&pageToken=" + nextPageToken);
+	xhr.setRequestHeader("Authorization", "Bearer " + access_token);
+	xhr.onload = function(){
+		var data = JSON.parse(this.response);
+		if(data.error)
+			chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.import_failed + " \"" + data.error.message + "\""});
+		else{
+			for(var i = 0; i < data.items.length; i++){
+				var duplicate = false,
+					channels = JSON.parse(localStorage.getItem("channels"));
+				for(var j = 0; j < channels.length; j++){
+					if(channels[j].id == data.items[i].snippet.resourceId.channelId){
+						duplicate = true;
+						break;
+					}
+				}
+				if(!duplicate)
+					setYoutube(data.items[i].snippet.resourceId.channelId, false, false, true);
+			}
+			
+			if(data.items.length == 50 && typeof data.nextPageToken !== "undefined")
+				importChannelsContinued(access_token, data.nextPageToken);
+			else
+				importChannelsPost();
+		}
+	};
+	xhr.send();
+}
+
+/**
+ *  Ran after all channels are imported
+ */
+function importChannelsPost(){
+	//Not the best method, but most cleanest
+	setTimeout(function(){
+		chrome.extension.sendMessage({type: "refreshPage"});
+	}, 10*1000);
 }
