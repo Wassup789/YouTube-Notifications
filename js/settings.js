@@ -90,7 +90,7 @@ function checkToken(){
 		function(current_token) {
 			var error = chrome.runtime.lastError;
 			if(error && error.message == "OAuth2 not granted or revoked." && timesFailed < 4){
-				setTimeout(function(){checkToken()}, 200);
+				setTimeout(function(){checkToken()}, 100);
 				timesFailed++;
 				return;
 			}
@@ -137,8 +137,10 @@ function getCommonString(name) {
  *  Gets information of all YouTube channels and displays it in the options menu
  */
 function getVideoList() {
-	var channels = JSON.parse(localStorage.getItem("channels"));
+	var channels = JSON.parse(localStorage.getItem("channels")),
+		showEmpty = true;
 	for(var i = 0; i < channels.length; i++) {
+		showEmpty = false;
 		var date = new Date(parseInt(channels[i].latestVideo.timestamp)*1000);
 		date = timeSince(date);
 		if(date.indexOf("/") != -1)
@@ -164,6 +166,8 @@ function getVideoList() {
 		elem.find(".channelColumn:nth-child(4) .channel_video_title").text(channels[i].latestVideo.title);
 		elem.find(".channelColumn:nth-child(4) .channel_video_time").text(date);
 	}
+	if(showEmpty)
+		$("#emptyChannelsList").show();
 }
 
 /**
@@ -323,6 +327,13 @@ function registerListeners(){
 		requestToken();
 	});
 	$("#settings_import_changeUser").on("click", function(){
+		changeOAuthToken();
+	});
+	$("#emptyChannelsList_subheader").on("click", function(){
+		$("a.mdl-layout__tab").removeClass("is-active");
+		$("a[href='#tab-edit_settings']").addClass("is-active");
+		$(".mdl-layout__tab-panel").removeClass("is-active");
+		$("#tab-edit_settings").addClass("is-active");
 		changeOAuthToken();
 	});
 }
@@ -688,10 +699,10 @@ function updateSearchExact() {
  *  Requests the user to approve the OAuth request
  */
 function requestToken() {
-	createSnackbar(wyns.strings.please_wait);
+	if($(".paper-snackbar").text() != wyns.strings.please_wait)
+		createSnackbar(wyns.strings.please_wait);
 	chrome.identity.getAuthToken({ interactive: true }, function(token){
 		if(chrome.runtime.lastError){
-			console.log(chrome.runtime.lastError);
 			createSnackbar("Error: " + chrome.runtime.lastError.message);
 		}else{
 			chrome.extension.sendMessage({type: "receivedToken"});
@@ -703,6 +714,9 @@ function requestToken() {
  *  Displays the correct information for the import channels popup
  */
 function showImportPopup(channelsNum) {
+	$("#settings_import_changeUser").show();
+	$("#settings_import").addClass("double");
+	
 	if(channelsNum > 50)
 		$("#import_channels-overRecommended").show();
 	else
@@ -716,7 +730,7 @@ function showImportPopup(channelsNum) {
 		$("#import_channels-downloadsSuffix").text("KB of downloads");
 	else
 		$("#import_channels-downloadsSuffix").text("MB of downloads");
-	$("#import_channels-downloads").text("~" + (0.00275 * channelsNum));
+	$("#import_channels-downloads").text("~" + Math.round(0.00275 * channelsNum * 1000) / 1000);
 	$("#import_channels-container").attr("data-toggle", true);
 }
 

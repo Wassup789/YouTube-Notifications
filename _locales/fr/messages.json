@@ -23,6 +23,14 @@
 		"description": "The button to load more information in the popup: Load More",
 		"message": "Charger plus"
 	},
+	"settings_noChannels_header": {
+		"description": "The channels list, content header text if no channels are found",
+		"message": "Aucun Canaux Trouvés"
+	},
+	"settings_noChannels_subheader": {
+		"description": "The channels list, content subheader text if no channels are found",
+		"message": "Importer Abonnements"
+	},
 	"settings_editSettings_useNotifications": {
 		"description": "The label for the enable notifications checkbox",
 		"message": "Utilisez Notifications"

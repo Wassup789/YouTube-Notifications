@@ -19,7 +19,12 @@ body{
 }
 .unscrollable {overflow: hidden;}
 
-a{text-decoration: none;cursor:pointer;}
+a, .link{
+	text-decoration: none;
+	cursor:pointer;
+	color: #448aff;
+	font-weight: 500;
+}
 #version {
     position: relative;
     display: inline-block;
@@ -401,6 +406,32 @@ main {
 }
 #demo-menu-lower-right {
 	margin-top: -8px;
+}
+
+#emptyChannelsList {
+	text-align: center;
+	color: #b3b3b3;
+	height: 380px;
+}
+#emptyChannelsList_content {
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+}
+#emptyChannelsList_header {
+	display: block;
+	font-size: 20px;
+	vertical-align: middle;
+	margin-bottom: 5px;
+}
+#emptyChannelsList_subheader span {
+	cursor: pointer;
+	color: #2c5598;
+}
+
+#emptyChannelsList_subheader {
+	display: block;
+	font-size: 12px;
 }
 
 /* SNACKBAR */
