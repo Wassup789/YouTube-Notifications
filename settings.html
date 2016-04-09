@@ -20,7 +20,7 @@
 				<div id="button-menu-container">
 					<div id="search-textbox" class="mdl-textfield mdl-js-textfield">
 						<input class="mdl-textfield__input" type="text" id="search-input">
-						<label class="mdl-textfield__label" for="search-input">Search...</label>
+						<label class="mdl-textfield__label" for="search-input" i18n="settings_searchPlaceholder"></label>
 					</div>
 					<button id="search-btn" class="mdl-button mdl-js-button mdl-button--icon">
 						<i class="material-icons">search</i>
@@ -199,6 +199,7 @@
 				<div class="card-header">vX.X.X.X</div>
 				<ul>
 					<li>Implemented search functionality</li>
+					<li>Added subscription importing</li>
 				</ul>
 			</div>
 			<div class="mdl-card__actions mdl-card--border">
@@ -213,13 +214,13 @@
 				<h2 class="mdl-card__title-text" i18n="settings_importChannels_title"></h2>
 			</div>
 			<div class="mdl-card__supporting-text">
-				<span id="import_channels-contentTitle">Importing <span></span> total channels</span>
-				<span id="import_channels-overRecommended">This exceeds the recommended amount.</span>
-				<span id="import_channels-duplicateInfo">Duplicate channels will not be added.</span>
-				<span id="import_channels-statisticsTitle">Every 5 minutes, this will result in...</span>
+				<span id="import_channels-contentTitle"><span i18n="settings_importChannels_titlePrefix"></span> <span class="num"></span> <span i18n="settings_importChannels_titleSuffix"></span></span>
+				<span id="import_channels-overRecommended" i18n="settings_importChannels_contentOverRecommended"></span>
+				<span id="import_channels-duplicateInfo" i18n="settings_importChannels_contentDuplicate"></span>
+				<span id="import_channels-statisticsTitle" i18n="settings_importChannels_contentStatisticsTitle"></span>
 				<ul>
-					<li><span id="import_channels-requests"></span> requests</li>
-					<li><span id="import_channels-downloads"></span><span id="import_channels-downloadsSuffix">MB of downloads</span></li>
+					<li><span id="import_channels-requests"></span> <span i18n="settings_importChannels_contentStatisticsRequests"></span></li>
+					<li><span id="import_channels-downloads"></span><span id="import_channels-downloadsSuffix"></span> <span i18n="settings_importChannels_contentStatisticsDownloads"></span></li>
 				</ul>
 			</div>
 			<div class="mdl-card__actions mdl-card--border">

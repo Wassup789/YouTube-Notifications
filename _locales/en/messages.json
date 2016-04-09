@@ -119,6 +119,38 @@
 		"description": "The label for the change channel's import button",
 		"message": "Import"
 	},
+	"settings_importChannels_titlePrefix": {
+		"description": "The prefix for the import channel popup's title",
+		"message": "Importing"
+	},
+	"settings_importChannels_titleSuffix": {
+		"description": "The suffix for the import channel popup's title",
+		"message": "total channels"
+	},
+	"settings_importChannels_contentOverRecommended": {
+		"description": "The label for the import channel popup's content for over recommended amount of channels",
+		"message": "This exceeds the recommended amount."
+	},
+	"settings_importChannels_contentDuplicate": {
+		"description": "The label for the import channel popup's content for duplicate channels",
+		"message": "Duplicate channels will not be added."
+	},
+	"settings_importChannels_contentStatisticsTitle": {
+		"description": "The title label for the import channel popup's content for statistics",
+		"message": "Every 5 minutes, this will result in..."
+	},
+	"settings_importChannels_contentStatisticsRequests": {
+		"description": "The suffix for the import channel popup's content for statistics requests",
+		"message": "requests"
+	},
+	"settings_importChannels_contentStatisticsDownloads": {
+		"description": "The suffix for the import channel popup's content for statistics downloads",
+		"message": "of downloads"
+	},
+	"settings_searchPlaceholder": {
+		"description": "The label for the search input",
+		"message": "Search..."
+	},
 	"settingsJs_updating": {
 		"description": "",
 		"message": "Updating..."

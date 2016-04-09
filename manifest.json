@@ -22,7 +22,7 @@
       "matches": [
         "*://*.youtube.com/*"
 	  ],
-	  "js": [ "js/jquery.min.js", "js/injected.js" ]
+	  "js": [ "js/jquery.min.js", "js/content_script.js" ]
 	}
   ],
   "default_locale": "en",

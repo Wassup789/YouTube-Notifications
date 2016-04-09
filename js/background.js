@@ -125,9 +125,9 @@ $(function(){
 				break;
 			case "setYoutube":
 				if(request.contentScript)
-					sendResponse(setYoutube(request.name, request.refresh, true));
+					setYoutube(request.name, request.refresh, true, true);
 				else
-					sendResponse(setYoutube(request.name, request.refresh));
+					setYoutube(request.name, request.refresh, false, (typeof request.isChannelId !== "undefined" ? request.isChannelId : false));
 				break;
 			case "testNotify":
 				sendResponse(wyn.testNotify());
@@ -297,7 +297,6 @@ function checkYoutubeStatus(){
  *  @param {string} name The name of the channel to get information from.
  *  @param {boolean} [refresh=false] Refreshes the options page after execution
  *  @param {boolean} [fromContentScript=false] If the request was from a content script
- *  @param {boolean} [isChannelId=false] If 'name' is a channel ID
  */
 function setYoutube(name, refresh, fromContentScript, isChannelId){
 	refresh = refresh || false;
@@ -345,6 +344,13 @@ function setYoutube(name, refresh, fromContentScript, isChannelId){
 						var arr = JSON.parse(localStorage.getItem("channels"));
 						arr.push(output);
 						localStorage.setItem("channels", JSON.stringify(arr));
+						if(fromContentScript){
+							chrome.tabs.query({active: true}, function(tabs){
+								tabs.forEach(function(tab){
+									chrome.tabs.sendMessage(tab.id, {type: "contentScript_response", responseType: true, id: data.items[0].id}); 
+								});
+							});
+						}
 						checkYoutube(arr.length-1, refresh);
 					}
 				});
@@ -355,15 +361,6 @@ function setYoutube(name, refresh, fromContentScript, isChannelId){
 			}
 		}
 	});
-	/**
-	 *  FIX THIS: because of async, the content script will recieve a null value if returns inside async request.
-	 *  Possible fixes:
-	 *  	- Synchronous
-	 *  Problem:
-	 *  	- Stops code in background from executing
-	 */
-	if(fromContentScript)
-		return true;
 }
 
 /**
@@ -391,8 +388,6 @@ function removeYoutube(type, name, refresh, fromContentScript){
 			chrome.extension.sendMessage({type: "refreshPage"});
 		else
 			chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.removed_channel + "\"" + channelName + "\""});
-		if(fromContentScript)
-			return true;
 	}else if(type == 1){
 		var channels = JSON.parse(localStorage.getItem("channels"));
 		for(var i = 0; i < channels.length; i++){
@@ -405,8 +400,13 @@ function removeYoutube(type, name, refresh, fromContentScript){
 					chrome.extension.sendMessage({type: "refreshPage"});
 				else
 					chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.removed_channel + "\"" + channelName + "\""});
-				if(fromContentScript)
-					return true;
+				if(fromContentScript){
+					chrome.tabs.query({active: true}, function(tabs){
+						tabs.forEach(function(tab){
+							chrome.tabs.sendMessage(tab.id, {type: "contentScript_response", responseType: false, id: name}); 
+						});
+					});
+				}
 				return;
 			}
 		}

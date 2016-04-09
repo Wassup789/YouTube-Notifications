@@ -99,6 +99,50 @@
 		"description": "The label for the add channel's add more button",
 		"message": "Ajouter Plus"
 	},
+	"settings_importChannels_title": {
+		"description": "The label for the title of the import channels popup",
+		"message": "Importer des Canaux"
+	},
+	"settings_importChannels_cancel": {
+		"description": "The label for the change channel's cancel button",
+		"message": "Annuler"
+	},
+	"settings_importChannels_import": {
+		"description": "The label for the change channel's import button",
+		"message": "Importer"
+	},
+	"settings_importChannels_titlePrefix": {
+		"description": "The prefix for the import channel popup's title",
+		"message": "Importation"
+	},
+	"settings_importChannels_titleSuffix": {
+		"description": "The suffix for the import channel popup's title",
+		"message": "canaux au total"
+	},
+	"settings_importChannels_contentOverRecommended": {
+		"description": "The label for the import channel popup's content for over recommended amount of channels",
+		"message": "Cela dépasse la quantité recommandée."
+	},
+	"settings_importChannels_contentDuplicate": {
+		"description": "The label for the import channel popup's content for duplicate channels",
+		"message": "Canaux en double ne seront pas ajoutés."
+	},
+	"settings_importChannels_contentStatisticsTitle": {
+		"description": "The title label for the import channel popup's content for statistics",
+		"message": "Toutes les 5 minutes, cela se traduit par..."
+	},
+	"settings_importChannels_contentStatisticsRequests": {
+		"description": "The suffix for the import channel popup's content for statistics requests",
+		"message": "demandes"
+	},
+	"settings_importChannels_contentStatisticsDownloads": {
+		"description": "The suffix for the import channel popup's content for statistics downloads",
+		"message": "de téléchargements"
+	},
+	"settings_searchPlaceholder": {
+		"description": "The label for the search input",
+		"message": "Chercher..."
+	},
 	"settings_changelog_title": {
 		"description": "The label for the title of the changelog popup",
 		"message": "Changelog"

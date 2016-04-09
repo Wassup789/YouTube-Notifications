@@ -722,14 +722,14 @@ function showImportPopup(channelsNum) {
 	else
 		$("#import_channels-overRecommended").hide();
 	
-	$("#import_channels-contentTitle").children("span").text(channelsNum)
+	$("#import_channels-contentTitle").children("span.num").text(channelsNum)
 	$("#import_channels-requests").text("~" + channelsNum);
 	
 	var downloadSize = 0.00275 * channelsNum;
 	if(downloadSize < 0.1)
-		$("#import_channels-downloadsSuffix").text("KB of downloads");
+		$("#import_channels-downloadsSuffix").text("KB");
 	else
-		$("#import_channels-downloadsSuffix").text("MB of downloads");
+		$("#import_channels-downloadsSuffix").text("MB");
 	$("#import_channels-downloads").text("~" + Math.round(0.00275 * channelsNum * 1000) / 1000);
 	$("#import_channels-container").attr("data-toggle", true);
 }
