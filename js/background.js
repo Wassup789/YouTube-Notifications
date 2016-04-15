@@ -96,6 +96,7 @@ chrome.runtime.onInstalled.addListener(function(details){
         var thisVersion = chrome.runtime.getManifest().version;
 		if(details.previousVersion != thisVersion){
 			console.log("Updated from " + details.previousVersion + " to " + thisVersion);
+			chrome.browserAction.setBadgeText({text: "new"});
 			
 			var settings = JSON.parse(localStorage.getItem("settings"));
 			settings.updated.enabled = true;

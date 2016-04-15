@@ -71,6 +71,10 @@
 		"description": "The label for the change user subscription button",
 		"message": "Change User"
 	},
+	"settings_vertSettings_viewChangelog": {
+		"description": "The label for the view changelog button",
+		"message": "View Changelog"
+	},
 	"settings_vertSettings_help": {
 		"description": "The label for the help button",
 		"message": "Help"

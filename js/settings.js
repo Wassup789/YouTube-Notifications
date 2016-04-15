@@ -30,6 +30,8 @@ var wyns = {};
 	},
 	wyns.previousLastListItem;
 $(function(){
+	chrome.browserAction.setBadgeText({text: ""});
+	
 	setLocales();
 	
 	if(!chrome.extension.getBackgroundPage().wyn.isConnected)
@@ -71,8 +73,11 @@ $(function(){
 	$("#version").html(wyns.strings.info_version + " " + manifest.version + "<br/>" + wyns.strings.info_by + " <a href=\"" + homeUrl + "\">Wassup789</a>");
 	
 	var settings = JSON.parse(localStorage.getItem("settings"));
-	if(settings.updated.enabled)
-		$("#version-updated").show();
+	if(settings.updated.enabled){
+		$("#changelog-dialog .card-header").text("v" + chrome.runtime.getManifest().version);
+		$("#changelog-container").attr("data-toggle", true);
+	}
+		//$("#version-updated").show();
 	
 	getVideoList();
 	registerListeners();
@@ -292,20 +297,32 @@ function registerListeners(){
 			$(this).attr("data-toggle", "true");
 		}
 	});
+	$("#menu_viewChangelog").on("click", function(){
+		$("#changelog-dialog .card-header").text("v" + chrome.runtime.getManifest().version);
+		$("#changelog-container").attr("data-toggle", true);
+	});
 	$("#menu_help").on("click", function(){
 		chrome.extension.getBackgroundPage().wyn.firstLaunch();
 	});
 	$("#version-updated").on("click", function(){
 		$("#changelog-dialog .card-header").text("v" + chrome.runtime.getManifest().version);
 		$("#changelog-container").attr("data-toggle", true);
-		var settings = JSON.parse(localStorage.getItem("settings"));
-		settings.updated.enabled = false;
-		localStorage.setItem("settings", JSON.stringify(settings));
+		disableUpdateContainer();
 	});
 	$("#changelog-close-button").on("click", function(){
 		$("#changelog-container").attr("data-toggle", false);
+		disableUpdateContainer();
 	});
-	$("#changelog-container .overlay, #import_channels-container .overlay").on("click", function(){
+	$("#changelog-container .overlay").on("click", function(){
+		$(this).parent().attr("data-toggle", false);
+		disableUpdateContainer();
+	});
+	function disableUpdateContainer(){
+		var settings = JSON.parse(localStorage.getItem("settings"));
+		settings.updated.enabled = false;
+		localStorage.setItem("settings", JSON.stringify(settings));
+	}
+	$("#import_channels-container .overlay").on("click", function(){
 		if(!$("#loading").is(":visible"))
 			$(this).parent().attr("data-toggle", false);
 	});

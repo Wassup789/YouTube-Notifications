@@ -14,6 +14,7 @@ This code is licensed under the MIT License.
 ### Permissions
  - notifications
  - unlimitedStorage
+ - identity (For subscription importing)
  - \*://\*.youtube.com/\*
  - \*://\*.ytimg.com/\*
 
@@ -21,7 +22,7 @@ This code is licensed under the MIT License.
 
 [![ChromeWebStore](https://raw.githubusercontent.com/Wassup789/Youtube-Notifications/master/img/chromewebstore.png)](https://chrome.google.com/webstore/detail/youtube-notifications/cilgbgkmanbbecbjihnbpeaoodmgchom)
 
-**Latest Version:** ***v1.1.0.5***
+**Latest Version:** ***v1.1.1.0***
 
 **Release Archive:**
 
@@ -32,19 +33,19 @@ This code is licensed under the MIT License.
 ## Screenshots
 **Options - Channel List**
 
-[![Screenshot 1](http://i.imgur.com/DMqcsFg.png)](http://i.imgur.com/DMqcsFg.png)
+[![Screenshot 1](http://i.imgur.com/fOSP26C.png)](http://i.imgur.com/fOSP26C.png)
 
 **Options - Settings**
 
-[![Screenshot 2](http://i.imgur.com/CIXlMxn.png)](http://i.imgur.com/CIXlMxn.png)
+[![Screenshot 2](http://i.imgur.com/22c7cwQ.png)](http://i.imgur.com/22c7cwQ.png)
 
 **Options - Channel Information**
 
-[![Screenshot 3](http://i.imgur.com/xiHQo9Y.png)](http://i.imgur.com/xiHQo9Y.png)
+[![Screenshot 3](http://i.imgur.com/H8KbSTG.png)](http://i.imgur.com/H8KbSTG.png)
 
 **Example Notification**
 
-[![Screenshot 4](http://i.imgur.com/B3sSnsb.png)](http://i.imgur.com/B3sSnsb.png)
+[![Screenshot 4](http://i.imgur.com/M85fE82.png)](http://i.imgur.com/M85fE82.png)
 
 ## Changelog
 [See CHANGELOG.md][CLog.md]
