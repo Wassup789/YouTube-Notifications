@@ -51,7 +51,11 @@ a, .link{
 	top: 12px;
 	right: 16px;
 }
-#button-menu-container .mdl-menu__container {margin-top: -30px;}
+#button-menu-container .mdl-menu__container {
+	margin-top: -30px;
+	pointer-events: none;
+}
+#button-menu-container .mdl-menu__container.is-visible {pointer-events: auto;}
 #menu_changeAlignment[data-toggle="false"]:after {content: "__MSG_settings_vertSettings_channelAlignment__";}
 #menu_changeAlignment[data-toggle="true"]:after {content: "__MSG_settings_vertSettings_channelAlignment2__";}
 .mdl-layout.is-upgraded .mdl-layout__tab.is-active::after {background: #FFEB3B;}
