@@ -92,7 +92,7 @@ $(function(){
 var timesFailed = 0;
 function checkImportToken(){
 	chrome.identity.getAuthToken({
-			interactive: true,
+			interactive: false,
 			scopes: [
 				"https://www.googleapis.com/auth/youtube.readonly"
 			]
