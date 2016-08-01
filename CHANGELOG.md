@@ -3,6 +3,7 @@ Changelog
 ## v1.1.X.X (XX-XX-2016)
  * Altered the popup's uploads search to include video titles
  * Implemented watch later feature
+ * Implemented import subscriptions selection
 
 ## v1.1.1.0 (04-15-2016)
  * Reverted to old video uploads method due to quota exhaustion

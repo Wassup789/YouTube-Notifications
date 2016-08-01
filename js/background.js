@@ -69,7 +69,8 @@ if(localStorage.getItem("settings") == null)
 		},
 		watchlater: {
 			id: ""
-		}
+		},
+		extendedAuthToken: ""
 	}));
 
 fixItems();
@@ -105,6 +106,10 @@ function fixItems(){
 		settings.watchlater = {
 			id: ""
 		};
+		localStorage.setItem("settings", JSON.stringify(settings));
+	}
+	if(typeof settings.extendedAuthToken === "undefined"){
+		settings.extendedAuthToken = "";
 		localStorage.setItem("settings", JSON.stringify(settings));
 	}
 }
@@ -171,11 +176,11 @@ $(function(){
 				var settings = JSON.parse(localStorage.getItem("settings"));
 				sendResponse(settings.addBtn.enabled);
 				break;
-			case "receivedToken":
+			case "onReceiveImportToken":
 				sendResponse(onReceiveImportToken());
 				break;
-			case "importApproved":
-				sendResponse(onImportApproved());
+			case "importUserApproved":
+				sendResponse(onImportApproved(request.data));
 				break;
 		}
 	});
@@ -936,68 +941,52 @@ wyn.resetVideos = function(){
  *  Ran when the subscription import has been approved
  */
 function onReceiveImportToken() {
-	chrome.identity.getAuthToken({ interactive: false }, function(access_token) {
-		if(chrome.runtime.lastError)
-			return;
-		
-		var xhr = new XMLHttpRequest();
-		xhr.open("GET", "https://www.googleapis.com/youtube/v3/subscriptions?part=id&maxresults=0&mine=true");
-		xhr.setRequestHeader("Authorization", "Bearer " + access_token);
-		xhr.onload = function(){
-			var data = JSON.parse(this.response);
-			console.log(data);
-			if(data.error)
-				chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.import_failed + " \"" + data.error.message + "\""});
-			else
-				chrome.extension.sendMessage({type: "showImportPopup", message: data.pageInfo.totalResults});
-		};
-		xhr.send();
-	});
-}
+	chrome.identity.getAuthToken({
+		interactive: true,
+			scopes: [
+				"https://www.googleapis.com/auth/youtube.readonly"
+			]
+		}, function(access_token) {
+			if(chrome.runtime.lastError)
+				return;
 
-/**
- *  Run when the import channels dialog was approved by the user
- */
-function onImportApproved(){
-	chrome.identity.getAuthToken({ interactive: false }, function(access_token) {
-		if(chrome.runtime.lastError)
-			return;
-		
-		var xhr = new XMLHttpRequest();
-		xhr.open("GET", "https://www.googleapis.com/youtube/v3/subscriptions?part=snippet&maxResults=50&mine=true");
-		xhr.setRequestHeader("Authorization", "Bearer " + access_token);
-		xhr.onload = function(){
-			var data = JSON.parse(this.response);
-			if(data.error)
-				chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.import_failed + " \"" + data.error.message + "\""});
-			else{
-				for(var i = 0; i < data.items.length; i++){
-					var duplicate = false,
-						channels = JSON.parse(localStorage.getItem("channels"));
-					for(var j = 0; j < channels.length; j++){
-						if(channels[j].id == data.items[i].snippet.resourceId.channelId){
-							duplicate = true;
-							break;
-						}
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", "https://www.googleapis.com/youtube/v3/subscriptions?part=snippet&maxResults=50&mine=true");
+			xhr.setRequestHeader("Authorization", "Bearer " + access_token);
+			xhr.onload = function(){
+				var data = JSON.parse(this.response);
+				if(data.error)
+					chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.import_failed + " \"" + data.error.message + "\""});
+				else {
+					var output = [];
+					for(var i = 0; i < data.items.length; i++) {
+						output.push({
+							enabled: false,
+							title: data.items[i].snippet.title,
+							channelId: data.items[i].snippet.resourceId.channelId,
+							thumbnail: data.items[i].snippet.thumbnails.default.url
+						})
 					}
-					if(!duplicate)
-						setYoutube(data.items[i].snippet.resourceId.channelId, false, false, true);
+
+					if(data.items.length == 50 && data.items.length != data.pageInfo.totalResults)
+						onReceiveImportTokenContinued(access_token, data.nextPageToken, output);
+					else
+						onReceiveImportTokenPost(output);
 				}
-				
-				if(data.items.length == 50 && data.items.length != data.pageInfo.totalResults)
-					importChannelsContinued(access_token, data.nextPageToken, channels);
-				else
-					importChannelsPost();
-			}
-		};
-		xhr.send();
-	});
+			};
+			xhr.send();
+		}
+	);
 }
 
 /**
- *  Import channels continued through page token
+ * Ran when the subscription import has been approved (contd.)
+ *
+ * @param access_token
+ * @param nextPageToken
+ * @param output
  */
-function importChannelsContinued(access_token, nextPageToken, channels) {
+function onReceiveImportTokenContinued(access_token, nextPageToken, output) {
 	var xhr = new XMLHttpRequest();
 	xhr.open("GET", "https://www.googleapis.com/youtube/v3/subscriptions?part=snippet&maxResults=50&mine=true&pageToken=" + nextPageToken);
 	xhr.setRequestHeader("Authorization", "Bearer " + access_token);
@@ -1005,34 +994,49 @@ function importChannelsContinued(access_token, nextPageToken, channels) {
 		var data = JSON.parse(this.response);
 		if(data.error)
 			chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.import_failed + " \"" + data.error.message + "\""});
-		else{
-			for(var i = 0; i < data.items.length; i++){
-				var duplicate = false,
-					channels = JSON.parse(localStorage.getItem("channels"));
-				for(var j = 0; j < channels.length; j++){
-					if(channels[j].id == data.items[i].snippet.resourceId.channelId){
-						duplicate = true;
-						break;
-					}
-				}
-				if(!duplicate)
-					setYoutube(data.items[i].snippet.resourceId.channelId, false, false, true);
+		else {
+			for(var i = 0; i < data.items.length; i++) {
+				output.push({
+					enabled: false,
+					title: data.items[i].snippet.title,
+					channelId: data.items[i].snippet.resourceId.channelId,
+					thumbnail: data.items[i].snippet.thumbnails.default.url
+				})
 			}
-			
+
 			if(data.items.length == 50 && typeof data.nextPageToken !== "undefined")
-				importChannelsContinued(access_token, data.nextPageToken);
+				onReceiveImportTokenContinued(access_token, data.nextPageToken, output);
 			else
-				importChannelsPost();
+				onReceiveImportTokenPost(output);
 		}
 	};
 	xhr.send();
 }
 
+function onReceiveImportTokenPost(output) {
+	chrome.extension.sendMessage({type: "importData", message: output});
+}
+
 /**
- *  Ran after all channels are imported
+ *  Ran when the import channels dialog was approved by the user
  */
-function importChannelsPost(){
-	//Not the best method, but most cleanest
+function onImportApproved(data){
+	for(var i = 0; i < data.length; i++){
+		if(!data[i].enabled)
+			continue;
+
+		var duplicate = false,
+			channels = JSON.parse(localStorage.getItem("channels"));
+		for(var j = 0; j < channels.length; j++){
+			if(channels[j].id == data[i].channelId){
+				duplicate = true;
+				break;
+			}
+		}
+		if(!duplicate)
+			setYoutube(data[i].channelId, false, false, true);
+	}
+
 	setTimeout(function(){
 		chrome.extension.sendMessage({type: "refreshPage"});
 	}, 10*1000);

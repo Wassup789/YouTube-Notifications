@@ -230,5 +230,34 @@
 			</div>
 		</div>
 	</div>
+	<div id="import_channels_selection-container" data-toggle="false">
+		<div class="overlay"></div>
+		<div id="import_channels_selection-dialog" class="mdl-card mdl-shadow--2dp">
+			<div class="mdl-card__title">
+				<h2 class="mdl-card__title-text" i18n="settings_importChannels_title"></h2>
+			</div>
+			<div class="mdl-card__supporting-text">
+				<span id="import_channels_selection-contentTitle"><span i18n="settings_importChannelsSelection_title"></span></span>
+				<ul id="import_channels_selectionList" class="mdl-list">
+					<li id="masterImportChannelRow" class="mdl-list__item" style="display: none;">
+						<span class="mdl-list__item-primary-content">
+							<img class="import_channels_selectionRow-img mdl-list__item-avatar" src="" width="20" height="20" />
+							<span class="import_channels_selectionRow-title"></span>
+						</span>
+						<span class="mdl-list__item-secondary-action">
+							<label class="import_channels_selectionRow-val mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+								<input type="checkbox" class="mdl-checkbox__input" checked />
+							</label>
+						</span>
+					</li>
+				</ul>
+			</div>
+			<div class="mdl-card__actions mdl-card--border">
+				<a id="import_channels_selection-check-button" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" data-toggle="false" i18n="settings_importChannels_check"></a>
+				<a id="import_channels_selection-close-button" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" i18n="settings_importChannels_cancel"></a>
+				<a id="import_channels_selection-import-button" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" i18n="settings_importChannels_import"></a>
+			</div>
+		</div>
+	</div>
 </body>
 </html>

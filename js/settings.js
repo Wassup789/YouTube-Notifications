@@ -29,14 +29,15 @@ var wyns = {};
 		"date_seconds": getCommonString("dateSeconds"),
 	},
 	wyns.previousLastListItem;
+	wyns.importData;
 $(function(){
 	chrome.browserAction.setBadgeText({text: ""});
-	
+
 	setLocales();
 	
 	if(!chrome.extension.getBackgroundPage().wyn.isConnected)
 		createSnackbar(wyns.strings.connect_failed);
-	
+
 	chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 		switch (request.type) {
 			case "refreshPage":
@@ -47,13 +48,13 @@ $(function(){
 					wyns.channelsToAdd2 += 2;
 				else
 					wyns.channelsToAdd2++;
-				
+
 				if(wyns.channelsToAdd == wyns.channelsToAdd2){
 					$("#loading").stop().hide();
 					$("#add_channels-dialog").stop().show().css("opacity", 1);
 					$("#add_channels-container").attr("data-toggle", "false");
 					createSnackbar(wyns.strings.add_channels_failed);
-					
+
 					$("#add_channels-dialog .mdl-card__supporting-text").children().not(":first").remove();
 					$("#add_channels-dialog .mdl-card__supporting-text .mdl-textfield input").val("");
 					wyns.channelsToAdd2 = -1;
@@ -62,8 +63,8 @@ $(function(){
 			case "createSnackbar":
 				createSnackbar(request.message);
 				break;
-			case "showImportPopup":
-				showImportPopup(request.message);
+			case "importData":
+				displayImportData(request.message);
 				break;
 		}
 	});
@@ -125,7 +126,7 @@ function setLocales() {
 
 /**
  *  Gets the string from the locales appropriate to settings.js
- *  
+ *
  *  @param {string} name A valid localized string which doesn't include 'settingsJs'
  *  @returns {string} The localized string
  */
@@ -337,7 +338,7 @@ function registerListeners(){
 	$("#import_channels-import-button").on("click", function(){
 		$("#import_channels-container").attr("data-toggle", false);
 		createSnackbar(wyns.strings.please_wait_while);
-		chrome.extension.sendMessage({type: "importApproved"});
+		chrome.extension.sendMessage({type: "importUserApproved", data: wyns.importData});
 	});
 	$("#popup_videoList_more").on("click", function(){
 		getChannelVideos(publishedBeforeDate);
@@ -357,6 +358,43 @@ function registerListeners(){
 		$(".mdl-layout__tab-panel").removeClass("is-active");
 		$("#tab-edit_settings").addClass("is-active");
 		changeImportOAuthToken();
+	});
+
+	//Start of import channel selection
+	$("body").on("click", "#import_channels_selectionList .mdl-list__item", function(){
+		if($(this).find(".import_channels_selectionRow-val").hasClass("is-checked")) {
+			$(this).find(".import_channels_selectionRow-val").removeClass("is-checked").find("input")[0].checked = false;
+			wyns.importData[$(this).index()-1].enabled = false;// -1 because of the master row
+		}else {
+			$(this).find(".import_channels_selectionRow-val").addClass("is-checked").find("input")[0].checked = true;
+			wyns.importData[$(this).index()-1].enabled = true;// -1 because of the master row
+		}
+	});
+	$("#import_channels_selection-close-button").on("click", function(){
+		$("#import_channels_selection-container").attr("data-toggle", false);
+	});
+	$("#import_channels_selection-container .overlay").on("click", function(){
+		$("#import_channels_selection-container").attr("data-toggle", false);
+	});
+	$("#import_channels_selection-check-button").on("click", function() {
+		if ($(this).attr("data-toggle") == "true") {
+			$(this).attr("data-toggle", false);
+			$(this).text(chrome.i18n.getMessage("settings_importChannels_check"));
+			$(".mdl-list__item:not(#masterImportChannelRow)").find(".import_channels_selectionRow-val").removeClass("is-checked").find("input")[0].checked = false;
+			for(var i = 0; i < wyns.importData; i++)
+				wyns.importData[i].enabled = false;
+
+		}else{
+			$(this).attr("data-toggle", true);
+			$(this).text(chrome.i18n.getMessage("settings_importChannels_uncheck"));
+			$(".mdl-list__item:not(#masterImportChannelRow)").find(".import_channels_selectionRow-val").addClass("is-checked").find("input")[0].checked = true;
+			for(var i = 0; i < wyns.importData; i++)
+				wyns.importData[i].enabled = true;
+		}
+	});
+	$("#import_channels_selection-import-button").on("click", function() {
+		$("#import_channels_selection-container").attr("data-toggle", false);
+		showImportPopup();
 	});
 }
 
@@ -397,14 +435,7 @@ function refreshPage(){
  *  Updates the values in the settings page
  */
 function configureSettings(){
-	var settings = JSON.parse(localStorage.getItem("settings"));
-	if(settings.notifications.enabled){
-		$("#settings_notifications_toggle").addClass("is-checked");
-		$("#settings_notifications_toggle input")[0].checked = true;
-	}else{
-		$("#settings_notifications_toggle").removeClass("is-checked");
-		$("#settings_notifications_toggle input")[0].checked = false;
-	}
+	var settings = JSON.parse(localStorage.getItem("settings"));//
 	$("#settings_notifications_toggle input").on("change", function(){
 		var value = $("#settings_notifications_toggle input")[0].checked,
 			settings = JSON.parse(localStorage.getItem("settings"));
@@ -733,7 +764,7 @@ function requestImportToken() {
 			if(chrome.runtime.lastError){
 				createSnackbar("Error: " + chrome.runtime.lastError.message);
 			}else{
-				chrome.extension.sendMessage({type: "receivedToken"});
+				chrome.extension.sendMessage({type: "onReceiveImportToken"});
 			}
 		}
 	);
@@ -742,27 +773,66 @@ function requestImportToken() {
 /**
  *  Displays the correct information for the import channels popup
  */
-function showImportPopup(channelsNum) {
+function showImportPopup() {
+	var size = 0;
+
+	for(var i = 0; i < wyns.importData.length; i++)
+		if(wyns.importData[i].enabled)
+			size++;
+
+	if(size == 0)
+		return;
+
 	$("#settings_import_changeUser").show();
 	$("#settings_import").addClass("double");
 	
-	if(channelsNum > 50)
+	if(size > 50)
 		$("#import_channels-overRecommended").show();
 	else
 		$("#import_channels-overRecommended").hide();
 	
-	$("#import_channels-contentTitle").children("span.num").text(channelsNum)
-	$("#import_channels-requests").text("~" + channelsNum);
+	$("#import_channels-contentTitle").children("span.num").text(size)
+	$("#import_channels-requests").text("~" + size);
 	
-	var downloadSize = 0.00275 * channelsNum;
+	var downloadSize = 0.00275 * size;
 	if(downloadSize < 0.1)
 		$("#import_channels-downloadsSuffix").text("KB");
 	else
 		$("#import_channels-downloadsSuffix").text("MB");
-	$("#import_channels-downloads").text("~" + Math.round(0.00275 * channelsNum * 1000) / 1000);
+	$("#import_channels-downloads").text("~" + Math.round(0.00275 * size * 1000) / 1000);
 	$("#import_channels-container").attr("data-toggle", true);
 }
 
+/**
+ *
+ */
+function displayImportData(data) {
+	wyns.importData = data;
+
+	data.sort(function(a, b) {
+		var text1 = a.title.toLowerCase(),
+			text2 = b.title.toLowerCase();
+		return (text1 < text2) ? -1 : (text1 > text2) ? 1 : 0;
+	});
+
+	$("#import_channels_selectionList").children(":not(#masterImportChannelRow)").remove();
+	for(var i = 0; i < data.length; i++) {
+		var elem = $("#masterImportChannelRow").clone().appendTo("#import_channels_selectionList");
+		elem.removeAttr("id");
+		elem.attr("data-id", i);
+		elem.css("display", "");
+		elem.find(".import_channels_selectionRow-title").text(data[i].title);
+		elem.find(".import_channels_selectionRow-img").attr("src", data[i].thumbnail);
+		if(data[i].enabled) {
+			elem.find(".import_channels_selectionRow-val").addClass("is-checked");
+			elem.find(".import_channels_selectionRow-val input")[0].checked = true;
+		}else{
+			elem.find(".import_channels_selectionRow-val").removeClass("is-checked");
+			elem.find(".import_channels_selectionRow-val input")[0].checked = false;
+		}
+	}
+	$("#import_channels_selection-container").attr("data-toggle", true);
+}
 
 /**
  *  Change user token

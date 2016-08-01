@@ -33,3 +33,6 @@ $RECYCLE.BIN/
 .Trashes
 
 *~
+
+# Intellij IDEA
+.idea/

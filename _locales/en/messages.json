@@ -116,12 +116,20 @@
 		"message": "Import Channels"
 	},
 	"settings_importChannels_cancel": {
-		"description": "The label for the change channel's cancel button",
+		"description": "The label for the import channel's cancel button",
 		"message": "Cancel"
 	},
 	"settings_importChannels_import": {
-		"description": "The label for the change channel's import button",
+		"description": "The label for the import channel's import button",
 		"message": "Import"
+	},
+	"settings_importChannels_check": {
+		"description": "The label for the import channel's check all button",
+		"message": "Check All"
+	},
+	"settings_importChannels_uncheck": {
+		"description": "The label for the import channel's uncheck all button",
+		"message": "Uncheck All"
 	},
 	"settings_importChannels_titlePrefix": {
 		"description": "The prefix for the import channel popup's title",
@@ -150,6 +158,10 @@
 	"settings_importChannels_contentStatisticsDownloads": {
 		"description": "The suffix for the import channel popup's content for statistics downloads",
 		"message": "of downloads"
+	},
+	"settings_importChannelsSelection_title": {
+		"description": "The title of the import channel selection popup",
+		"message": "Select Channels to Import"
 	},
 	"settings_searchPlaceholder": {
 		"description": "The label for the search input",
