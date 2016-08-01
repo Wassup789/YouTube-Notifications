@@ -86,16 +86,21 @@ $(function(){
 		configureSettings();
 	}, 500);
 	
-	checkToken();
+	checkImportToken();
 });
 
 var timesFailed = 0;
-function checkToken(){
-	chrome.identity.getAuthToken({ interactive: false },
+function checkImportToken(){
+	chrome.identity.getAuthToken({
+			interactive: true,
+			scopes: [
+				"https://www.googleapis.com/auth/youtube.readonly"
+			]
+		},
 		function(current_token) {
 			var error = chrome.runtime.lastError;
 			if(error && error.message == "OAuth2 not granted or revoked." && timesFailed < 4){
-				setTimeout(function(){checkToken()}, 100);
+				setTimeout(function(){checkImportToken()}, 100);
 				timesFailed++;
 				return;
 			}
@@ -341,17 +346,17 @@ function registerListeners(){
 		chrome.tabs.create({url: "https://www.youtube.com/subscription_manager"});
 	});
 	$("#settings_import").on("click", function(){
-		requestToken();
+		requestImportToken();
 	});
 	$("#settings_import_changeUser").on("click", function(){
-		changeOAuthToken();
+		changeImportOAuthToken();
 	});
 	$("#emptyChannelsList_subheader").on("click", function(){
 		$("a.mdl-layout__tab").removeClass("is-active");
 		$("a[href='#tab-edit_settings']").addClass("is-active");
 		$(".mdl-layout__tab-panel").removeClass("is-active");
 		$("#tab-edit_settings").addClass("is-active");
-		changeOAuthToken();
+		changeImportOAuthToken();
 	});
 }
 
@@ -681,12 +686,12 @@ function updateSearch() {
 		return;
 	
 	var val = $("#search-input").val().toLowerCase().trim();
-	var max = 0;
 	
 	$(".channelRow:not(#masterChannelRow)").show().filter(function() {
-		var text = $(this).find(".channel_author").text().toLowerCase();
-		if(text.indexOf(val) < 0) max++;
-		return !~text.indexOf(val);
+		var text = $(this).find(".channel_author").text().toLowerCase(),
+			text2 = $(this).find(".channel_video_title").text().toLowerCase();
+		
+		return text.indexOf(val) < 0 ? text2.indexOf(val) < 0 : false;
 	}).hide();
 	
 	if(typeof wyns.previousLastListItem !== "undefined")
@@ -715,16 +720,23 @@ function updateSearchExact() {
 /**
  *  Requests the user to approve the OAuth request
  */
-function requestToken() {
+function requestImportToken() {
 	if($(".paper-snackbar").text() != wyns.strings.please_wait)
 		createSnackbar(wyns.strings.please_wait);
-	chrome.identity.getAuthToken({ interactive: true }, function(token){
-		if(chrome.runtime.lastError){
-			createSnackbar("Error: " + chrome.runtime.lastError.message);
-		}else{
-			chrome.extension.sendMessage({type: "receivedToken"});
+	chrome.identity.getAuthToken({
+			interactive: true,
+			scopes: [
+				"https://www.googleapis.com/auth/youtube.readonly"
+			]
+		},
+		function(token){
+			if(chrome.runtime.lastError){
+				createSnackbar("Error: " + chrome.runtime.lastError.message);
+			}else{
+				chrome.extension.sendMessage({type: "receivedToken"});
+			}
 		}
-	});
+	);
 }
 
 /**
@@ -755,9 +767,14 @@ function showImportPopup(channelsNum) {
 /**
  *  Change user token
  */
-function changeOAuthToken() {
+function changeImportOAuthToken() {
 	createSnackbar(wyns.strings.please_wait);
-	chrome.identity.getAuthToken({ interactive: false },
+	chrome.identity.getAuthToken({
+			interactive: true,
+			scopes: [
+				"https://www.googleapis.com/auth/youtube.readonly"
+			]
+		},
 		function(current_token) {
 			if (!chrome.runtime.lastError) {
 				chrome.identity.removeCachedAuthToken({ token: current_token });
@@ -765,7 +782,7 @@ function changeOAuthToken() {
 				xhr.open("GET", "https://accounts.google.com/o/oauth2/revoke?token=" + current_token);
 				xhr.send();
 			}
-			requestToken();
+			requestImportToken();
 		}
 	);
 }

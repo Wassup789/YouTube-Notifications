@@ -249,11 +249,15 @@
 	},
 	"background_notificationWatch": {
 		"description": "",
-		"message": "Watch Video"
+		"message": "Play Video"
 	},
 	"background_notificationClose": {
 		"description": "",
 		"message": "Dismiss"
+	},
+	"background_notificationWatchLater": {
+		"description": "",
+		"message": "Watch Later"
 	},
 	"background_notificationLogCheck": {
 		"description": "",

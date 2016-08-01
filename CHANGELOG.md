@@ -1,12 +1,16 @@
 Changelog
 =====
-## v1.1.1.0 (04-15-2015)
+## v1.1.X.X (XX-XX-2016)
+ * Altered the popup's uploads search to include video titles
+ * Implemented watch later feature
+
+## v1.1.1.0 (04-15-2016)
  * Reverted to old video uploads method due to quota exhaustion
  * Added four additional API keys
  * Implemented search functionality
  * Added subscription importing
 
-## v1.1.0.5 (02-02-2015)
+## v1.1.0.5 (02-02-2016)
  * Changed channel updater to use the search API instead of the channel's playlist API (This allows more up-to-date updating)
  * Fixed bug where channels would stop updating
  * Added locales/languages

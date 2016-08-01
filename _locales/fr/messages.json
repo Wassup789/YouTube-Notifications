@@ -255,6 +255,10 @@
 		"description": "",
 		"message": "Près"
 	},
+	"background_notificationWatchLater": {
+		"description": "",
+		"message": "À regarder plus tard"
+	},
 	"background_notificationLogCheck": {
 		"description": "",
 		"message": "Vérification YouTube utilisateur: "
