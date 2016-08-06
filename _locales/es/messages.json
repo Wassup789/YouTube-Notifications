@@ -123,6 +123,14 @@
 		"description": "The label for the change channel's import button",
 		"message": "Importar"
 	},
+	"settings_importChannels_check": {
+		"description": "The label for the import channel's check all button",
+		"message": "Seleccionar Todos"
+	},
+	"settings_importChannels_uncheck": {
+		"description": "The label for the import channel's uncheck all button",
+		"message": "Desmarcar Todo"
+	},
 	"settings_importChannels_titlePrefix": {
 		"description": "The prefix for the import channel popup's title",
 		"message": "Importación de"
@@ -150,6 +158,10 @@
 	"settings_importChannels_contentStatisticsDownloads": {
 		"description": "The suffix for the import channel popup's content for statistics downloads",
 		"message": "de descargas"
+	},
+	"settings_importChannelsSelection_title": {
+		"description": "The title of the import channel selection popup",
+		"message": "Seleccione Canales para importar"
 	},
 	"settings_searchPlaceholder": {
 		"description": "The label for the search input",

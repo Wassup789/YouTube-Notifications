@@ -435,7 +435,14 @@ function refreshPage(){
  *  Updates the values in the settings page
  */
 function configureSettings(){
-	var settings = JSON.parse(localStorage.getItem("settings"));//
+	var settings = JSON.parse(localStorage.getItem("settings"));
+	if(settings.notifications.enabled){
+		$("#settings_notifications_toggle").addClass("is-checked");
+		$("#settings_notifications_toggle input")[0].checked = true;
+	}else{
+		$("#settings_notifications_toggle").removeClass("is-checked");
+		$("#settings_notifications_toggle input")[0].checked = false;
+	}
 	$("#settings_notifications_toggle input").on("change", function(){
 		var value = $("#settings_notifications_toggle input")[0].checked,
 			settings = JSON.parse(localStorage.getItem("settings"));

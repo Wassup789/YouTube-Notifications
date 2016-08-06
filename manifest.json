@@ -5,7 +5,7 @@
   },
   "name": "__MSG_appName__",
   "description": "__MSG_appDesc__",
-  "version": "1.1.1.0",
+  "version": "1.1.2.0",
   "permissions": [
     "notifications",
 	"unlimitedStorage",
@@ -32,7 +32,7 @@
       "128": "img/128.png"
    },
    "oauth2": {
-    "client_id": "836337899077-9v0uf16i106obm32lkhc85ubr90h685u.apps.googleusercontent.com",
+    "client_id": "836337899077-k426d78agmgff3l32a29c4lalg0tb0q1.apps.googleusercontent.com",
     "scopes": [
       "https://www.googleapis.com/auth/youtube.readonly",
 	  "https://www.googleapis.com/auth/youtube.force-ssl"

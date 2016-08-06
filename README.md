@@ -14,7 +14,7 @@ This code is licensed under the MIT License.
 ### Permissions
  - notifications
  - unlimitedStorage
- - identity (For subscription importing)
+ - identity (For subscription importing & watch later)
  - \*://\*.youtube.com/\*
  - \*://\*.ytimg.com/\*
 
@@ -22,7 +22,7 @@ This code is licensed under the MIT License.
 
 [![ChromeWebStore](https://raw.githubusercontent.com/Wassup789/Youtube-Notifications/master/img/chromewebstore.png)](https://chrome.google.com/webstore/detail/youtube-notifications/cilgbgkmanbbecbjihnbpeaoodmgchom)
 
-**Latest Version:** ***v1.1.1.0***
+**Latest Version:** ***v1.1.2.0***
 
 **Release Archive:**
 
@@ -45,7 +45,7 @@ This code is licensed under the MIT License.
 
 **Example Notification**
 
-[![Screenshot 4](http://i.imgur.com/M85fE82.png)](http://i.imgur.com/M85fE82.png)
+[![Screenshot 4](http://i.imgur.com/6owdPVw.png)](http://i.imgur.com/6owdPVw.png)
 
 ## Changelog
 [See CHANGELOG.md][CLog.md]
