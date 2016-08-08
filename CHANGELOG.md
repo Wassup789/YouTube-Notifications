@@ -1,5 +1,9 @@
 Changelog
 =====
+## v1.1.X.X (XX-XX-20XX)
+ * Added channel sorting
+ * Switched table layout to flexbox
+
 ## v1.1.2.0 (08-05-2016)
  * Altered the popup's uploads search to include video titles
  * Implemented watch later feature

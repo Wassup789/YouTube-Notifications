@@ -30,7 +30,18 @@ var wyns = {};
 	},
 	wyns.previousLastListItem;
 	wyns.importData;
+
+var SORTMODE_USER = 0,
+	SORTMODE_ABC = 1,
+	SORTMODE_UPLOAD = 2;
+
+var sortElem_custom, sortElem_latestUpload, sortElem_abc;
+
 $(function(){
+	sortElem_custom = $("#menu_sortMode_custom input");
+	sortElem_latestUpload = $("#menu_sortMode_latestUpload input");
+	sortElem_abc = $("#menu_sortMode_abc input");
+
 	chrome.browserAction.setBadgeText({text: ""});
 
 	setLocales();
@@ -83,6 +94,7 @@ $(function(){
 	getVideoList();
 	registerListeners();
 	setTimeout(function(){
+		initDesign();
 		initSearch();// This includes the listener for search
 		configureSettings();
 	}, 500);
@@ -150,6 +162,10 @@ function getCommonString(name) {
 function getVideoList() {
 	var channels = JSON.parse(localStorage.getItem("channels")),
 		showEmpty = true;
+
+	channels = sortChannels(channels);
+
+	$(".channelRow:not(#masterChannelRow)").remove();
 	for(var i = 0; i < channels.length; i++) {
 		showEmpty = false;
 		var date = new Date(parseInt(channels[i].latestVideo.timestamp)*1000);
@@ -179,6 +195,59 @@ function getVideoList() {
 	}
 	if(showEmpty)
 		$("#emptyChannelsList").show();
+}
+
+/**
+ * Sorts and returns an array of channels determined by localStorage settings value: sortOrder
+ */
+function sortChannels(channels) {
+	var settings = JSON.parse(localStorage.getItem("settings"));
+
+	switch(settings.sortOrder) {
+		case SORTMODE_ABC:
+			channels.sort(function(objA, objB){
+				var valA = objA.name.toLowerCase();
+				var valB = objB.name.toLowerCase();
+				if(valA < valB)
+					return -1;
+				if(valA > valB)
+					return 1;
+				return 0;
+			});
+			break;
+		case SORTMODE_UPLOAD:
+			channels.sort(function(objA, objB){
+				var valA = objA.latestVideo.timestamp;
+				var valB = objB.latestVideo.timestamp;
+				return valB - valA;
+			});
+			break;
+	}
+	return channels;
+}
+
+/**
+ * Initializes all elements that require design changes on load
+ */
+function initDesign() {
+	$("#menu_sortMode_content").parent().attr("id", "menu_sortMode_container");
+
+	var settings = JSON.parse(localStorage.getItem("settings"));
+
+	mdl_toggleRadio(sortElem_custom, false);
+	mdl_toggleRadio(sortElem_latestUpload, false);
+	mdl_toggleRadio(sortElem_abc, false);
+	switch(settings.sortOrder) {
+		case SORTMODE_USER:
+			mdl_toggleRadio(sortElem_custom, true);
+			break;
+		case SORTMODE_ABC:
+			mdl_toggleRadio(sortElem_abc, true);
+			break;
+		case SORTMODE_UPLOAD:
+			mdl_toggleRadio(sortElem_latestUpload, true);
+			break;
+	}
 }
 
 /**
@@ -285,13 +354,21 @@ function registerListeners(){
 			disableButtons(false);
 			
 			var newArr = [],
-				oldArr = JSON.parse(localStorage.getItem("channels"));
+				oldArr = JSON.parse(localStorage.getItem("channels")),
+				settings = JSON.parse(localStorage.getItem("settings"));
 			$(".channelRow:not(#masterChannelRow)").each(function(){
 				var id = parseInt($(this).attr("data-id"));
 				newArr.push(oldArr[id]);
 			});
-			
+
 			localStorage.setItem("channels", JSON.stringify(newArr));
+
+			if(JSON.stringify(oldArr) != JSON.stringify(newArr)) {
+				settings.sortOrder = SORTMODE_USER;
+				localStorage.setItem("settings", JSON.parse(settings));
+				sortElem_custom.click();
+			}
+
 			createSnackbar(wyns.strings.saved);
 			
 			$(this).attr("data-toggle", "false");
@@ -396,6 +473,51 @@ function registerListeners(){
 		$("#import_channels_selection-container").attr("data-toggle", false);
 		showImportPopup();
 	});
+
+	//Start of sort mode
+	$("#menu_sortMode_custom").on("click", function(){
+		var settings = JSON.parse(localStorage.getItem("settings"));
+		settings.sortOrder = SORTMODE_USER;
+		localStorage.setItem("settings", JSON.stringify(settings));
+
+		mdl_toggleRadio(sortElem_custom, true);
+		mdl_toggleRadio(sortElem_latestUpload, false);
+		mdl_toggleRadio(sortElem_abc, false);
+
+		getVideoList();
+	});
+	$("#menu_sortMode_abc").on("click", function(){
+		var settings = JSON.parse(localStorage.getItem("settings"));
+		settings.sortOrder = SORTMODE_ABC;
+		localStorage.setItem("settings", JSON.stringify(settings));
+
+		mdl_toggleRadio(sortElem_abc, true);
+		mdl_toggleRadio(sortElem_custom, false);
+		mdl_toggleRadio(sortElem_latestUpload, false);
+
+		getVideoList();
+	});
+	$("#menu_sortMode_latestUpload").on("click", function(){
+		var settings = JSON.parse(localStorage.getItem("settings"));
+		settings.sortOrder = SORTMODE_UPLOAD;
+		localStorage.setItem("settings", JSON.stringify(settings));
+
+		mdl_toggleRadio(sortElem_latestUpload, true);
+		mdl_toggleRadio(sortElem_custom, false);
+		mdl_toggleRadio(sortElem_abc, false);
+
+		getVideoList();
+	});
+}
+
+/**
+ * Set a MDL radio's value
+ */
+function mdl_toggleRadio(elem, value) {
+	if(value)
+		elem.attr("checked", true).parent().addClass("is-checked");
+	else
+		elem.attr("checked", false).parent().removeClass("is-checked");
 }
 
 /**
@@ -413,9 +535,15 @@ function disableButtons(bool){
 		$("a[href='#tab-newest_uploads']").addClass("is-active");
 		$(".mdl-layout__tab-panel").removeClass("is-active");
 		$("#tab-newest_uploads").addClass("is-active");
+		$("#search-textbox").css("opacity", 0).addClass("noninteractable").removeClass("is-dirty");
+		$("#search-btn").css("opacity", 0).addClass("noninteractable");
+		$("#search-input").val("");
+		updateSearch()
 	}else{
 		$(".channelRow:not(#masterChannelRow) .channelColumn:nth-child(5) .channel_info_btn").show();
 		$("#add_channels-fab").show();
+		$("#search-textbox").css("opacity", 1).removeClass("noninteractable");
+		$("#search-btn").css("opacity", 1).removeClass("noninteractable");
 	}
 }
 
@@ -936,7 +1064,7 @@ function convertISO8601Duration(r){var e=r.split("T"),t="",i={},n={},s="string",
 
 
 // SNACKBAR
-var createSnackbar=function(){var t=null;return function(e,i,n){t&&t.dismiss();var a=document.createElement("div");a.className="paper-snackbar",a.dismiss=function(){this.style.opacity=0};var s=document.createTextNode(e);if(a.appendChild(s),i){n||(n=a.dismiss.bind(a));var d=document.createElement("button");d.className="action",d.innerHTML=i,d.addEventListener("click",n),a.appendChild(d)}setTimeout(function(){t===this&&t.dismiss()}.bind(a),5e3),a.addEventListener("transitionend",function(e){"opacity"===e.propertyName&&0==this.style.opacity&&(this.parentElement.removeChild(this),t===this&&(t=null))}.bind(a)),t=a,document.body.appendChild(a),getComputedStyle(a).bottom,a.style.bottom="0px",a.style.opacity=1}}();
+var createSnackbar=function(){var t=null;return function(e,i,n){t&&t.dismiss();var a=document.createElement("div");a.className="paper-snackbar selectable",a.dismiss=function(){this.style.opacity=0};var s=document.createTextNode(e);if(a.appendChild(s),i){n||(n=a.dismiss.bind(a));var d=document.createElement("button");d.className="action",d.innerHTML=i,d.addEventListener("click",n),a.appendChild(d)}setTimeout(function(){t===this&&t.dismiss()}.bind(a),5e3),a.addEventListener("transitionend",function(e){"opacity"===e.propertyName&&0==this.style.opacity&&(this.parentElement.removeChild(this),t===this&&(t=null))}.bind(a)),t=a,document.body.appendChild(a),getComputedStyle(a).bottom,a.style.bottom="0px",a.style.opacity=1}}();
 
 // SHADOW TRANSITION
 'use strict';jQuery(function(h){function r(b,m,d){var l=[];h.each(b,function(f){var g=[],e=b[f];f=m[f];e.b&&g.push("inset");"undefined"!==typeof f.left&&g.push(parseFloat(e.left+d*(f.left-e.left))+"px "+parseFloat(e.top+d*(f.top-e.top))+"px");"undefined"!==typeof f.blur&&g.push(parseFloat(e.blur+d*(f.blur-e.blur))+"px");"undefined"!==typeof f.a&&g.push(parseFloat(e.a+d*(f.a-e.a))+"px");if("undefined"!==typeof f.color){var p="rgb"+(h.support.rgba?"a":"")+"("+parseInt(e.color[0]+d*(f.color[0]-e.color[0]),

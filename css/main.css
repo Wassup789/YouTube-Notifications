@@ -2,6 +2,8 @@
 	box-sizing:border-box;
 	-webkit-user-select: none;
 }
+.selectable {-webkit-user-select: text;}
+.noninteractable {pointer-events: none;}
 
 body{
 	font-size:12px;
@@ -79,11 +81,16 @@ main {
 	min-height: initial;
 }
 #channels, #settings {
-	display: table;
+	display: flex;
+	flex-direction: column;
 	width: 100%;
 }
+#channels {
+	display: table;
+}
 .channelRow, .settingRow {
-    display: block;
+    display: flex;
+	align-items: center;
     padding: 10px 15px;
     border-bottom: 2px solid #EEE;
 	font-size: 14px;
@@ -92,17 +99,37 @@ main {
 .channelRow.editable * {cursor: move;}
 .channelRow:last-child, .settingRow:last-child {border: none;}
 
-.channelColumn, .settingColumn {display: table-cell;}
-.settingColumn.text span:after {content: ":";}
-.channelColumn:nth-child(2) {
-	min-width: 175px;
+.settingColumn > .label:after {content: ":";}
+.settingColumn {
+	display: flex;
+	align-items: center;
+	white-space: nowrap;
+	overflow: visible;
+	flex-grow: 1;
+   	padding: 0 5px;
 }
+.settingColumn:first-child {
+	padding-left: 0;
+}
+.settingColumn .mdl-slider__container * {
+	margin: 0;
+}
+.settingColumn .mdl-slider__container {
+	width: 120px;
+	margin: 0 -30px 0 10px;
+}
+.settingColumn .mdl-switch {
+	 margin-left: 5px;
+}
+.channelColumn:nth-child(2) {
+	 min-width: 175px;
+ }
 .channelColumn:nth-child(4) {
 	vertical-align: middle;
 	line-height: 20px;
 	padding: 5px;
-    width: 230px;
-    max-width: 230px;
+	width: 230px;
+	max-width: 230px;
 	min-width: 230px;
 }
 .channelColumn:nth-child(5) {
@@ -229,18 +256,12 @@ main {
 #settings_import.double, #settings_import_changeUser {width: 49.5%}
 #settings_refresh, #settings_import {background: #8BC34A;}
 #settings_import_changeUser {background: #6C6AEC;}
-#settings_notifications_toggle {
-	width: initial;
-	margin-left: 5px;
-}
 .mdl-switch.is-checked .mdl-switch__track {background: rgba(244, 67, 54, 0.5);}
 .mdl-switch.is-checked .mdl-switch__thumb, .mdl-switch__ripple-container .mdl-ripple, .mdl-slider__background-lower {background: #F44336;}
 #settings_tts_select {
 	width: 150px;
 	margin-left: 5px;
 }
-#settings_addbtn_toggle {margin-left: 5px;}
-#settings_addbtn_viewsubs {margin-left: 20px;}
 
 #popup_card {
     width: 572px;
@@ -254,6 +275,9 @@ main {
 }
 #popup_card .channelRow {
 	border: none;
+}
+#popup_card[data-toggle="true"] .channelRow {
+	display: block;
 }
 #popup_card[data-toggle="true"] .channelColumn:nth-child(1), #popup_card[data-toggle="true"] .channelColumn:nth-child(2) {
 	min-width: initial;
@@ -301,9 +325,6 @@ main {
 	position: fixed;
 	top: calc(50% - 14px + 52px);
 	left: calc(50% - 14px);
-}
-#popup_videoList {
-	margin-top: 20px;
 }
 #popup_videoList a {
 	color: #000;
@@ -489,6 +510,13 @@ main {
 #import_channels_selection-close-button,
 #import_channels_selection-import-button {
 	float: right;
+}
+
+#menu_sortMode_container {
+	margin-top: -55px!important;
+}
+.mdl-radio_menu {
+	top: -17px;
 }
 
 /* SNACKBAR */

@@ -49,6 +49,10 @@ var wyn = {};
 	console.log("Using API Key #" + (apiKeyIndex + 1));
 	wyn.apiKey = wyn.apiKeys[apiKeyIndex];
 
+var SORTMODE_USER = 0,
+	SORTMODE_ABC = 1,
+	SORTMODE_UPLOAD = 2;
+
 if(localStorage.getItem("channels") == null)
 	localStorage.setItem("channels", JSON.stringify([]));
 if(localStorage.getItem("settings") == null)
@@ -70,7 +74,8 @@ if(localStorage.getItem("settings") == null)
 		watchlater: {
 			id: ""
 		},
-		extendedAuthToken: ""
+		extendedAuthToken: "",
+		sortOrder: SORTMODE_USER
 	}));
 
 fixItems();
@@ -110,6 +115,10 @@ function fixItems(){
 	}
 	if(typeof settings.extendedAuthToken === "undefined"){
 		settings.extendedAuthToken = "";
+		localStorage.setItem("settings", JSON.stringify(settings));
+	}
+	if(typeof settings.sortOrder === "undefined"){
+		settings.sortOrder = SORTMODE_USER;
 		localStorage.setItem("settings", JSON.stringify(settings));
 	}
 }

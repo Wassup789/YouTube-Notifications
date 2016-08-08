@@ -87,6 +87,22 @@
 		"description": "The label for the edit channel layout finish button",
 		"message": "Save Changes"
 	},
+	"settings_vertSettings_sortMode": {
+		"description": "The label for the sort mode button",
+		"message": "Sort Mode"
+	},
+	"settings_vertSettings_sortMode_custom": {
+		"description": "The label for the sort mode: custom",
+		"message": "User Defined"
+	},
+	"settings_vertSettings_sortMode_latestUpload": {
+		"description": "The label for the sort mode: latestUpload",
+		"message": "Latest Upload"
+	},
+	"settings_vertSettings_sortMode_abc": {
+		"description": "The label for the sort mode: abc",
+		"message": "Alphabetically"
+	},
 	"settings_addChannel_title": {
 		"description": "The label for the title of the add channel popup",
 		"message": "Add Channels"

@@ -29,9 +29,30 @@
 						<i class="material-icons">more_vert</i>
 					</button>
 					<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="demo-menu-lower-right">
+						<li id="menu_sortMode" class="mdl-menu__item" data-toggle="false" i18n="settings_vertSettings_sortMode"></li>
 						<li id="menu_changeAlignment" class="mdl-menu__item" data-toggle="false"></li>
 						<li id="menu_viewChangelog" class="mdl-menu__item" data-toggle="false" i18n="settings_vertSettings_viewChangelog"></li>
 						<li id="menu_help" class="mdl-menu__item" data-toggle="false" i18n="settings_vertSettings_help"></li>
+					</ul>
+					<ul id="menu_sortMode_content" class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="menu_sortMode">
+						<li id="menu_sortMode_custom" class="mdl-menu__item" data-toggle="false">
+							<label class="mdl-radio mdl-js-radio mdl-radio_menu">
+								<input type="radio" class="mdl-radio__button">
+							</label>
+							<span i18n="settings_vertSettings_sortMode_custom"></span>
+						</li>
+						<li id="menu_sortMode_abc" class="mdl-menu__item" data-toggle="false">
+							<label class="mdl-radio mdl-js-radio mdl-radio_menu">
+								<input type="radio" class="mdl-radio__button">
+							</label>
+							<span i18n="settings_vertSettings_sortMode_abc"></span>
+						</li>
+						<li id="menu_sortMode_latestUpload" class="mdl-menu__item" data-toggle="false">
+							<label class="mdl-radio mdl-js-radio mdl-radio_menu">
+								<input type="radio" class="mdl-radio__button">
+							</label>
+							<span i18n="settings_vertSettings_sortMode_latestUpload"></span>
+						</li>
 					</ul>
 				</div>
 			</div>
@@ -111,45 +132,33 @@
 					<div class="main_card mdl-card mdl-shadow--2dp">
 						<div id="settings">
 							<div id="settings_notifications" class="settingRow">
-								<div class="settingColumn text">
-									<span i18n="settings_editSettings_useNotifications"></span>
-								</div>
 								<div class="settingColumn">
+									<span class="label" i18n="settings_editSettings_useNotifications"></span>
 									<label id="settings_notifications_toggle" class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="switch-1">
 										<input type="checkbox" id="switch-1" class="mdl-switch__input" />
 									</label>
 								</div>
-								<div class="settingColumn text">
-									<span i18n="settings_editSettings_notificationVolume"></span>
-								</div>
 								<div class="settingColumn">
+									<span class="label" i18n="settings_editSettings_notificationVolume"></span>
 									<input id="settings_notifications_volume" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" tabindex="0"/>
-								</div>
-								<div class="settingColumn">
 									<button id="settings_notifications_test" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored" i18n="settings_editSettings_notificationTest"></button>
 								</div>
 							</div>
 							<div id="tts_notifications" class="settingRow">
-								<div class="settingColumn text">
-									<span i18n="settings_editSettings_tts"></span>
-								</div>
 								<div class="settingColumn">
+									<span class="label" i18n="settings_editSettings_tts"></span>
 									<label id="settings_tts_toggle" class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="switch-2">
 										<input type="checkbox" id="switch-2" class="mdl-switch__input" />
 									</label>
 								</div>
-								<div class="settingColumn text">
-									<span i18n="settings_editSettings_ttsVoice"></span>
-								</div>
 								<div class="settingColumn">
+									<span class="label" i18n="settings_editSettings_ttsVoice"></span>
 									<select id="settings_tts_select"></select>
 								</div>
 							</div>
 							<div id="addBtn_notifications" class="settingRow">
-								<div class="settingColumn text">
-									<span i18n="settings_editSettings_addButtons"></span>
-								</div>
 								<div class="settingColumn">
+									<span class="label" i18n="settings_editSettings_addButtons"></span>
 									<label id="settings_addbtn_toggle" class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="switch-3">
 										<input type="checkbox" id="switch-3" class="mdl-switch__input" />
 									</label>
