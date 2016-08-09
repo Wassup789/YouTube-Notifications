@@ -2,6 +2,9 @@ Changelog
 =====
 ## v1.1.X.X (XX-XX-20XX)
  * Added channel sorting
+ * Added playlist support
+ * Added custom notification sounds via local upload
+ * Removed page refresh upon new channels/playlists
  * Switched table layout to flexbox
 
 ## v1.1.2.0 (08-05-2016)

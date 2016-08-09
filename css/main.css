@@ -110,6 +110,7 @@ main {
 }
 .settingColumn:first-child {
 	padding-left: 0;
+	flex-grow: 1000;/*TESTING*/
 }
 .settingColumn .mdl-slider__container * {
 	margin: 0;
@@ -541,6 +542,10 @@ main {
 }
 .mdl-radio_menu {
 	top: -17px;
+}
+
+button.mdl-button:not(.mdl-button--fab) .material-icons {
+	margin: 0 7px 0 -3px;
 }
 
 /* SNACKBAR */
