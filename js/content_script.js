@@ -26,7 +26,7 @@ $(function(){
 				id: channelId,
 				elem: elem
 			});
-			chrome.runtime.sendMessage({type: "setYoutube", contentScript: true, name: channelId, refresh: true});
+			chrome.runtime.sendMessage({type: "addYoutubeChannel", contentScript: true, name: channelId, refresh: true});
 		}else if(elem.hasClass("yt-uix-button-subscribed-branded")){// Remove channel
 			awaitingResponse.push({
 				id: channelId,

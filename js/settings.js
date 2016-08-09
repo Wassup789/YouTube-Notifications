@@ -27,6 +27,7 @@ var wyns = {};
 		"date_minutes": getCommonString("dateMinutes"),
 		"date_second": getCommonString("dateSecond"),
 		"date_seconds": getCommonString("dateSeconds"),
+		"playlist_by": getCommonString("playlistBy"),
 	},
 	wyns.previousLastListItem;
 	wyns.importData;
@@ -51,8 +52,8 @@ $(function(){
 
 	chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 		switch (request.type) {
-			case "refreshPage":
-				refreshPage();
+			case "updateData":
+				getVideoList();
 				break;
 			case "addChannelFailed":
 				if(wyns.channelsToAdd2 == -1)
@@ -177,7 +178,8 @@ function getVideoList() {
 		
 		var elem = $("#masterChannelRow").clone().appendTo("#channels");
 		elem.removeAttr("id");
-		elem.attr("data-id", i);
+		elem.attr("data-id", channels[i].index);
+		elem.attr("data-index", i);
 		elem.css("display", "");
 		elem.find(".channelColumn:nth-child(1) .channel_img").attr("src", channels[i].thumbnail);
 		elem.find(".channelColumn:nth-child(1) .channel_a").attr("href", "https://www.youtube.com/channel/" + channels[i].id);
@@ -192,9 +194,16 @@ function getVideoList() {
 		elem.find(".channelColumn:nth-child(4) .channel_video_a").attr("title", channels[i].latestVideo.title);
 		elem.find(".channelColumn:nth-child(4) .channel_video_title").text(channels[i].latestVideo.title);
 		elem.find(".channelColumn:nth-child(4) .channel_video_time").text(date);
+
+		if(channels[i].id == channels[i].playlistId) {
+			elem.attr("data-isplaylist", true);
+			elem.find(".channelColumn:nth-child(2) .channel_author_info").html("<span>" + wyns.strings.playlist_by + " </span><span class='channel_realAuthor'>" + channels[i].altName + "</span>");
+			elem.find(".channelColumn:nth-child(1) .channel_a").attr("href", "https://www.youtube.com/playlist?list=" + channels[i].playlistId);
+			elem.find(".channelColumn:nth-child(2) .channel_a").attr("href", "https://www.youtube.com/playlist?list=" + channels[i].playlistId);
+		}
 	}
 	if(showEmpty)
-		$("#emptyChannelsList").show();
+		$("#emptyChannelsList").attr("data-type", 0).show();
 }
 
 /**
@@ -202,6 +211,8 @@ function getVideoList() {
  */
 function sortChannels(channels) {
 	var settings = JSON.parse(localStorage.getItem("settings"));
+	for(var i = 0; i < channels.length; i++)
+		channels[i].index = i;
 
 	switch(settings.sortOrder) {
 		case SORTMODE_ABC:
@@ -275,61 +286,68 @@ function registerListeners(){
 	});
 	
 	$("#add_channels-add-button").on("click", function(){
-		$("#add_channels-dialog").fadeOut("slow");
-		$("#loading").fadeIn("slow");
+		createSnackbar("Adding channels...");
+
+		$("#add_channels-container").attr("data-toggle", "false");
+
 		var num = 0;
 		$(".add_channel_input").each(function(i){
 			if($($(".add_channel_input")[i]).val() != ""){
-				chrome.extension.sendMessage({type: "setYoutube", name: $($(".add_channel_input")[i]).val(), refresh: true});
+				var playlist = getUrlVar("list", $($(".add_channel_input")[i]).val());
+
+				if(playlist != null)
+					chrome.extension.sendMessage({type: "addYoutubePlaylist", name: playlist});
+				else
+					chrome.extension.sendMessage({type: "addYoutubeChannel", name: $($(".add_channel_input")[i]).val()});
+
 				num++;
 			}
 		});
 		if(num < 1){
-			$("#loading").stop().hide();
-			$("#add_channels-dialog").stop().show().css("opacity", 1);
-			$("#add_channels-container").attr("data-toggle", "false");
 			createSnackbar(wyns.strings.add_channels_failed);
 					
 			$("#add_channels-dialog .mdl-card__supporting-text").children().not(":first").remove();
 			$("#add_channels-dialog .mdl-card__supporting-text .mdl-textfield input").val("");
 		}else
 			wyns.channelsToAdd = num;
+
+		$("#add_channels-dialog .mdl-textfield:not(:first-child)").remove();
+		$("#add_channels-dialog .mdl-textfield:first-child").removeClass("is-dirty").find("input").val("");
 	});
 	$("body").on("keyup", ".add_channel_input", function(e){
 		if(e.keyCode == 13)
 			$("#add_channels-add-button").click();
 	});
 	
-	$(".channel_remove_btn").on("click", function(){
+	$("body").on("click", ".channel_remove_btn", function(){
 		if(sortable.option("disabled")){
 			var id = parseInt($(this).parent().parent().attr("data-id"));
 			var channels = JSON.parse(localStorage.getItem("channels")),
 				name = channels[id].name;
 			channels.splice(id, 1);
 			localStorage.setItem("channels", JSON.stringify(channels));
-			$(this).parent().parent().remove();
-			$(".channelRow:not(#masterChannelRow)").each(function(i){
-				$(this).attr("data-id", i);
-			});
+
+			getVideoList();
+
 			createSnackbar(wyns.strings.user_remove_channel + "\"" + name + "\"");
 			console.log(wyns.strings.user_remove_channel + name);
 		}
 	});
-	$(".channel_info_btn").on("click", function(){
-		var id = parseInt($(this).parent().parent().attr("data-id"));
+	$("body").on("click", ".channel_info_btn", function(){
+		var id = parseInt($(this).parent().parent().attr("data-index"));
 		displayPopupCard(id);
 	});
 	$("#popup_card").on("click", ".channel_info_btn", function(){
-		var id = parseInt($(this).parent().parent().attr("data-id"));
+		var id = parseInt($(this).parent().parent().attr("data-index"));
 		displayPopupCard(id);
 	});
 	$("#popup_overlay").on("click", function(){
-		var id = parseInt($(this).parent().find("#popup_card .channelRow").attr("data-id"));
+		var id = parseInt($(this).parent().find("#popup_card .channelRow").attr("data-index"));
 		displayPopupCard(id);
 	});
 	
 	$("#settings_refresh").on("click", function(){
-		chrome.extension.sendMessage({type: "checkYoutubeBatch", refresh: true});
+		chrome.extension.sendMessage({type: "checkYoutubeBatch"});
 		createSnackbar(wyns.strings.updating);
 	});
 	
@@ -354,7 +372,7 @@ function registerListeners(){
 			disableButtons(false);
 			
 			var newArr = [],
-				oldArr = JSON.parse(localStorage.getItem("channels")),
+				oldArr = sortChannels(JSON.parse(localStorage.getItem("channels"))),
 				settings = JSON.parse(localStorage.getItem("settings"));
 			$(".channelRow:not(#masterChannelRow)").each(function(){
 				var id = parseInt($(this).attr("data-id"));
@@ -548,18 +566,6 @@ function disableButtons(bool){
 }
 
 /**
- *  Refreshes the options menu
- */
-function refreshPage(){
-	setTimeout(function(){
-		$("body").fadeOut("slow");
-		setTimeout(function(){
-			location.reload();
-		}, 600);
-	}, 500);
-}
-
-/**
  *  Updates the values in the settings page
  */
 function configureSettings(){
@@ -651,7 +657,7 @@ function launchSpeechSynthesis(){
 /**
  *  Displays a popup card for a channel displaying it's information and it's last ten videos
  *  
- *  @param {number} num The channel's index
+ *  @param {number} num The channel's display index
  */
 var popupId = -1, savedData = {}, publishedBeforeDate;
 function displayPopupCard(num){
@@ -723,10 +729,20 @@ function displayPopupCard(num){
  */
 function getChannelVideos(publishedBefore){
 	var id = parseInt($("#popup_card .channelRow").attr("data-id")),
-		channelId = JSON.parse(localStorage.getItem("channels"))[id].id,
-		playlistId = JSON.parse(localStorage.getItem("channels"))[id].playlistId,
+		channels = JSON.parse(localStorage.getItem("channels")),
+		channelId = channels[id].id,
+		playlistId = channels[id].playlistId,
 		//url = "https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&maxResults=10&playlistId=" + playlistId + "&key=" + wyns.apiKey;
 		url = "https://www.googleapis.com/youtube/v3/search?part=snippet&order=date&safeSearch=none&type=video&maxResults=10" + (typeof publishedBefore === "undefined" ? "" : "&publishedBefore=" + publishedBefore) + "&channelId=" + channelId + "&key=" + wyns.apiKey;
+
+	if(channelId == playlistId)
+		url = "https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&maxResults=10&playlistId=" + playlistId + (typeof publishedBefore === "undefined" ? "" : "&pageToken=" + publishedBefore) + "&key=" + wyns.apiKey;
+
+	if(publishedBeforeDate == -1){
+		$("#popup_videoList_more_container").slideUp();
+		return;
+	}
+
 	if(typeof savedData[channelId] !== "undefined" && typeof publishedBefore === "undefined")
 		setChannelVideos(savedData[channelId]);
 	else{
@@ -738,11 +754,17 @@ function getChannelVideos(publishedBefore){
 			success: function(data) {
 				if(data.items.length < 10)
 					$("#popup_videoList_more_container").slideUp();
-				
+
+				if(channelId == playlistId)
+					publishedBeforeDate = (typeof data.nextPageToken !== "undefined" ? data.nextPageToken : -1);
+
 				var videos = "";
-				for(var i = 0; i < data.items.length; i++)
-					//videos += data.items[i].contentDetails.videoId + ",";
-					videos += data.items[i].id.videoId + ",";
+				for(var i = 0; i < data.items.length; i++) {
+					if(channelId == playlistId)
+						videos += data.items[i].contentDetails.videoId + ",";
+					else
+						videos += data.items[i].id.videoId + ",";
+				}
 				var url = "https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,contentDetails&maxResults=1&id=" + videos + "&key=" + wyns.apiKey;
 				$.ajax({
 					type: "GET",
@@ -763,8 +785,13 @@ function getChannelVideos(publishedBefore){
 								duration:		convertISO8601Duration(data.items[i].contentDetails.duration)
 							};
 							output.push(outputAdd);
+
+							if(i == data.items.length - 1 && channelId != playlistId)
+									publishedBeforeDate = new Date(parseInt(outputAdd.timestamp) * 1000 - 1000).toISOString();
 						}
+
 						setChannelVideos(output);
+
 						if(typeof publishedBefore === "undefined")
 							savedData[channelId] = output;
 						else
@@ -819,9 +846,6 @@ function setChannelVideos(data){
 		elem.find("a .videoListColumn:nth-child(2) .videoList_sub").text(date);
 		elem.find("a .videoListColumn:nth-child(3) .videoList_title").text(addCommas(data[i].views) + " " + wyns.strings.info_views + " | " + likesa + "% " + wyns.strings.info_likes + " | " + dislikesa + "% " + wyns.strings.info_dislikes);
 		elem.find("a .videoListColumn:nth-child(3) .videoList_sub").text(data[i].duration);
-		
-		if(i == data.length - 1)
-			publishedBeforeDate = new Date(parseInt(data[i].timestamp)*1000 - 1000).toISOString();
 	}
 	
 	$("#popup_videoList_more_container").show();//Display the "load more" container incase the button is removed due to the lack of videos
@@ -859,6 +883,11 @@ function updateSearch() {
 		
 		return text.indexOf(val) < 0 ? text2.indexOf(val) < 0 : false;
 	}).hide();
+
+	if(!$(".channelRow:not(#masterChannelRow)").is(":visible"))
+		$("#emptyChannelsList").attr("data-type", 1).show();
+	else
+		$("#emptyChannelsList").hide();
 	
 	if(typeof wyns.previousLastListItem !== "undefined")
 		wyns.previousLastListItem.css("border-bottom", "");
@@ -876,10 +905,10 @@ function updateSearchExact() {
 	var val = $("#search-input").val().toLowerCase().trim();
 	var list = $(".channelRow:not(#masterChannelRow):visible");
 	if(list.length == 1)
-		displayPopupCard(parseInt(list.attr("data-id")));
+		displayPopupCard(parseInt(list.attr("data-index")));
 	list.filter(function(){
 		if($(this).find(".channel_author").text().toLowerCase().trim() == val)
-			displayPopupCard(parseInt($(this).attr("data-id")));
+			displayPopupCard(parseInt($(this).attr("data-index")));
 	});
 }
 
@@ -1042,6 +1071,22 @@ function timeSince(date){
 			return interval + " " + wyns.strings.date_seconds;
 	}else
 		return interval + " " + wyns.strings.date_second;
+}
+
+/**
+ * Extracts a GET parameter from a URL
+ *
+ * @param name The parameter to retrieve
+ * @param url The target URL
+ * @returns {null} The parameter value or null if nonexistent
+ */
+function getUrlVar(name, url) {
+	if (!url) url = location.href;
+	name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+	var regexS = "[\\?&]"+name+"=([^&#]*)";
+	var regex = new RegExp( regexS );
+	var results = regex.exec( url );
+	return results == null ? null : results[1];
 }
 
 /**

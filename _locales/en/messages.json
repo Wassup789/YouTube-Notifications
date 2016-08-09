@@ -105,11 +105,11 @@
 	},
 	"settings_addChannel_title": {
 		"description": "The label for the title of the add channel popup",
-		"message": "Add Channels"
+		"message": "Add Channels & Playlists"
 	},
 	"settings_addChannel_placeholder": {
 		"description": "The placeholder label for the add channel textbox",
-		"message": "Channel name, ID or URL"
+		"message": "Name, ID or URL"
 	},
 	"settings_addChannel_add": {
 		"description": "The label for the add channel's add button",
@@ -274,6 +274,10 @@
 	"common_dateSeconds": {
 		"description": "",
 		"message": "seconds"
+	},
+	"common_playlistBy": {
+		"description": "",
+		"message": "Playlist by"
 	},
 	"background_notificationWatch": {
 		"description": "",

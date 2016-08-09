@@ -158,25 +158,28 @@ $(function(){
 	chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 		switch (request.type) {
 			case "checkYoutubeBatch":
-				sendResponse(checkYoutubeBatch(request.refresh));
+				sendResponse(checkYoutubeBatch());
 				break;
 			case "checkYoutube":
 				sendResponse(checkYoutube(request.name));
 				break;
-			case "setYoutube":
+			case "addYoutubeChannel":
 				if(request.contentScript)
-					setYoutube(request.name, request.refresh, true, true);
+					addYoutubeChannel(request.name, true, ADD_TYPE_CHANNELID);
 				else
-					setYoutube(request.name, request.refresh, false, (typeof request.isChannelId !== "undefined" ? request.isChannelId : false));
+					addYoutubeChannel(request.name, false, (typeof request.isChannelId !== "undefined" ? (request.isChannelId ? ADD_TYPE_CHANNELID : ADD_TYPE_DEFAULT) : ADD_TYPE_DEFAULT));
+				break;
+			case "addYoutubePlaylist":
+				addYoutubeChannel(request.name, false, ADD_TYPE_PLAYLIST);
 				break;
 			case "testNotify":
 				sendResponse(wyn.testNotify());
 				break;
 			case "removeYoutube":
 				if(request.contentScript)
-					sendResponse(removeYoutube(request.num, request.name, request.refresh, true));
+					sendResponse(removeYoutube(request.num, request.name, true));
 				else
-					sendResponse(removeYoutube(request.num, request.name, request.refresh));
+					sendResponse(removeYoutube(request.num, request.name));
 				break;
 			case "doesYoutubeExist":
 				sendResponse(doesYoutubeExist(request.id, request.index));
@@ -220,21 +223,19 @@ function getCommonString(name) {
 /**
  *  Updates all channels stored's information
  *  Request is made once.
- *  
- *  @param {boolean} [refresh=false] Refreshes the options page after execution
  */
-function updateChannelsInfo(refresh){
-	refresh = refresh || false;
-	
+function updateChannelsInfo(){
 	console.log(wyn.strings.update_channels_init);
 	
 	var channels = JSON.parse(localStorage.getItem("channels"));
 	var channelIdList = "";
 	for(var i = 0; i < channels.length; i++){
-		channelIdList += channels[i].id + ",";
+		if(channels[i].id != channels[i].playlistId)
+			channelIdList += channels[i].id + ",";
 	}
 	channelIdList = channelIdList.substring(0, channelIdList.length-1);
-	var url = "https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&maxResults=1&id=" + channelIdList + "&key=" + wyn.apiKey;
+	var url = "https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&maxResults=1&id=" + channelIdList + "&key=" + wyn.apiKey,
+		url2 = "https://www.googleapis.com/youtube/v3/playlists?part=snippet&maxResults=1&id=" + channelIdList + "&key=" + wyn.apiKey;
 	$.ajax({
 		url: url,
 		error: function(){
@@ -253,12 +254,34 @@ function updateChannelsInfo(refresh){
 				}
 			}
 			localStorage.setItem("channels", JSON.stringify(channels));
+
+			$.ajax({
+				url: url2,
+				error: function(){
+					console.log(wyn.strings.update_channels_failed);
+				},
+				success: function(data){
+					for(var i = 0; i < channels.length; i++) {
+						for(var j = 0; j < data.items.length; j++){
+							if(data.items[j].id == channels[i].id){
+								channels[i].name				= data.items[j].snippet.title;
+								channels[i].altName				= data.items[j].snippet.channelTitle;
+								channels[i].thumbnail			= data.items[j].snippet.thumbnails.default.url;
+								break;
+							}
+						}
+					}
+					localStorage.setItem("channels", JSON.stringify(channels));
+				}
+			});
 		}
 	});
 }
 
 /**
  *  Pings the YouTube Data API servers
+ *
+ *  Fix: repeated code
  */
 function checkYoutubeStatus(){
 	var url = "https://www.googleapis.com/youtube/v3/videos";
@@ -270,9 +293,9 @@ function checkYoutubeStatus(){
 				chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.connect_success});
 				console.log(wyn.strings.log_color_prefix + wyn.strings.connect_success, wyn.strings.log_color_green);
 				updateChannelsInfo(true);
-				checkYoutubeBatch(true);
+				checkYoutubeBatch();
 				setInterval(function(){
-					checkYoutubeBatch(true);
+					checkYoutubeBatch();
 				}, 1000*60*5);
 			},
 			403: function() {
@@ -311,9 +334,9 @@ function checkYoutubeStatus(){
 				chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.connect_success});
 				console.log(wyn.strings.log_color_prefix + wyn.strings.connect_success, wyn.strings.log_color_green);
 				updateChannelsInfo(true);
-				checkYoutubeBatch(true);
+				checkYoutubeBatch();
 				setInterval(function(){
-					checkYoutubeBatch(true);
+					checkYoutubeBatch();
 				}, 1000*60*5);
 			}else{
 				wyn.isConnected = false;
@@ -335,18 +358,28 @@ function checkYoutubeStatus(){
  *  Adds a new channel
  *  
  *  @param {string} name The name of the channel to get information from.
- *  @param {boolean} [refresh=false] Refreshes the options page after execution
  *  @param {boolean} [fromContentScript=false] If the request was from a content script
+ *  @param {boolean} [type=ADD_TYPE_DEFAULT] The search type
  */
-function setYoutube(name, refresh, fromContentScript, isChannelId){
-	refresh = refresh || false;
+var ADD_TYPE_DEFAULT = 0,
+	ADD_TYPE_CHANNELID = 1,
+	ADD_TYPE_PLAYLIST = 2;
+function addYoutubeChannel(name, fromContentScript, type){
 	fromContentScript = fromContentScript || false;
-	isChannelId = isChannelId || false;
-	
-	if(isChannelId)
-		var url = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&maxResults=1&channelId=" + name + "&key=" + wyn.apiKey;
-	else
-		var url = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&maxResults=1&q=" + name + "&key=" + wyn.apiKey;
+	type = type || ADD_TYPE_DEFAULT;
+
+	switch(type) {
+		case ADD_TYPE_DEFAULT:
+			var url = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel,playlist&maxResults=1&q=" + name + "&key=" + wyn.apiKey;
+			break;
+		case ADD_TYPE_CHANNELID:
+			var url = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&maxResults=1&channelId=" + name + "&key=" + wyn.apiKey;
+			break;
+		case ADD_TYPE_PLAYLIST:
+			var url = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=playlist&maxResults=1&q=" + name + "&key=" + wyn.apiKey;
+			break;
+	}
+
 	console.log(wyn.strings.add_channel_init + "\"" + name + "\"");
 	$.ajax({
 		url: url,
@@ -357,43 +390,76 @@ function setYoutube(name, refresh, fromContentScript, isChannelId){
 		},
 		success: function(data) {
 			if(data.items.length == 1){
-				var id = data.items[0].id.channelId;
-				var url = "https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&maxResults=1&id=" + id + "&key=" + wyn.apiKey;
-				$.ajax({
-					url: url,
-					success: function(data) {
-						var output = {
-							"id": 				data.items[0].id,
-							"playlistId": 		data.items[0].contentDetails.relatedPlaylists.uploads,
-							"name":				data.items[0].snippet.title,
-							"thumbnail":		data.items[0].snippet.thumbnails.default.url,
-							"viewCount":		data.items[0].statistics.viewCount,
-							"subscriberCount":	data.items[0].statistics.subscriberCount,
-							"latestVideo":	{
-								"id": 			"",
-								"title":		"",
-								"description":	"",
-								"timestamp":	"",
-								"thumbnail":	"",
-								"views":		"",
-								"duration":		"",
-								"likes":		"",
-								"dislikes":		""
-							}
-						};
-						var arr = JSON.parse(localStorage.getItem("channels"));
-						arr.push(output);
-						localStorage.setItem("channels", JSON.stringify(arr));
-						if(fromContentScript){
-							chrome.tabs.query({active: true}, function(tabs){
-								tabs.forEach(function(tab){
-									chrome.tabs.sendMessage(tab.id, {type: "contentScript_response", responseType: true, id: data.items[0].id}); 
-								});
-							});
+				if(type == ADD_TYPE_PLAYLIST || data.items[0].id.kind == "youtube#playlist") {// Playlists don't need another AJAX request
+					var output = {
+						"id": data.items[0].id.playlistId,
+						"playlistId": data.items[0].id.playlistId,
+						"name": data.items[0].snippet.title,
+						"altName": data.items[0].snippet.channelTitle,
+						"thumbnail": data.items[0].snippet.thumbnails.default.url,
+						"viewCount": -1,
+						"subscriberCount": -1,
+						"latestVideo": {
+							"id": "",
+							"title": "",
+							"description": "",
+							"timestamp": "",
+							"thumbnail": "",
+							"views": "",
+							"duration": "",
+							"likes": "",
+							"dislikes": ""
 						}
-						checkYoutube(arr.length-1, refresh);
-					}
-				});
+					};
+
+					var arr = JSON.parse(localStorage.getItem("channels"));
+					arr.push(output);
+					localStorage.setItem("channels", JSON.stringify(arr));
+					checkYoutube(arr.length - 1);
+				}else {
+					var id = data.items[0].id.channelId;
+					var url = "https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&maxResults=1&id=" + id + "&key=" + wyn.apiKey;
+					$.ajax({
+						url: url,
+						success: function (data) {
+							var output = {
+								"id": data.items[0].id,
+								"playlistId": data.items[0].contentDetails.relatedPlaylists.uploads,
+								"name": data.items[0].snippet.title,
+								"altName" : "",
+								"thumbnail": data.items[0].snippet.thumbnails.default.url,
+								"viewCount": data.items[0].statistics.viewCount,
+								"subscriberCount": data.items[0].statistics.subscriberCount,
+								"latestVideo": {
+									"id": "",
+									"title": "",
+									"description": "",
+									"timestamp": "",
+									"thumbnail": "",
+									"views": "",
+									"duration": "",
+									"likes": "",
+									"dislikes": ""
+								}
+							};
+							var arr = JSON.parse(localStorage.getItem("channels"));
+							arr.push(output);
+							localStorage.setItem("channels", JSON.stringify(arr));
+							if (fromContentScript) {
+								chrome.tabs.query({active: true}, function (tabs) {
+									tabs.forEach(function (tab) {
+										chrome.tabs.sendMessage(tab.id, {
+											type: "contentScript_response",
+											responseType: true,
+											id: data.items[0].id
+										});
+									});
+								});
+							}
+							checkYoutube(arr.length - 1);
+						}
+					});
+				}
 			}else{
 				console.log(wyn.strings.add_channel_failed + "\"" + name + "\"");
 				if(!fromContentScript)
@@ -408,11 +474,9 @@ function setYoutube(name, refresh, fromContentScript, isChannelId){
  *  
  *  @param {number} type The type of the channel name (0 = index, 1 = channelID)
  *  @param {string} name The name of the channel's name
- *  @param {boolean} [refresh=false] Refreshes the options page after execution
  *  @param {boolean} [fromContentScript=false] If the request was from a content script
  */
-function removeYoutube(type, name, refresh, fromContentScript){
-	refresh = refresh || false;
+function removeYoutube(type, name, fromContentScript){
 	fromContentScript = fromContentScript || false;
 	
 	type = parseInt(type);
@@ -423,11 +487,9 @@ function removeYoutube(type, name, refresh, fromContentScript){
 		console.log(wyn.strings.remove_channel + "\"" + channelName + "\"");
 		channels.splice(id, 1);
 		localStorage.setItem("channels", JSON.stringify(channels));
-		
-		if(refresh)
-			chrome.extension.sendMessage({type: "refreshPage"});
-		else
-			chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.removed_channel + "\"" + channelName + "\""});
+
+		chrome.extension.sendMessage({type: "updateData"});
+		chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.removed_channel + "\"" + channelName + "\""});
 	}else if(type == 1){
 		var channels = JSON.parse(localStorage.getItem("channels"));
 		for(var i = 0; i < channels.length; i++){
@@ -436,10 +498,9 @@ function removeYoutube(type, name, refresh, fromContentScript){
 				channels.splice(i, 1);
 				console.log(wyn.strings.remove_channel + "\"" + channelName + "\"");
 				localStorage.setItem("channels", JSON.stringify(channels));
-				if(refresh)
-					chrome.extension.sendMessage({type: "refreshPage"});
-				else
-					chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.removed_channel + "\"" + channelName + "\""});
+
+				chrome.extension.sendMessage({type: "updateData"});
+				chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.removed_channel + "\"" + channelName + "\""});
 				if(fromContentScript){
 					chrome.tabs.query({active: true}, function(tabs){
 						tabs.forEach(function(tab){
@@ -473,11 +534,9 @@ function doesYoutubeExist(id, index){
  *  Checks a specific YouTube channel
  *  
  *  @param {number} num The index of the YouTube channel (located in localStorage item: "channels"
- *  @param {boolean} [refresh=false] Refreshes the options page after execution
  *  @param {boolean} [batch=false] If the request is from a batch check (see function: checkYoutubeBatch)
  */
-function checkYoutube(num, refresh, batch) {
-	refresh = refresh || false;
+function checkYoutube(num, batch) {
 	batch = batch || false;
 	wyn.activeCheckings[num] = true;
 	
@@ -535,14 +594,14 @@ function checkYoutube(num, refresh, batch) {
 			
 			if(prevTimestamp >= channels[num].latestVideo.timestamp){
 				wyn.activeCheckings[num] = false;
-				if(!batch){
-					for(var i = 0; i < wyn.activeCheckings.length; i++)
-						if(wyn.activeCheckings[i])
+				if(!batch) {
+					for (var i = 0; i < wyn.activeCheckings.length; i++){
+						if (wyn.activeCheckings[i])
 							return;
-					if(refresh)
-						chrome.extension.sendMessage({type: "refreshPage"});
-					else
-						chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.snackbar_nonewvideos});
+					}
+
+					chrome.extension.sendMessage({type: "updateData"});
+					chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.snackbar_nonewvideos});
 				}/*else{
 					wyn.activeBatchCheckings[num] = false;
 					for(var i = 0; i < wyn.activeBatchCheckings.length; i++)
@@ -615,11 +674,11 @@ function checkYoutube(num, refresh, batch) {
 					
 					wyn.activeCheckings[num] = false;
 					if(!batch){
-						for(var i = 0; i < wyn.activeCheckings.length; i++)
-							if(wyn.activeCheckings[i])
+						for(var i = 0; i < wyn.activeCheckings.length; i++) {
+							if (wyn.activeCheckings[i])
 								return;
-						if(refresh)
-							chrome.extension.sendMessage({type: "refreshPage"});
+						}
+						chrome.extension.sendMessage({type: "updateData"});
 					}/*else{
 						wyn.activeBatchCheckings[num] = false;
 						for(var i = 0; i < wyn.activeBatchCheckings.length; i++)
@@ -713,12 +772,8 @@ function convertISO8601Duration(t){
 
 /**
  *  Checks all YouTube channels
- *  
- *  @param {boolean} [refresh=false] Refreshes the options page after execution
  */
-function checkYoutubeBatch(refresh){
-	refresh = refresh || false;
-	
+function checkYoutubeBatch(){
 	if(wyn.batchChecking)
 		return;
 	//wyn.batchChecking = true;
@@ -729,11 +784,11 @@ function checkYoutubeBatch(refresh){
 	for(var i = 0; i < channels.length; i++){
 		setTimeout(function(i){// Debug timeout; Bug: Notifications not saving, repeated notifications; Assumption: Other channel updates overwriting
 			//wyn.activeBatchCheckings[i] = true;
-			checkYoutube(i, true, true);
+			checkYoutube(i, true);
 		}, 100*i, i);
 	}
 }
-wyn.forceRefresh = function(){checkYoutubeBatch(true)};
+wyn.forceRefresh = function(){checkYoutubeBatch()};
 
 /**
  *  Add commas to numbers > 3
@@ -1031,9 +1086,11 @@ function onReceiveImportTokenPost(output) {
  */
 function onImportApproved(data){
 	for(var i = 0; i < data.length; i++){
+		// Following value is determined if the user checked the channel
 		if(!data[i].enabled)
 			continue;
 
+		// Loop through existing channels for duplicates
 		var duplicate = false,
 			channels = JSON.parse(localStorage.getItem("channels"));
 		for(var j = 0; j < channels.length; j++){
@@ -1042,13 +1099,10 @@ function onImportApproved(data){
 				break;
 			}
 		}
+		// If no duplicates, add
 		if(!duplicate)
-			setYoutube(data[i].channelId, false, false, true);
+			addYoutubeChannel(data[i].channelId, false, false, ADD_TYPE_CHANNELID);
 	}
-
-	setTimeout(function(){
-		chrome.extension.sendMessage({type: "refreshPage"});
-	}, 10*1000);
 }
 
 /**

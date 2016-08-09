@@ -150,6 +150,19 @@ main {
 .channel_author_info {
 	display: none;
 }
+.channelRow[data-isplaylist="true"] .channel_author_info {
+	display: block;
+	margin-left: 5px;
+	color: rgba(0, 0, 255, 0.5);
+	max-width: 150px;
+}
+.channelRow[data-isplaylist="true"] .channel_author_info span:first-child {display: none;}
+.channelRow[data-isplaylist="true"] .channel_author_info span:last-child {
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
 
 .channel_video_title {
 	display: block;
@@ -176,7 +189,7 @@ main {
 	width: 25px;
 	font-size: 12px;
 	margin-top: 2px;
-	background: #B71C1C!important;
+	background: #d60000!important;
 	cursor: pointer!important;
 	padding: 0;
 }
@@ -248,10 +261,6 @@ main {
 	width: 100%;
 }
 
-#settings_notifications .settingColumn:nth-child(2), #tts_notifications .settingColumn:nth-child(2) {padding-left: 5px;}
-#settings_notifications .settingColumn:nth-child(3) {padding-left: 40px;}
-#tts_notifications .settingColumn:nth-child(3) {padding-left: 23px;}
-#settings_notifications .settingColumn:nth-child(4) .mdl-slider__container {width: 135px;}
 #settings_refresh, #settings_import {width: 100%;}
 #settings_import.double, #settings_import_changeUser {width: 49.5%}
 #settings_refresh, #settings_import {background: #8BC34A;}
@@ -291,6 +300,7 @@ main {
 	display: block;
 	width: 100px;
 	margin: 0 auto;
+	max-width: initial;
 }
 
 #popup_card[data-toggle="true"] .channelColumn:nth-child(2) .channel_author {
@@ -305,6 +315,13 @@ main {
     color: #868686;
     display: block;
     text-align: center;
+	max-width: initial;
+}
+#popup_card[data-toggle="true"] .channelRow[data-isplaylist="true"] .channel_author_info span:first-child,
+#popup_card[data-toggle="true"] .channelRow[data-isplaylist="true"] .channel_author_info span:last-child {
+	display: inline-block;
+	white-space: pre;
+	vertical-align: middle;
 }
 #popup_card[data-toggle="true"] .channelColumn:nth-child(4) {
 	width: 100%;
@@ -445,6 +462,7 @@ main {
 	position: relative;
 	top: 50%;
 	transform: translateY(-50%);
+	cursor: default;
 }
 #emptyChannelsList_header {
 	display: block;
@@ -460,6 +478,11 @@ main {
 #emptyChannelsList_subheader {
 	display: block;
 	font-size: 12px;
+}
+#emptyChannelsList[data-type="1"] #emptyChannelsList_subheader {display: none;}
+#emptyChannelsList_content i.material-icons {
+	font-size: 100px;
+	line-height: 0;
 }
 
 #import_channels_selection-dialog {
