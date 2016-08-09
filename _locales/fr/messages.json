@@ -71,6 +71,14 @@
 		"description": "The label for the change user subscription button",
 		"message": "Changer d'utilisateur"
 	},
+	"settings_editSettings_notificationSound": {
+		"description": "The label for the notification sounds label",
+		"message": "Son de Notification"
+	},
+	"settings_editSettings_uploadSound": {
+		"description": "The label for the upload sound button",
+		"message": "Ajouter son"
+	},
 	"settings_vertSettings_viewChangelog": {
 		"description": "The label for the view changelog button",
 		"message": "Voir le Changelog"
@@ -206,6 +214,18 @@
 	"settingsJs_pleaseWaitWhile": {
 		"description": "",
 		"message": "S'il vous plaît patienter, cela peut prendre un certain temps..."
+	},
+	"settingsJs_notificationSound_default": {
+		"description": "",
+		"message": "Défaut"
+	},
+	"settingsJs_uploading": {
+		"description": "",
+		"message": "L'ajout..."
+	},
+	"settingsJs_uploadComplete": {
+		"description": "",
+		"message": "Mettre en Linge Complet"
 	},
 	"common_published": {
 		"description": "First letter is capitalized",

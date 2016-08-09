@@ -11,6 +11,7 @@
 </head>
 <body>
 	<div id="loading" style="display: none;"></div>
+	<input id="fileUploader" type="file" accept="audio/*" hidden>
 	<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--fixed-tabs">
 		<header id="header" class="mdl-layout__header">
 			<div id="header_title" class="mdl-layout__header-row">
@@ -143,6 +144,15 @@
 									<span class="label" i18n="settings_editSettings_notificationVolume"></span>
 									<input id="settings_notifications_volume" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" tabindex="0"/>
 									<button id="settings_notifications_test" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored" i18n="settings_editSettings_notificationTest"></button>
+								</div>
+							</div>
+							<div id="sound_notifications" class="settingRow">
+								<div class="settingColumn">
+									<span class="label" i18n="settings_editSettings_notificationSound"></span>
+									<select id="settings_sound_list"></select>
+								</div>
+								<div class="settingColumn">
+									<button id="settings_sound_upload" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored" i18n="settings_editSettings_uploadSound"></button>
 								</div>
 							</div>
 							<div id="tts_notifications" class="settingRow">

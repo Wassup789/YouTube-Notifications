@@ -267,7 +267,8 @@ main {
 #settings_import_changeUser {background: #6C6AEC;}
 .mdl-switch.is-checked .mdl-switch__track {background: rgba(244, 67, 54, 0.5);}
 .mdl-switch.is-checked .mdl-switch__thumb, .mdl-switch__ripple-container .mdl-ripple, .mdl-slider__background-lower {background: #F44336;}
-#settings_tts_select {
+#settings_tts_select,
+#settings_sound_list {
 	width: 150px;
 	margin-left: 5px;
 }

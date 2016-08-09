@@ -48,10 +48,29 @@ var wyn = {};
 	var apiKeyIndex = Math.floor(Math.random() * wyn.apiKeys.length);
 	console.log("Using API Key #" + (apiKeyIndex + 1));
 	wyn.apiKey = wyn.apiKeys[apiKeyIndex];
+	wyn.databaseRequest = indexedDB.open("default", 2);
+	wyn.database;
+
+//Deal with the indexedDB
+wyn.databaseRequest.onupgradeneeded = function(e) {
+	var db = e.target.result;
+
+	if(!db.objectStoreNames.contains("customMedia"))
+		db.createObjectStore("customMedia");
+};
+wyn.databaseRequest.onsuccess = function(e) {
+	wyn.database = e.target.result;
+
+	updateNotificationSound();
+};
+
 
 var SORTMODE_USER = 0,
 	SORTMODE_ABC = 1,
 	SORTMODE_UPLOAD = 2;
+
+var NOTIFICATIONSOUND_DEFAULT = 0,
+	NOTIFICATIONSOUND_CUSTOM = 100;
 
 if(localStorage.getItem("channels") == null)
 	localStorage.setItem("channels", JSON.stringify([]));
@@ -75,7 +94,8 @@ if(localStorage.getItem("settings") == null)
 			id: ""
 		},
 		extendedAuthToken: "",
-		sortOrder: SORTMODE_USER
+		sortOrder: SORTMODE_USER,
+		notificationSound: NOTIFICATIONSOUND_DEFAULT
 	}));
 
 fixItems();
@@ -119,6 +139,10 @@ function fixItems(){
 	}
 	if(typeof settings.sortOrder === "undefined"){
 		settings.sortOrder = SORTMODE_USER;
+		localStorage.setItem("settings", JSON.stringify(settings));
+	}
+	if(typeof settings.notificationSound === "undefined"){
+		settings.notificationSound = NOTIFICATIONSOUND_DEFAULT;
 		localStorage.setItem("settings", JSON.stringify(settings));
 	}
 }
@@ -193,6 +217,9 @@ $(function(){
 				break;
 			case "importUserApproved":
 				sendResponse(onImportApproved(request.data));
+				break;
+			case "updateNotificationSound":
+				sendResponse(updateNotificationSound());
 				break;
 		}
 	});
@@ -826,11 +853,26 @@ function notify(ntID, options){
 		localStorage.setItem("badgeCount", ++bc);
 		bc = localStorage.getItem("badgeCount");
 		updateBadge({colour:'#e12a27', text:"" + bc});*/
-		
-		wyn.notificationSound.volume = parseInt(JSON.parse(localStorage.getItem("settings"))["notifications"]["volume"])/100;
-		wyn.notificationSound.play()
+
+		playNotificationSound();
 		notifyTTS(options);
 	});
+}
+
+function playNotificationSound() {
+	$(wyn.notificationSound).stop();
+	wyn.notificationSound.currentTime = 0;
+	wyn.notificationSound.volume = parseInt(JSON.parse(localStorage.getItem("settings"))["notifications"]["volume"])/100;
+	wyn.notificationSound.play();
+	setTimeout(function(){
+		$(wyn.notificationSound).animate({volume: 0}, {
+			duration: 5000,
+			complete: function() {
+				wyn.notificationSound.pause()
+				wyn.notificationSound.currentTime = 0;
+			}
+		});
+	}, 5000);
 }
 
 /**
@@ -1205,10 +1247,30 @@ function onReceiveExtendedTokenPost(access_token, videoInfo) {
 		};
 		
 		chrome.notifications.create(ntID, options, function(){
-			wyn.notificationSound.volume = parseInt(JSON.parse(localStorage.getItem("settings"))["notifications"]["volume"])/100;
-			wyn.notificationSound.play()
+			playNotificationSound();
 			notifyTTS(options);
 		});
 	};
 	xhr.send(JSON.stringify(requestData));
+}
+
+function updateNotificationSound() {
+	setTimeout(function() {//Somehow make this more... smooth
+		var settings = JSON.parse(localStorage.getItem("settings"));
+		switch (settings.notificationSound) {
+			case NOTIFICATIONSOUND_CUSTOM:
+				var transaction = wyn.database.transaction(["customMedia"], "readonly"),
+					store = transaction.objectStore("customMedia"),
+					data = store.get(0);
+
+				data.onsuccess = function () {
+					if (typeof data.result !== "undefined")
+						wyn.notificationSound = new Audio(data.result.file);
+				};
+				break;
+			default:
+				wyn.notificationSound = new Audio("sound/notification.mp3");
+				break;
+		}
+	}, 0);
 }

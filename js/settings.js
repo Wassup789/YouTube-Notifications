@@ -31,10 +31,22 @@ var wyns = {};
 	},
 	wyns.previousLastListItem;
 	wyns.importData;
+	wyns.databaseRequest = indexedDB.open("default", 2);
+	wyns.database;
+
+//Deal with the indexedDB
+wyns.databaseRequest.onsuccess = function(e) {
+	wyns.database = e.target.result;
+
+	updateNotificationMedia(true);
+};
 
 var SORTMODE_USER = 0,
 	SORTMODE_ABC = 1,
 	SORTMODE_UPLOAD = 2;
+
+var NOTIFICATIONSOUND_DEFAULT = 0,
+	NOTIFICATIONSOUND_CUSTOM = 100;
 
 var sortElem_custom, sortElem_latestUpload, sortElem_abc;
 
@@ -525,6 +537,40 @@ function registerListeners(){
 		mdl_toggleRadio(sortElem_abc, false);
 
 		getVideoList();
+	});
+
+	//Start of file uploader
+	$("#settings_sound_upload").on("click", function(){
+		$("#fileUploader").click();
+	});
+	$("#fileUploader").on("change", function(){
+		createSnackbar(getString("uploading"));
+
+		var file = $("#fileUploader")[0].files[0],
+			fileReader = new FileReader();
+
+		fileReader.onloadend = function(){
+			var data = {
+				name: file.name.replace(/\.[^/.]+$/, ""),
+				file: this.result
+			};
+
+			var transaction = wyns.database.transaction(["customMedia"], "readwrite"),
+				store = transaction.objectStore("customMedia"),
+				request = store.delete(0);
+
+			request.onsuccess = function(){
+				transaction = wyns.database.transaction(["customMedia"], "readwrite");
+				store = transaction.objectStore("customMedia");
+				request = store.add(data, 0);
+
+				createSnackbar(getString("uploadcomplete"));
+				updateNotificationMedia(false);
+
+				chrome.extension.sendMessage({type: "updateNotificationSound"});
+			};
+		};
+		fileReader.readAsDataURL(file)
 	});
 }
 
@@ -1019,6 +1065,41 @@ function changeImportOAuthToken() {
 			requestImportToken();
 		}
 	);
+}
+
+/**
+ *
+ */
+function updateNotificationMedia(registerListeners) {
+	var selectElem = $("#settings_sound_list");
+	selectElem.children().remove();
+	selectElem.append($("<option></option>").attr("value", NOTIFICATIONSOUND_DEFAULT).text(getString("notificationSound_default")));
+
+	var transaction = wyns.database.transaction(["customMedia"], "readonly"),
+		store = transaction.objectStore("customMedia"),
+		data = store.get(0);
+
+	data.onsuccess = function() {
+		if (typeof data.result !== "undefined") {
+			$("#settings_sound_list").append($("<option></option>").attr("value", NOTIFICATIONSOUND_CUSTOM).text(data.result.name));
+
+			selectElem.val(JSON.parse(localStorage.getItem("settings")).notificationSound);
+		}
+	};
+
+	selectElem.val(JSON.parse(localStorage.getItem("settings")).notificationSound);
+
+	if(registerListeners) {
+		$("#settings_sound_list").on("change", function(){
+			var value = parseInt(selectElem.val()),
+				settings = JSON.parse(localStorage.getItem("settings"));
+			settings.notificationSound = parseInt(selectElem.val());
+			localStorage.setItem("settings", JSON.stringify(settings));
+			createSnackbar(wyns.strings.saved);
+
+			chrome.extension.sendMessage({type: "updateNotificationSound"});
+		});
+	}
 }
 
 /**
