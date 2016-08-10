@@ -10,7 +10,6 @@
 	<script type="text/javascript" src="js/settings.js"></script>
 </head>
 <body>
-	<div id="loading" style="display: none;"></div>
 	<input id="fileUploader" type="file" accept="audio/*" hidden>
 	<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--fixed-tabs">
 		<header id="header" class="mdl-layout__header">
@@ -277,6 +276,10 @@
 			</div>
 			<div class="mdl-card__supporting-text">
 				<span id="import_channels_selection-contentTitle"><span i18n="settings_importChannelsSelection_title"></span></span>
+				<div id="import_channels_noChannelsFound">
+					<i class="material-icons">notifications_off</i>
+					<span i18n="settings_noChannels_header"></span>
+				</div>
 				<ul id="import_channels_selectionList" class="mdl-list">
 					<li id="masterImportChannelRow" class="mdl-list__item" style="display: none;">
 						<span class="mdl-list__item-primary-content">

@@ -442,7 +442,7 @@ function addYoutubeChannel(name, fromContentScript, type){
 					var arr = JSON.parse(localStorage.getItem("channels"));
 					arr.push(output);
 					localStorage.setItem("channels", JSON.stringify(arr));
-					checkYoutube(arr.length - 1);
+					checkYoutube(arr.length - 1, false, true);
 				}else {
 					var id = data.items[0].id.channelId;
 					var url = "https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&maxResults=1&id=" + id + "&key=" + wyn.apiKey;
@@ -483,7 +483,7 @@ function addYoutubeChannel(name, fromContentScript, type){
 									});
 								});
 							}
-							checkYoutube(arr.length - 1);
+							checkYoutube(arr.length - 1, false, true);
 						}
 					});
 				}
@@ -515,7 +515,7 @@ function removeYoutube(type, name, fromContentScript){
 		channels.splice(id, 1);
 		localStorage.setItem("channels", JSON.stringify(channels));
 
-		chrome.extension.sendMessage({type: "updateData"});
+		chrome.extension.sendMessage({type: "updateData", newData: false});
 		chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.removed_channel + "\"" + channelName + "\""});
 	}else if(type == 1){
 		var channels = JSON.parse(localStorage.getItem("channels"));
@@ -526,7 +526,7 @@ function removeYoutube(type, name, fromContentScript){
 				console.log(wyn.strings.remove_channel + "\"" + channelName + "\"");
 				localStorage.setItem("channels", JSON.stringify(channels));
 
-				chrome.extension.sendMessage({type: "updateData"});
+				chrome.extension.sendMessage({type: "updateData", newData: false});
 				chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.removed_channel + "\"" + channelName + "\""});
 				if(fromContentScript){
 					chrome.tabs.query({active: true}, function(tabs){
@@ -562,9 +562,11 @@ function doesYoutubeExist(id, index){
  *  
  *  @param {number} num The index of the YouTube channel (located in localStorage item: "channels"
  *  @param {boolean} [batch=false] If the request is from a batch check (see function: checkYoutubeBatch)
+ *  @param {boolean} [isNewItem=false] If this channel is new and the data has to be pushed
  */
-function checkYoutube(num, batch) {
+function checkYoutube(num, batch, isNewItem) {
 	batch = batch || false;
+	isNewItem = isNewItem || false;
 	wyn.activeCheckings[num] = true;
 	
 	var channels = JSON.parse(localStorage.getItem("channels"));
@@ -627,20 +629,11 @@ function checkYoutube(num, batch) {
 							return;
 					}
 
-					chrome.extension.sendMessage({type: "updateData"});
+					chrome.extension.sendMessage({type: "updateData", newData: false});
 					chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.snackbar_nonewvideos});
-				}/*else{
-					wyn.activeBatchCheckings[num] = false;
-					for(var i = 0; i < wyn.activeBatchCheckings.length; i++)
-						if(wyn.activeBatchCheckings[i])
-							return;
-					wyn.batchChecking = false;
-					if(wyn.hasBatchChanged){
-						if(refresh)
-							chrome.extension.sendMessage({type: "refreshPage"});
-					}else
-						chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.snackbar_nonewvideos});
-				}*/
+				}
+				if(isNewItem)
+					chrome.extension.sendMessage({type: "updateData", newData: true, newDataIndex: num});
 				return;
 			}
 			$.ajax({
@@ -705,19 +698,10 @@ function checkYoutube(num, batch) {
 							if (wyn.activeCheckings[i])
 								return;
 						}
-						chrome.extension.sendMessage({type: "updateData"});
-					}/*else{
-						wyn.activeBatchCheckings[num] = false;
-						for(var i = 0; i < wyn.activeBatchCheckings.length; i++)
-							if(wyn.activeBatchCheckings[i])
-								return;
-						wyn.batchChecking = false;
-						if(wyn.hasBatchChanged){
-							if(refresh)
-								chrome.extension.sendMessage({type: "refreshPage"});
-						}else
-							chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.snackbar_nonewvideos});
-					}*/
+						chrome.extension.sendMessage({type: "updateData", newData: false});
+					}
+					if(isNewItem)
+						chrome.extension.sendMessage({type: "updateData", newData: true, newDataIndex: num});
 				}
 			});
 		}

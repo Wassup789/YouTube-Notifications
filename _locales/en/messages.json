@@ -88,11 +88,11 @@
 		"message": "Help"
 	},
 	"settings_vertSettings_channelAlignment": {
-		"description": "The label for the edit channel layout button",
-		"message": "Edit Channel Layout"
+		"description": "The label for the edit layout button",
+		"message": "Edit Layout"
 	},
 	"settings_vertSettings_channelAlignment2": {
-		"description": "The label for the edit channel layout finish button",
+		"description": "The label for the edit layout finish button",
 		"message": "Save Changes"
 	},
 	"settings_vertSettings_sortMode": {

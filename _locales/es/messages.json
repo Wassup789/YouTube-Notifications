@@ -89,7 +89,7 @@
 	},
 	"settings_vertSettings_channelAlignment": {
 		"description": "The label for the edit channel layout button",
-		"message": "Editar dise\\00f1o"
+		"message": "Editar Diseño"
 	},
 	"settings_vertSettings_channelAlignment2": {
 		"description": "The label for the edit channel layout finish button",

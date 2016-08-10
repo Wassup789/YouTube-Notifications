@@ -65,7 +65,10 @@ $(function(){
 	chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 		switch (request.type) {
 			case "updateData":
-				getVideoList();
+				if(request.newData)
+					getVideoList(request.newDataIndex);
+				else
+					getVideoList();
 				break;
 			case "addChannelFailed":
 				if(wyns.channelsToAdd2 == -1)
@@ -132,9 +135,12 @@ function checkImportToken(){
 			}
 			
 			if (error) {
+				$("#settings_import").removeClass("double");
 				$("#settings_import_changeUser").hide();
-			}else
+			}else {
 				$("#settings_import").addClass("double");
+				$("#settings_import_changeUser").show();
+			}
 		}
 	);
 }
@@ -171,8 +177,12 @@ function getCommonString(name) {
 
 /**
  *  Gets information of all YouTube channels and displays it in the options menu
+ *
+ *  @param {number} [index=-1] The index to scroll to after completion
  */
-function getVideoList() {
+function getVideoList(index) {
+	index = index || -1;
+
 	var channels = JSON.parse(localStorage.getItem("channels")),
 		showEmpty = true;
 
@@ -214,8 +224,17 @@ function getVideoList() {
 			elem.find(".channelColumn:nth-child(2) .channel_a").attr("href", "https://www.youtube.com/playlist?list=" + channels[i].playlistId);
 		}
 	}
+
 	if(showEmpty)
 		$("#emptyChannelsList").attr("data-type", 0).show();
+
+	if(index != -1) {
+		var newElem = $(".channelRow[data-id='" + index + "']");
+		newElem[0].scrollIntoViewIfNeeded();
+		newElem.css("background-color", "#C1C1C1");
+		setTimeout(function(){newElem.css("transition", "background 3s").css("background-color", "#FFFFFF");}, 0);
+		setTimeout(function(){newElem.css("transition", "");}, 3000)
+	}
 }
 
 /**
@@ -391,11 +410,11 @@ function registerListeners(){
 				newArr.push(oldArr[id]);
 			});
 
-			localStorage.setItem("channels", JSON.stringify(newArr));
 
 			if(JSON.stringify(oldArr) != JSON.stringify(newArr)) {
+				localStorage.setItem("channels", JSON.stringify(newArr));
 				settings.sortOrder = SORTMODE_USER;
-				localStorage.setItem("settings", JSON.parse(settings));
+				localStorage.setItem("settings", JSON.stringify(settings));
 				sortElem_custom.click();
 			}
 
@@ -594,11 +613,8 @@ function disableButtons(bool){
 		$(".channelRow:not(#masterChannelRow) .channelColumn:nth-child(5) .channel_info_btn").hide();
 		$("#add_channels-fab").hide();
 		$("#add_channels-container").attr("data-toggle", "false");
-		
-		$("a.mdl-layout__tab").removeClass("is-active");
-		$("a[href='#tab-newest_uploads']").addClass("is-active");
-		$(".mdl-layout__tab-panel").removeClass("is-active");
-		$("#tab-newest_uploads").addClass("is-active");
+
+		setPage("#tab-newest_uploads");
 		$("#search-textbox").css("opacity", 0).addClass("noninteractable").removeClass("is-dirty");
 		$("#search-btn").css("opacity", 0).addClass("noninteractable");
 		$("#search-input").val("");
@@ -824,7 +840,7 @@ function getChannelVideos(publishedBefore){
 								title:			data.items[i].snippet.title,
 								description:	data.items[i].snippet.description,
 								timestamp:		Date.parse(data.items[i].snippet.publishedAt)/1000,
-								thumbnail:		data.items[i].snippet.thumbnails.high.url,
+								thumbnail:		data.items[i].snippet.thumbnails.default.url,
 								likes:			data.items[i].statistics.likeCount,
 								dislikes:		data.items[i].statistics.dislikeCount,
 								views:			data.items[i].statistics.viewCount,
@@ -920,7 +936,9 @@ function initSearch() {
 function updateSearch() {
 	if(popupId != -1)
 		return;
-	
+
+	setPage("#tab-newest_uploads");
+
 	var val = $("#search-input").val().toLowerCase().trim();
 	
 	$(".channelRow:not(#masterChannelRow)").show().filter(function() {
@@ -1019,6 +1037,8 @@ function showImportPopup() {
 function displayImportData(data) {
 	wyns.importData = data;
 
+	checkImportToken();
+
 	data.sort(function(a, b) {
 		var text1 = a.title.toLowerCase(),
 			text2 = b.title.toLowerCase();
@@ -1027,9 +1047,13 @@ function displayImportData(data) {
 
 	$("#import_channels_selectionList").children(":not(#masterImportChannelRow)").remove();
 	for(var i = 0; i < data.length; i++) {
+		if(data[i].thumbnail.startsWith("//"))
+			data[i].thumbnail = "https:" + data[i].thumbnail;
+
 		var elem = $("#masterImportChannelRow").clone().appendTo("#import_channels_selectionList");
 		elem.removeAttr("id");
 		elem.attr("data-id", i);
+		elem.attr("title", data[i].title);
 		elem.css("display", "");
 		elem.find(".import_channels_selectionRow-title").text(data[i].title);
 		elem.find(".import_channels_selectionRow-img").attr("src", data[i].thumbnail);
@@ -1041,6 +1065,11 @@ function displayImportData(data) {
 			elem.find(".import_channels_selectionRow-val input")[0].checked = false;
 		}
 	}
+	if(data.length == 0)
+		$("#import_channels_noChannelsFound").show();
+	else
+		$("#import_channels_noChannelsFound").hide();
+
 	$("#import_channels_selection-container").attr("data-toggle", true);
 }
 
@@ -1068,10 +1097,11 @@ function changeImportOAuthToken() {
 }
 
 /**
- *
+ * Updates the notification dropdown selection items
  */
 function updateNotificationMedia(registerListeners) {
 	var selectElem = $("#settings_sound_list");
+
 	selectElem.children().remove();
 	selectElem.append($("<option></option>").attr("value", NOTIFICATIONSOUND_DEFAULT).text(getString("notificationSound_default")));
 
@@ -1100,6 +1130,17 @@ function updateNotificationMedia(registerListeners) {
 			chrome.extension.sendMessage({type: "updateNotificationSound"});
 		});
 	}
+}
+
+/**
+ * Sets the current page
+ * Example tabId value: '#tab-edit_settings'
+ */
+function setPage(tabId) {
+	$("a.mdl-layout__tab").removeClass("is-active");
+	$("a[href='" + tabId + "']").addClass("is-active");
+	$(".mdl-layout__tab-panel").removeClass("is-active");
+	$(tabId).addClass("is-active");
 }
 
 /**

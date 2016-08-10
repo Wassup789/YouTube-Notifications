@@ -4,7 +4,10 @@ Changelog
  * Added channel sorting
  * Added playlist support
  * Added custom notification sounds via local upload
+ * Added import channel empty state
  * Removed page refresh upon new channels/playlists
+ * New channel additions will be scrolled to view upon addition
+ * Video thumbnails now use less data
  * Switched table layout to flexbox
 
 ## v1.1.2.0 (08-05-2016)
