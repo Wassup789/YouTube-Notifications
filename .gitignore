@@ -1,3 +1,8 @@
+# Remove auto-generated files
+settings.html
+js/settings.js
+
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
