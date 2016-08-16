@@ -5,15 +5,15 @@
 	},
 	"appDesc": {
 		"description": "App description.",
-		"message": "Recevez des notifications lorsque les utilisateurs de YouTube sélectionnés télécharger une nouvelle vidéo."
+		"message": "Recevez des notifications lorsque les utilisateurs de YouTube sélectionnés envoient une nouvelle vidéo."
 	},
 	"settings_newVersion": {
 		"description": "The button displayed when there is a new version",
-		"message": "Nouvelle version!"
+		"message": "Nouvelle version !"
 	},
 	"settings_headerTabs1": {
 		"description": "The first tab text: Newest Uploads",
-		"message": "Derniers Envois"
+		"message": "Derniers envois"
 	},
 	"settings_headerTabs2": {
 		"description": "The second tab text: Edit Settings",
@@ -25,47 +25,47 @@
 	},
 	"settings_noChannels_header": {
 		"description": "The channels list, content header text if no channels are found",
-		"message": "Aucun Canaux Trouvés"
+		"message": "Aucunes chaînes trouvées"
 	},
 	"settings_noChannels_subheader": {
 		"description": "The channels list, content subheader text if no channels are found",
-		"message": "Importer Abonnements"
+		"message": "Importer vos abonnements"
 	},
 	"settings_editSettings_useNotifications": {
 		"description": "The label for the enable notifications checkbox",
-		"message": "Utilisez Notifications"
+		"message": "Utiliser des notifications"
 	},
 	"settings_editSettings_notificationVolume": {
 		"description": "The label for the notification volume slider",
-		"message": "Notification Volume"
+		"message": "Volume des notifications"
 	},
 	"settings_editSettings_notificationTest": {
 		"description": "The label for the notification test button",
-		"message": "Tester"
+		"message": "Essayer"
 	},
 	"settings_editSettings_tts": {
 		"description": "The label for the enable text-to-speech checkbox",
-		"message": "Utilisez Text-To-Speech"
+		"message": "Utilisez la synthèse vocale"
 	},
 	"settings_editSettings_ttsVoice": {
 		"description": "The label for the text-to-speech selector",
-		"message": "Text-To-Speech Voix"
+		"message": "Voix pour la synthèse vocale"
 	},
 	"settings_editSettings_addButtons": {
 		"description": "The label for the enable add buttons checkbox",
-		"message": "Ajouter des boutons sur YouTube"
+		"message": "Activer le bouton \"Ajouter\" sur YouTube"
 	},
 	"settings_editSettings_addButtonsSubs": {
 		"description": "The label for the view subscriptions button",
-		"message": "Voir les Souscriptions"
+		"message": "Voir les abonnements"
 	},
 	"settings_editSettings_manualRefresh": {
 		"description": "The label for the manual refresh button",
-		"message": "Actualiser Manuel"
+		"message": "Actualisation manuelle"
 	},
 	"settings_editSettings_importSubscription": {
 		"description": "The label for the import subscription button",
-		"message": "Abonnements d'Importation"
+		"message": "Importation d'abonnements"
 	},
 	"settings_editSettings_importSubscriptionChange": {
 		"description": "The label for the change user subscription button",
@@ -73,15 +73,15 @@
 	},
 	"settings_editSettings_notificationSound": {
 		"description": "The label for the notification sounds label",
-		"message": "Son de Notification"
+		"message": "Son de notification"
 	},
 	"settings_editSettings_uploadSound": {
 		"description": "The label for the upload sound button",
-		"message": "Ajouter son"
+		"message": "Ajouter un son"
 	},
 	"settings_vertSettings_viewChangelog": {
 		"description": "The label for the view changelog button",
-		"message": "Voir le Changelog"
+		"message": "Voir les changelogs"
 	},
 	"settings_vertSettings_help": {
 		"description": "The label for the help button",
@@ -93,19 +93,19 @@
 	},
 	"settings_vertSettings_channelAlignment2": {
 		"description": "The label for the edit channel layout finish button",
-		"message": "Sauvegarder les Modifications"
+		"message": "Sauvegarder les modifications"
 	},
 	"settings_vertSettings_sortMode": {
 		"description": "The label for the sort mode button",
-		"message": "Mode Tri"
+		"message": "Mode de triage"
 	},
 	"settings_vertSettings_sortMode_custom": {
 		"description": "The label for the sort mode: custom",
-		"message": "Défini par l'utilisateur"
+		"message": "Personalisé"
 	},
 	"settings_vertSettings_sortMode_latestUpload": {
 		"description": "The label for the sort mode: latestUpload",
-		"message": "Dernières Upload"
+		"message": "Plus récentes"
 	},
 	"settings_vertSettings_sortMode_abc": {
 		"description": "The label for the sort mode: abc",
@@ -113,7 +113,7 @@
 	},
 	"settings_addChannel_title": {
 		"description": "The label for the title of the add channel popup",
-		"message": "Ajouter Chaînes & Playlists"
+		"message": "Ajouter des chaînes & playlists"
 	},
 	"settings_addChannel_placeholder": {
 		"description": "The placeholder label for the add channel textbox",
@@ -133,11 +133,11 @@
 	},
 	"settings_changelog_close": {
 		"description": "The label for the changelog's close button",
-		"message": "Près"
+		"message": "Fermer"
 	},
 	"settings_importChannels_title": {
 		"description": "The label for the title of the import channels popup",
-		"message": "Importer des Canaux"
+		"message": "Importer des chaînes"
 	},
 	"settings_importChannels_cancel": {
 		"description": "The label for the change channel's cancel button",
@@ -149,11 +149,11 @@
 	},
 	"settings_importChannels_check": {
 		"description": "The label for the import channel's check all button",
-		"message": "Vérifie tout"
+		"message": "Tout Cocher"
 	},
 	"settings_importChannels_uncheck": {
 		"description": "The label for the import channel's uncheck all button",
-		"message": "Décocher tout"
+		"message": "Tout Décocher"
 	},
 	"settings_importChannels_titlePrefix": {
 		"description": "The prefix for the import channel popup's title",
@@ -161,7 +161,7 @@
 	},
 	"settings_importChannels_titleSuffix": {
 		"description": "The suffix for the import channel popup's title",
-		"message": "canaux au total"
+		"message": "Toutes les chaînes"
 	},
 	"settings_importChannels_contentOverRecommended": {
 		"description": "The label for the import channel popup's content for over recommended amount of channels",
@@ -169,15 +169,15 @@
 	},
 	"settings_importChannels_contentDuplicate": {
 		"description": "The label for the import channel popup's content for duplicate channels",
-		"message": "Canaux en double ne seront pas ajoutés."
+		"message": "Les chaînes dupliquées ne seront pas ajoutées."
 	},
 	"settings_importChannels_contentStatisticsTitle": {
 		"description": "The title label for the import channel popup's content for statistics",
-		"message": "Toutes les 5 minutes, cela se traduit par..."
+		"message": "Toutes les 5 minutes, cela donneras..."
 	},
 	"settings_importChannels_contentStatisticsRequests": {
 		"description": "The suffix for the import channel popup's content for statistics requests",
-		"message": "demandes"
+		"message": "requêtes"
 	},
 	"settings_importChannels_contentStatisticsDownloads": {
 		"description": "The suffix for the import channel popup's content for statistics downloads",
@@ -185,7 +185,7 @@
 	},
 	"settings_importChannelsSelection_title": {
 		"description": "The title of the import channel selection popup",
-		"message": "Sélectionner les canaux à l'importation"
+		"message": "Sélectionner les chaînes à importer"
 	},
 	"settings_searchPlaceholder": {
 		"description": "The label for the search input",
@@ -197,23 +197,23 @@
 	},
 	"settingsJs_saved": {
 		"description": "",
-		"message": "Sauvés"
+		"message": "Sauvegarder"
 	},
 	"settingsJs_userRemoveChannel": {
 		"description": "",
-		"message": "Enlever chaîne YouTube: "
+		"message": "Chaines supprimées: "
 	},
 	"settingsJs_addChannelsFailed": {
 		"description": "",
-		"message": "Impossible d'ajouter tous les canaux entrés"
+		"message": "Impossible d'ajouter toutes les chaînes"
 	},
 	"settingsJs_pleaseWait": {
 		"description": "",
-		"message": "S'il vous plaît, attendez..."
+		"message": "Veuillez patienter..."
 	},
 	"settingsJs_pleaseWaitWhile": {
 		"description": "",
-		"message": "S'il vous plaît patienter, cela peut prendre un certain temps..."
+		"message": "Veuillez patienter, cela peut prendre un certain temps..."
 	},
 	"settingsJs_notificationSound_default": {
 		"description": "",
@@ -221,11 +221,11 @@
 	},
 	"settingsJs_uploading": {
 		"description": "",
-		"message": "L'ajout..."
+		"message": "Envoie..."
 	},
 	"settingsJs_uploadComplete": {
 		"description": "",
-		"message": "Mettre en Linge Complet"
+		"message": "Envoie Terminé"
 	},
 	"common_published": {
 		"description": "First letter is capitalized",
@@ -241,11 +241,11 @@
 	},
 	"common_likes": {
 		"description": "",
-		"message": "aime"
+		"message": "aiment"
 	},
 	"common_dislikes": {
 		"description": "",
-		"message": "dégoûts"
+		"message": "n'aiment pas"
 	},
 	"common_ago": {
 		"description": "Ex: Published 12 hours ago",
@@ -305,7 +305,7 @@
 	},
 	"background_notificationClose": {
 		"description": "",
-		"message": "Près"
+		"message": "Fermer"
 	},
 	"background_notificationWatchLater": {
 		"description": "",
@@ -313,15 +313,15 @@
 	},
 	"background_notificationLogCheck": {
 		"description": "",
-		"message": "Vérification YouTube utilisateur: "
+		"message": "Vérification de l'utilisateur YouTube: "
 	},
 	"background_notificationLogNew": {
 		"description": "",
-		"message": "A trouvé nouvelle vidéo youtube pour: "
+		"message": "Nouvelle vidéo YouTube trouvée de: "
 	},
 	"background_snackbarNoNewVideos": {
 		"description": "",
-		"message": "Pas de nouveaux vidéos trouvées"
+		"message": "Pas de nouvelle vidéo trouvé"
 	},
 	"background_connectSuccess": {
 		"description": "",
@@ -337,35 +337,35 @@
 	},
 	"background_updateChannelsComplete": {
 		"description": "",
-		"message": "Fini la mise à jour chaînes YouTube"
+		"message": "Mise à jour des chaînes YouTube terminée"
 	},
 	"background_updateChannelsFailed": {
 		"description": "",
-		"message": "Impossible de mettre à jour chaînes YouTube"
+		"message": "Impossible de mettre à jour les chaînes YouTube"
 	},
 	"background_updateChannelsFailedChannelPrefix": {
 		"description": "",
-		"message": "Chaîne Youtube: "
+		"message": "Les chaîne Youtube: "
 	},
 	"background_updateChannelsFailedChannelSuffix": {
 		"description": "",
-		"message": " ne pouvait être vérifiée"
+		"message": " n'ont pas pus être vérifiée"
 	},
 	"background_addChannelInit": {
 		"description": "",
-		"message": "Ajout canal: "
+		"message": "Ajout de la chaîne: "
 	},
 	"background_addChannelFailed": {
 		"description": "",
-		"message": "Impossible d'ajouter le canal: "
+		"message": "Impossible d'ajouter la chaîne: "
 	},
 	"background_removeChannel": {
 		"description": "",
-		"message": "Retrait canal: "
+		"message": "Suppression de la chaîne: "
 	},
 	"background_removedChannel": {
 		"description": "",
-		"message": "Canal enlevé: "
+		"message": "Chaîne supprimée: "
 	},
 	"background_importFailed": {
 		"description": "",
