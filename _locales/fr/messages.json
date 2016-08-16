@@ -85,7 +85,7 @@
 	},
 	"settings_vertSettings_help": {
 		"description": "The label for the help button",
-		"message": "Aider"
+		"message": "Aide"
 	},
 	"settings_vertSettings_channelAlignment": {
 		"description": "The label for the edit channel layout button",
