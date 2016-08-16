@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+
+    <link rel="import" href="bower_components/iron-pages/iron-pages.html">
+    <link rel="import" href="bower_components/paper-header-panel/paper-header-panel.html">
+    <link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
+    <link rel="import" href="bower_components/paper-tabs/paper-tabs.html">
+    <link rel="import" href="bower_components/paper-card/paper-card.html">
+    <link rel="import" href="bower_components/paper-spinner/paper-spinner.html">
+    <link rel="import" href="bower_components/paper-toggle-button/paper-toggle-button.html">
+    <link rel="import" href="bower_components/paper-slider/paper-slider.html">
+    <link rel="import" href="bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+    <link rel="import" href="bower_components/paper-listbox/paper-listbox.html">
+    <link rel="import" href="bower_components/paper-item/paper-item.html">
+    <link rel="import" href="bower_components/paper-button/paper-button.html">
+    <link rel="import" href="bower_components/paper-toast/paper-toast.html">
+    <link rel="import" href="bower_components/paper-fab/paper-fab.html">
+    <link rel="import" href="bower_components/paper-input/paper-input.html">
+    <link rel="import" href="bower_components/paper-menu-button/paper-menu-button.html">
+    <link rel="import" href="bower_components/paper-menu/paper-menu.html">
+    <link rel="import" href="bower_components/paper-menu/paper-submenu.html">
+    <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
+    <link rel="import" href="bower_components/paper-radio-button/paper-radio-button.html">
+    <link rel="import" href="bower_components/paper-checkbox/paper-checkbox.html">
+    <link rel="import" href="bower_components/iron-collapse/iron-collapse.html">
+    <link rel="import" href="bower_components/iron-icon/iron-icon.html">
+    <link rel="import" href="bower_components/iron-icons/iron-icons.html">
+    <link rel="import" href="bower_components/iron-icons/av-icons.html">
+    <link rel="import" href="bower_components/iron-icons/communication-icons.html">
+    <link rel="import" href="bower_components/iron-icons/social-icons.html">
+
+    <link rel="stylesheet" type="text/css" href="css/settings.css" />
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/sortable.min.js"></script>
+    <script type="text/javascript" src="js/settings_edit.js"></script>
+</head>
+<body>
+    <dom-module id="main-element">
+        <template>
+            <style>
+                :host {
+                    --primary-color: var(--paper-red-500);
+                    --light-primary-color: var(--paper-red-100);
+                    --dark-primary-color: var(--paper-red-700);
+                }
+                paper-header-panel paper-toolbar {
+                    height: calc(64px + 48px);
+                }
+                paper-toolbar .title {
+                    margin-left: 5px;
+                }
+                paper-slider {
+                    --paper-slider-active-color: var(--dark-primary-color);
+                    --paper-slider-secondary-color: var(--primary-color);
+                    --paper-slider-knob-color: var(--primary-color);
+                    --paper-slider-pin-color: var(--dark-primary-color);
+                    cursor: pointer;
+                }
+                paper-button[raised] {
+                    background-color: var(--primary-color);
+                    color: white;
+                }
+                paper-button iron-icon {
+                    margin: 0 6px 0 2px;
+                }
+                paper-dropdown-menu {
+                    margin: -20px 0 0 10px;
+                }
+                paper-toggle-button {
+                    display: inline-block;
+                    cursor: pointer;
+                    margin-left: 5px;
+                }
+                paper-fab {
+                    position: fixed;
+                    right: 20px;
+                    bottom: 20px;
+                    z-index: 1;
+                    --paper-fab-background: var(--paper-blue-500);
+                }
+                paper-card {
+                    --paper-card-header-color: white;
+                }
+                paper-card .card-actions {
+                    color: var(--primary-color);
+                }
+                paper-menu {
+                    color: black;
+                    white-space: nowrap;
+                    cursor: pointer;
+                }
+                paper-menu paper-item:not(.menu-trigger) {
+                    --paper-item-focused: {font-weight: 400;};
+                }
+                paper-menu paper-item:focus:before,
+                paper-menu paper-item:focus:after {
+                    background: transparent;
+                }
+                paper-toolbar paper-input-container {
+                    width: 160px;
+                    --paper-input-container-color: white;
+                    --paper-input-container-input-color: white;
+                    --paper-input-container-label: {color: white;};
+                    --paper-input-container-underline: {background: white;};
+                    --paper-input-container-underline-focus: {background: white;};
+                }
+                paper-input-container iron-icon {cursor: pointer;}
+
+                /* Specific Styling */
+                #paper_card-importChannelsSelection paper-item {
+                    --paper-item-selected: {
+                        font-weight: 400;
+                        background: transparent;
+                    };
+                    --paper-item-focused: {background: transparent;};
+                    --paper-item-focused-before: {background: transparent;};
+                }
+
+                paper-card .card-content {font-size: 13px;}
+            </style>
+            <input id="fileUploader" type="file" accept="audio/*" hidden>
+            <paper-toast text=""></paper-toast>
+            <paper-header-panel mode="waterfall">
+                <paper-toolbar id="toolbar" class="medium-tall">
+                    <img id="header_img" src="img/yt_logo.png" />
+                    <span class="title">Notifications</span>
+                    <paper-input-container no-label-float>
+                        <label>Search</label>
+                        <input id="search-input" is="iron-input">
+                        <iron-icon id="search-btn" icon="search" suffix></iron-icon>
+                    </paper-input-container>
+                    <paper-menu-button horizontal-align="right">
+                        <paper-icon-button icon="icons:more-vert" class="dropdown-trigger"></paper-icon-button>
+                        <paper-menu class="dropdown-content">
+                            <paper-submenu>
+                                <paper-item id="menu_sortMode" class="menu-trigger">
+                                    <span i18n="settings_vertSettings_sortMode"></span>
+                                    <paper-ripple></paper-ripple>
+                                </paper-item>
+                                <paper-menu class="menu-content">
+                                    <paper-item id="menu_sortMode_custom">
+                                        <paper-radio-button></paper-radio-button>
+                                        <paper-item-body i18n="settings_vertSettings_sortMode_custom"></paper-item-body>
+                                        <paper-ripple></paper-ripple>
+                                    </paper-item>
+                                    <paper-item id="menu_sortMode_abc">
+                                        <paper-radio-button></paper-radio-button>
+                                        <paper-item-body i18n="settings_vertSettings_sortMode_abc"></paper-item-body>
+                                        <paper-ripple></paper-ripple>
+                                    </paper-item>
+                                    <paper-item id="menu_sortMode_latestUpload">
+                                        <paper-radio-button></paper-radio-button>
+                                        <paper-item-body i18n="settings_vertSettings_sortMode_latestUpload"></paper-item-body>
+                                        <paper-ripple></paper-ripple>
+                                    </paper-item>
+                                </paper-menu>
+                            </paper-submenu>
+                            <paper-item id="menu_changeAlignment" data-toggle="false">
+                                <span></span>
+                                <paper-ripple></paper-ripple>
+                            </paper-item>
+                            <paper-item id="menu_viewChangelog">
+                                <span i18n="settings_vertSettings_viewChangelog"></span>
+                                <paper-ripple></paper-ripple>
+                            </paper-item>
+                            <paper-item id="menu_help">
+                                <span i18n="settings_vertSettings_help"></span>
+                                <paper-ripple></paper-ripple>
+                            </paper-item>
+                        </paper-menu>
+                    </paper-menu-button>
+                    <paper-tabs selected="0" class="bottom">
+                        <paper-tab i18n="settings_headerTabs1"></paper-tab>
+                        <paper-tab i18n="settings_headerTabs2"></paper-tab>
+                    </paper-tabs>
+                </paper-toolbar>
+                <iron-pages selected="0">
+                    <div id="page-latestUploads">
+                        <paper-fab id="add_channels-fab" icon="add"></paper-fab>
+                        <paper-card id="main_card">
+                            <div id="channels">
+                                <div id="masterChannelRow" class="channelRow" style="display: none;">
+                                    <div class="channelColumn popup_show">
+                                        <a class="channel_a"></a>
+                                        <img class="channel_img" src="" />
+                                    </div>
+                                    <div class="channelColumn popup_show">
+                                        <a class="channel_a"></a>
+                                        <span class="channel_author"></span>
+                                        <span class="channel_author_info"></span>
+                                    </div>
+                                    <div class="channelColumn">
+                                        <a class="channel_video_a"></a>
+                                        <img class="channel_video_img" src="" />
+                                    </div>
+                                    <div class="channelColumn">
+                                        <a class="channel_video_a"></a>
+                                        <span class="channel_video_title"></span>
+                                        <span class="channel_video_time"></span>
+                                    </div>
+                                    <div class="channelColumn popup_show">
+                                        <button class="channel_remove_btn">X</button>
+                                        <button class="channel_info_btn">i</button>
+                                    </div>
+                                </div>
+                                <div id="emptyChannelsList" style="display: none;">
+                                    <div id="emptyChannelsList_content">
+                                        <iron-icon icon="social:notifications-off"></iron-icon>
+                                        <div id="emptyChannelsList_header" i18n="settings_noChannels_header"></div>
+                                        <div id="emptyChannelsList_subheader"><span i18n="settings_noChannels_subheader"></span></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="popup_overlay" class="overlay" style="display: none;"></div>
+                        </paper-card>
+                        <paper-card id="popup_card" data-toggle="false" style="box-shadow: 0 0 0 0 rgba(0,0,0,0),0 0 0 0 rgba(0,0,0,0),0 0 0 0 rgba(0,0,0,0);display: none;">
+                            <div id="popup_loading_container">
+                                <paper-spinner id="popup_loading"></paper-spinner>
+                            </div>
+                            <div id="popup_videoList" style="display: none;">
+                                <div id="masterVideoListRow" class="videoListRow" style="display: none;">
+                                    <a href="">
+                                        <div class="videoListColumn">
+                                            <img class="videoList_img" src="" />
+                                        </div>
+                                        <div class="videoListColumn">
+                                            <span class="videoList_title"></span>
+                                            <span class="videoList_sub"></span>
+                                        </div>
+                                        <div class="videoListColumn">
+                                            <span class="videoList_title"></span>
+                                            <span class="videoList_sub"></span>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div id="popup_videoList_more_container">
+                                    <paper-button id="popup_videoList_more" raised>
+                                        <span i18n="settings_videoList_more"></span>
+                                    </paper-button>
+                                </div>
+                            </div>
+                        </paper-card>
+                    </div>
+                    <div id="page-editSettings">
+                        <paper-card id="main_card2">
+                            <div id="settings">
+                                <div id="settings_notifications" class="settingRow">
+                                    <div class="settingColumn">
+                                        <span class="label" i18n="settings_editSettings_useNotifications"></span>
+                                        <paper-toggle-button id="settings_notifications_toggle"></paper-toggle-button>
+                                    </div>
+                                    <div class="settingColumn">
+                                        <span class="label" i18n="settings_editSettings_notificationVolume"></span>
+                                        <paper-slider id="settings_notifications_volume" min="0" max="100"></paper-slider>
+                                        <paper-button id="settings_notifications_test" raised>
+                                            <iron-icon icon="av:volume-up"></iron-icon>
+                                            <span i18n="settings_editSettings_notificationTest"></span>
+                                        </paper-button>
+                                    </div>
+                                </div>
+                                <div id="sound_notifications" class="settingRow">
+                                    <div class="settingColumn">
+                                        <span class="label" i18n="settings_editSettings_notificationSound"></span>
+                                        <paper-dropdown-menu id="settings_sound_list">
+                                            <paper-listbox class="dropdown-content"></paper-listbox>
+                                        </paper-dropdown-menu>
+                                    </div>
+                                    <div class="settingColumn">
+                                        <paper-button id="settings_sound_upload" raised>
+                                            <iron-icon icon="icons:file-upload"></iron-icon>
+                                            <span i18n="settings_editSettings_uploadSound"></span>
+                                        </paper-button>
+                                    </div>
+                                </div>
+                                <div id="tts_notifications" class="settingRow">
+                                    <div class="settingColumn">
+                                        <span class="label" i18n="settings_editSettings_tts"></span>
+                                        <paper-toggle-button id="settings_tts_toggle"></paper-toggle-button>
+                                    </div>
+                                    <div class="settingColumn">
+                                        <span class="label" i18n="settings_editSettings_ttsVoice"></span>
+                                        <paper-dropdown-menu id="settings_tts_select">
+                                            <paper-listbox class="dropdown-content"></paper-listbox>
+                                        </paper-dropdown-menu>
+                                    </div>
+                                </div>
+                                <div id="addBtn_notifications" class="settingRow">
+                                    <div class="settingColumn">
+                                        <span class="label" i18n="settings_editSettings_addButtons"></span>
+                                        <paper-toggle-button id="settings_addbtn_toggle"></paper-toggle-button>
+                                    </div>
+                                    <div class="settingColumn">
+                                        <paper-button id="settings_addbtn_viewsubs" raised>
+                                            <iron-icon icon="av:subscriptions"></iron-icon>
+                                            <span i18n="settings_editSettings_addButtonsSubs"></span>
+                                        </paper-button>
+                                    </div>
+                                </div>
+                                <div class="settingRow">
+                                    <paper-button id="settings_import" raised>
+                                        <iron-icon icon="communication:import-export"></iron-icon>
+                                        <span i18n="settings_editSettings_importSubscription"></span>
+                                    </paper-button>
+                                    <paper-button id="settings_import_changeUser" raised>
+                                        <iron-icon icon="icons:account-circle"></iron-icon>
+                                        <span i18n="settings_editSettings_importSubscriptionChange"></span>
+                                    </paper-button>
+                                </div>
+                                <div class="settingRow">
+                                    <paper-button id="settings_refresh" raised>
+                                        <iron-icon icon="icons:refresh"></iron-icon>
+                                        <span i18n="settings_editSettings_manualRefresh"></span>
+                                    </paper-button>
+                                </div>
+                            </div>
+                        </paper-card>
+                    </div>
+                </iron-pages>
+                <div id="overlay" class="overlay" style="display: none;"></div>
+                <paper-card id="paper_card-addChannels" class="floating" data-toggle="false" i18n="settings_addChannel_title" image="img/welcome_card.jpg">
+                    <div class="card-content">
+                        <paper-input></paper-input>
+                    </div>
+                    <div class="card-actions">
+                        <paper-button id="add_channels-add-button" i18n="settings_addChannel_add"></paper-button>
+                        <paper-button id="add_channels-more-button" i18n="settings_addChannel_addMore"></paper-button>
+                    </div>
+                </paper-card>
+                <paper-card id="paper_card-changelog" class="floating" data-toggle="false" i18n="settings_changelog_title" image="img/welcome_card.jpg">
+                    <div class="card-content">
+                        <div class="content-header">vX.X.X.X</div>
+                        <ul>
+                            <li>Implemented watch later feature to notifications</li>
+                            <li>Import subscriptions can now be manually selected</li>
+                            <li>Altered the popup's uploads search to include video titles</li>
+                        </ul>
+                    </div>
+                    <div class="card-actions">
+                        <paper-button id="changelog-close-button" i18n="settings_changelog_close"></paper-button>
+                    </div>
+                </paper-card>
+                <paper-card id="paper_card-importChannelsSelection" class="floating" data-toggle="false" i18n="settings_importChannels_title" image="img/welcome_card.jpg">
+                    <div class="card-content">
+                        <div id="import_channels_selection-contentTitle">
+                            <span i18n="settings_importChannelsSelection_title"></span>
+                        </div>
+                        <div id="import_channels_noChannelsFound">
+                            <iron-icon icon="social:notifications-off"></iron-icon>
+                            <span i18n="settings_noChannels_header"></span>
+                        </div>
+                        <div id="importChannelsSelection-container">
+                            <paper-listbox>
+                                <paper-item id="masterImportChannelRow" style="display: none;">
+                                    <img class="import_channels_selectionRow-img">
+                                    <span class="import_channels_selectionRow-title"></span>
+                                    <paper-checkbox></paper-checkbox>
+                                </paper-item>
+                            </paper-listbox>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <paper-button id="import_channels_selection-check-button" data-toggle="false" i18n="settings_importChannels_check"></paper-button>
+                        <paper-button id="import_channels_selection-close-button" i18n="settings_importChannels_cancel"></paper-button>
+                        <paper-button id="import_channels_selection-import-button" i18n="settings_importChannels_import"></paper-button>
+                    </div>
+                </paper-card>
+                <paper-card id="paper_card-importChannelsVerify" class="floating" data-toggle="false" i18n="settings_changelog_title" image="img/welcome_card.jpg">
+                    <div class="card-content">
+                        <div id="import_channels-contentTitle" class="content-header">
+                            <span i18n="settings_importChannels_titlePrefix"></span> <span class="num"></span> <span i18n="settings_importChannels_titleSuffix"></span>
+                        </div>
+                        <span id="import_channels-overRecommended" i18n="settings_importChannels_contentOverRecommended"></span>
+                        <span id="import_channels-duplicateInfo" i18n="settings_importChannels_contentDuplicate"></span>
+                        <div id="import_channels-statisticsTitle" i18n="settings_importChannels_contentStatisticsTitle"></div>
+                        <ul>
+                            <li><span id="import_channels-requests"></span> <span i18n="settings_importChannels_contentStatisticsRequests"></span></li>
+                            <li><span id="import_channels-downloads"></span><span id="import_channels-downloadsSuffix"></span> <span i18n="settings_importChannels_contentStatisticsDownloads"></span></li>
+                        </ul>
+                    </div>
+                    <div class="card-actions">
+                        <paper-button id="import_channels-close-button" i18n="settings_importChannels_cancel"></paper-button>
+                        <paper-button id="import_channels-import-button" i18n="settings_importChannels_import"></paper-button>
+                    </div>
+                </paper-card>
+            </paper-header-panel>
+        </template>
+        <script>
+            HTMLImports.whenReady(function () {
+                Polymer({
+                    is: 'main-element'
+                });
+            });
+        </script>
+    </dom-module>
+    <main-element></main-element>
+</body>
+</html>

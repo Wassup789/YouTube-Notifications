@@ -9,6 +9,7 @@ Changelog
  * New channel additions will be scrolled to view upon addition
  * Video thumbnails now use less data
  * Switched table layout to flexbox
+ * Ported from Material Design Lite to Polymer
 
 ## v1.1.2.0 (08-05-2016)
  * Altered the popup's uploads search to include video titles

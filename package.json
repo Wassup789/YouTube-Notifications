@@ -1,0 +1,24 @@
+{
+  "name": "youtube-notifications",
+  "version": "1.0.0",
+  "description": "Get updates from your favorite YouTube users using this Chrome Extension. This extension uses the YouTube Data API Version 3.0 for it's data.",
+  "main": "gruntfile.js",
+  "dependencies": {
+    "grunt-vulcanize": "^1.0.0",
+    "grunt-contrib-watch": "^1.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Wassup789/YouTube-Notifications.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Wassup789/YouTube-Notifications/issues"
+  },
+  "homepage": "https://github.com/Wassup789/YouTube-Notifications#readme"
+}

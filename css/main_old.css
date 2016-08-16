@@ -57,6 +57,9 @@ a, .link{
 	margin-top: -30px;
 	pointer-events: none;
 }
+#button-menu-container .mdl-menu__container:nth-of-type(3) {
+	margin-top: -55px;
+}
 #button-menu-container .mdl-menu__container.is-visible {pointer-events: auto;}
 #menu_changeAlignment[data-toggle="false"]:after {content: "__MSG_settings_vertSettings_channelAlignment__";}
 #menu_changeAlignment[data-toggle="true"]:after {content: "__MSG_settings_vertSettings_channelAlignment2__";}
@@ -299,7 +302,7 @@ main {
     margin: 15px;
     position: fixed;
     top: 248px;
-		overflow-y: auto;
+	overflow-y: auto;
     z-index: 30;
 }
 #popup_card .channelRow {
@@ -548,13 +551,23 @@ main {
 }
 
 #menu_sortMode_container {
-	margin-top: -55px!important;
+	position: absolute;
+	right: 15px;
 }
+#menu_sortMode_container .mdl-menu__container {/* For some god damn reason, your network speed changes the div layout. Switching to Polymer */
+	margin-top: -30px;
+}
+#menu_sortMode_container .mdl-menu__container:nth-of-type(3) {
+	margin-top: -55px;
+}
+#button-menu-container {
+
+ }
 .mdl-radio_menu {
 	top: -17px;
 }
 
-button.mdl-button:not(.mdl-button--fab) .material-icons {
+button.mdl-button:not(.mdl-button--fab, .mdl-button--icon) .material-icons {
 	margin: 0 7px 0 -3px;
 }
 

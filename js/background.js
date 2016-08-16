@@ -933,7 +933,7 @@ function createTab(url) {
 
 /**
  *  Launches a test notification
- *  Can be launched in the option settings
+ *  Can be launched in the option settings.js
  */
 wyn.testNotify = function(){
 	var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5);
@@ -961,7 +961,7 @@ wyn.testNotify = function(){
 }
 
 /**
- *  Reads the notification's title if TTS is enabled in the settings
+ *  Reads the notification's title if TTS is enabled in the settings.js
  *  
  *  @param {object} options Notification options (see: https://developer.chrome.com/apps/notifications#type-NotificationOptions)
  */
