@@ -160,7 +160,7 @@ chrome.runtime.onInstalled.addListener(function(details){
 		if(details.previousVersion != thisVersion){
 			console.log("Updated from " + details.previousVersion + " to " + thisVersion);
 			chrome.browserAction.setBadgeText({text: "new"});
-			
+
 			var settings = JSON.parse(localStorage.getItem("settings"));
 			settings.updated.enabled = true;
 			localStorage.setItem("settings", JSON.stringify(settings));
@@ -178,7 +178,7 @@ $(function(){
 		dataType: "json",
 		timeout: 5*60*1000, // Timeout ajax requests after 5 minutes
 	});
-	
+
 	chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 		switch (request.type) {
 			case "checkYoutubeBatch":
@@ -223,13 +223,13 @@ $(function(){
 				break;
 		}
 	});
-	
+
 	checkYoutubeStatus();
 });
 
 /**
  *  Gets the string from the locales appropriate to background.js
- *  
+ *
  *  @param {string} name A valid localized string which doesn't include 'settingsJs'
  *  @returns {string} The localized string
  */
@@ -239,7 +239,7 @@ function getString(name) {
 
 /**
  *  Gets the string from the locales
- *  
+ *
  *  @param {string} name A valid localized string which doesn't include 'common'
  *  @returns {string} The localized string
  */
@@ -253,7 +253,7 @@ function getCommonString(name) {
  */
 function updateChannelsInfo(){
 	console.log(wyn.strings.update_channels_init);
-	
+
 	var channels = JSON.parse(localStorage.getItem("channels"));
 	var channelIdList = "";
 	for(var i = 0; i < channels.length; i++){
@@ -341,7 +341,7 @@ function checkYoutubeStatus(){
 				checkYoutubeStatus();
 				return;
 			}
-			
+
 			if(XMLHttpRequest.statusText != "OK" && XMLHttpRequest.status != 400){
 				wyn.isConnected = false;
 				chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.connect_failed});
@@ -383,7 +383,7 @@ function checkYoutubeStatus(){
 
 /**
  *  Adds a new channel
- *  
+ *
  *  @param {string} name The name of the channel to get information from.
  *  @param {boolean} [fromContentScript=false] If the request was from a content script
  *  @param {boolean} [type=ADD_TYPE_DEFAULT] The search type
@@ -498,14 +498,14 @@ function addYoutubeChannel(name, fromContentScript, type){
 
 /**
  *  Removes an existing channel
- *  
+ *
  *  @param {number} type The type of the channel name (0 = index, 1 = channelID)
  *  @param {string} name The name of the channel's name
  *  @param {boolean} [fromContentScript=false] If the request was from a content script
  */
 function removeYoutube(type, name, fromContentScript){
 	fromContentScript = fromContentScript || false;
-	
+
 	type = parseInt(type);
 	if(type == 0){
 		var id = parseInt(name),
@@ -531,7 +531,7 @@ function removeYoutube(type, name, fromContentScript){
 				if(fromContentScript){
 					chrome.tabs.query({active: true}, function(tabs){
 						tabs.forEach(function(tab){
-							chrome.tabs.sendMessage(tab.id, {type: "contentScript_response", responseType: false, id: name}); 
+							chrome.tabs.sendMessage(tab.id, {type: "contentScript_response", responseType: false, id: name});
 						});
 					});
 				}
@@ -544,7 +544,7 @@ function removeYoutube(type, name, fromContentScript){
 
 /**
  *  Checks if a YouTube channel exists
- *  
+ *
  *  @param {string} id The name of the channel's ID
  *  @param {number} index The index for an element (for injected.js)
  */
@@ -559,7 +559,7 @@ function doesYoutubeExist(id, index){
 
 /**
  *  Checks a specific YouTube channel
- *  
+ *
  *  @param {number} num The index of the YouTube channel (located in localStorage item: "channels"
  *  @param {boolean} [batch=false] If the request is from a batch check (see function: checkYoutubeBatch)
  *  @param {boolean} [isNewItem=false] If this channel is new and the data has to be pushed
@@ -568,11 +568,11 @@ function checkYoutube(num, batch, isNewItem) {
 	batch = batch || false;
 	isNewItem = isNewItem || false;
 	wyn.activeCheckings[num] = true;
-	
+
 	var channels = JSON.parse(localStorage.getItem("channels"));
 	var url = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=5&playlistId=" + channels[num].playlistId + "&key=" + wyn.apiKey;
 	//var url = "https://www.googleapis.com/youtube/v3/search?part=snippet&order=date&safeSearch=none&type=video&maxResults=1&channelId=" + channels[num].id + "&key=" + wyn.apiKey;//Old
-	
+
 	console.log(wyn.strings.notification_log_check + channels[num].name);
 	$.ajax({
 		url: url,
@@ -590,7 +590,7 @@ function checkYoutube(num, batch, isNewItem) {
 			playlistItems = 3 quota
 			search = 100 quota (33x more quota per request)
 			*/
-			
+
 			data.items.sort(function(a, b){//START OF OLD
 				var a = new Date(a.snippet.publishedAt),
 					b = new Date(b.snippet.publishedAt);
@@ -598,10 +598,10 @@ function checkYoutube(num, batch, isNewItem) {
 				if(a < b) return 1;
 				return 0;
 			});//END OF OLD
-			
+
 			if(data.items.length < 1)
 				return;
-			
+
 			var videoId = data.items[0].snippet.resourceId.videoId,//OLD
 			//var videoId = data.items[0].id.videoId,
 				url = "https://www.googleapis.com/youtube/v3/videos?part=statistics,contentDetails&maxResults=1&id=" + videoId + "&key=" + wyn.apiKey,
@@ -612,7 +612,7 @@ function checkYoutube(num, batch, isNewItem) {
 			channels[num].latestVideo.description = data.items[0].snippet.description.substring(0,100).replace(/(\r\n|\n|\r)/gm," ");
 			channels[num].latestVideo.timestamp = Date.parse(data.items[0].snippet.publishedAt)/1000;
 			channels[num].latestVideo.thumbnail = data.items[0].snippet.thumbnails.high.url.replace("https:/", "http://");
-			
+
 			/*console.log("=====START OF " + channels[num].name + "=====");
 			console.log("Previous Stamp: " + prevTimestamp);
 			console.log("New Stamp: " + channels[num].latestVideo.timestamp);
@@ -620,7 +620,7 @@ function checkYoutube(num, batch, isNewItem) {
 			console.log("New ID: " + channels[num].latestVideo.id);
 			console.log("Change? " + (prevTimestamp >= channels[num].latestVideo.timestamp ? "true": "false"));
 			console.log("=====END OF " + channels[num].name + "=====");*/
-			
+
 			if(prevTimestamp >= channels[num].latestVideo.timestamp){
 				wyn.activeCheckings[num] = false;
 				if(!batch) {
@@ -647,28 +647,26 @@ function checkYoutube(num, batch, isNewItem) {
 					wyn.batchChecking = false;*/
 				},
 				success: function(data) {
-					channels[num].latestVideo.views = data.items[0].statistics.viewCount;
+					channels[num].latestVideo.views = parseInt(data.items[0].statistics.viewCount);
 					channels[num].latestVideo.duration = convertISO8601Duration(data.items[0].contentDetails.duration);
 					channels[num].latestVideo.likes = data.items[0].statistics.likeCount;
 					channels[num].latestVideo.dislikes = data.items[0].statistics.dislikeCount;
-					
+
 					var channels2 = JSON.parse(localStorage.getItem("channels"));
 					channels2[num] = channels[num];
 					localStorage.setItem("channels", JSON.stringify(channels2));
-					
+
 					var info = channels[num];
-					
+
 					if(batch)
 						wyn.hasBatchChanged = true;
-					if(info.latestVideo.views == "301")
-						info.latestVideo.views = "301+";
 					info.latestVideo.likes = parseInt(info.latestVideo.likes);
 					info.latestVideo.dislikes = parseInt(info.latestVideo.dislikes);
 					var likesa = Math.round((info.latestVideo.likes / (info.latestVideo.likes + info.latestVideo.dislikes)) * 100);
 					var dislikesa = Math.round((info.latestVideo.dislikes / (info.latestVideo.likes + info.latestVideo.dislikes)) * 100);
 					if((likesa + dislikesa) > 100)
 						dislikesa--;
-					
+
 					var options = {
 						type: "image",
 						priority: 0,
@@ -676,7 +674,7 @@ function checkYoutube(num, batch, isNewItem) {
 						message: info.latestVideo.description,
 						imageUrl: info.latestVideo.thumbnail,
 						iconUrl: wyn.strings.notification_main_icon,
-						contextMessage: info.latestVideo.duration + " | "+ addCommas(info.latestVideo.views) + " " + wyn.strings.info_views + " | " + likesa + "% " + wyn.strings.info_likes + " | " + dislikesa + "% " + wyn.strings.info_dislikes,
+						contextMessage: info.latestVideo.duration + " | "+ info.latestVideo.views.toLocaleString() + " " + wyn.strings.info_views + " | " + likesa.toLocaleString({style: "percent"}) + "% " + wyn.strings.info_likes + " | " + dislikesa.toLocaleString({style: "percent"}) + "% " + wyn.strings.info_dislikes,
 						buttons: [{
 							title: wyn.strings.notification_watch,
 							iconUrl: wyn.strings.notification_watch_icon
@@ -691,7 +689,7 @@ function checkYoutube(num, batch, isNewItem) {
 					var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + num;
 					console.log(wyn.strings.log_color_prefix + wyn.strings.notification_log_new + info.name, wyn.strings.log_color_green);
 					notify(ntID, options);
-					
+
 					wyn.activeCheckings[num] = false;
 					if(!batch){
 						for(var i = 0; i < wyn.activeCheckings.length; i++) {
@@ -710,11 +708,11 @@ function checkYoutube(num, batch, isNewItem) {
 
 /**
  *  Converts an ISO-8601 formatted string to a different timestamp format (HH:MM:SS)
- *  
+ *
  *  @param {string} t The ISO-8601 formmated string
  *  @returns {string} Returns duration in HH:MM:SS format
  */
-function convertISO8601Duration(t){ 
+function convertISO8601Duration(t){
     //dividing period from time
     var x = t.split('T'),
         duration = '',
@@ -758,12 +756,12 @@ function convertISO8601Duration(t){
                 d[i][s] = d[i][s][0];
             }
         }
-    } 
+    }
     period = d.period.variables;
     time = d.time.variables;
-    time.H +=   24 * period.D + 
+    time.H +=   24 * period.D +
                             24 * 7 * period.W +
-                            24 * 7 * 4 * period.M + 
+                            24 * 7 * 4 * period.M +
                             24 * 7 * 4 * 12 * period.Y;
 
     if (time.H) {
@@ -789,7 +787,7 @@ function checkYoutubeBatch(){
 		return;
 	//wyn.batchChecking = true;
 	wyn.hasBatchChanged = false;
-	
+
 	console.log("Initializing YouTube channel check");
 	var channels = JSON.parse(localStorage.getItem("channels"));
 	for(var i = 0; i < channels.length; i++){
@@ -802,18 +800,8 @@ function checkYoutubeBatch(){
 wyn.forceRefresh = function(){checkYoutubeBatch()};
 
 /**
- *  Add commas to numbers > 3
- *  Ex: 1234567 -> 1,234,567
- *  
- *  @param {number} num The number to add commas to
- *  @returns {string} Number inputted with commas
- */
-function addCommas(num) {
-	return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-/**
  *  Creates a random alphanumberic string
- *  
+ *
  *  @param {number} len The length of the random string
  *  @returns {string} Random alphanumeric string
  */
@@ -827,7 +815,7 @@ function rndStr(len){
 
 /**
  *  Creates a notification
- *  
+ *
  *  @param {string} ntID A random string used to identify the notification later
  *  @param {object} options Notification options (see: https://developer.chrome.com/apps/notifications#type-NotificationOptions)
  */
@@ -861,7 +849,7 @@ function playNotificationSound() {
 
 /**
  *  Ran when a notification is clicked
- *  
+ *
  *  @param {string} ntID A random string used to identify the notification
  */
 function onNotificationClick(ntID){
@@ -876,7 +864,7 @@ function onNotificationClick(ntID){
 
 /**
  *  Ran when a notification's buttons are clicked
- *  
+ *
  *  @param {string} ntID A random string used to identify the notification
  */
 function onNotificationButtonClick(ntID, btnID){
@@ -892,7 +880,7 @@ function onNotificationButtonClick(ntID, btnID){
 				var channels = JSON.parse(localStorage.getItem("channels")),
 					data = channels[ntID.split("-")[4]].latestVideo;
 				data.index = ntID.split("-")[4];
-				
+
 				requestExtendedToken(data);
 				console.log("User clicked on \"" + wyn.strings.notification_watchlater + "\" button; NTID: " + ntID);
 				break;
@@ -906,7 +894,7 @@ function onNotificationButtonClick(ntID, btnID){
 
 /**
  *  Ran when a notification is closed
- *  
+ *
  *  @param {string} ntID A random string used to identify the notification
  *  @param {boolean} byUser If the notification was closed by the user
  */
@@ -917,7 +905,7 @@ function onNotificationClosed(ntID, byUser){
 
 /**
  *  Opens a link in a new tab/window
- *  
+ *
  *  @param {string} user The URL to open
  */
 function createTab(url) {
@@ -944,7 +932,7 @@ wyn.testNotify = function(){
 		message: "Insert Description Here",
 		imageUrl: "img/notification_placeholder.png",
 		iconUrl: wyn.strings.notification_main_icon,
-		contextMessage: "12:34 | 5,678 " + wyn.strings.info_views + " | 90% " + wyn.strings.info_likes + " | 10% " + wyn.strings.info_dislikes,
+		contextMessage: "12:34 | " + (5678).toLocaleString() + " " + wyn.strings.info_views + " | " + (90).toLocaleString({style: "percent"}) + "% " + wyn.strings.info_likes + " | " + (10).toLocaleString({style: "percent"}) + "% " + wyn.strings.info_dislikes,
 		buttons: [{
 			title: wyn.strings.notification_watch,
 			iconUrl: wyn.strings.notification_watch_icon
@@ -956,13 +944,13 @@ wyn.testNotify = function(){
 			iconUrl: wyn.strings.notification_close_icon
 		}]
 	};
-	
+
 	notify(ntID, options);
 }
 
 /**
  *  Reads the notification's title if TTS is enabled in the settings.js
- *  
+ *
  *  @param {object} options Notification options (see: https://developer.chrome.com/apps/notifications#type-NotificationOptions)
  */
 function notifyTTS(options) {
@@ -981,20 +969,19 @@ function notifyTTS(options) {
 
 /**
  *  Forces a notification to be displayed
- *  
+ *
  *  @param {number} id The index of the video to be displayed
  */
 wyn.forceNotification = function(id) {
 	var info = JSON.parse(localStorage.getItem("channels"))[id];
-	if(info.latestVideo.views == "301")
-		info.latestVideo.views = "301+";
+	info.latestVideo.views = parseInt(info.latestVideo.views);
 	info.latestVideo.likes = parseInt(info.latestVideo.likes);
 	info.latestVideo.dislikes = parseInt(info.latestVideo.dislikes);
 	var likesa = Math.round((info.latestVideo.likes / (info.latestVideo.likes + info.latestVideo.dislikes)) * 100);
 	var dislikesa = Math.round((info.latestVideo.dislikes / (info.latestVideo.likes + info.latestVideo.dislikes)) * 100);
 	if((likesa + dislikesa) > 100)
 		dislikesa--;
-	
+
 	var options = {
 		type: "image",
 		priority: 0,
@@ -1002,7 +989,7 @@ wyn.forceNotification = function(id) {
 		message: info.latestVideo.description,
 		imageUrl: info.latestVideo.thumbnail,
 		iconUrl: wyn.strings.notification_main_icon,
-		contextMessage: info.latestVideo.duration + " | "+ addCommas(info.latestVideo.views) + " " + wyn.strings.info_views + " | " + likesa + "% " + wyn.strings.info_likes + " | " + dislikesa + "% " + wyn.strings.info_dislikes,
+		contextMessage: info.latestVideo.duration + " | "+ info.latestVideo.views.toLocaleString() + " " + wyn.strings.info_views + " | " + likesa.toLocaleString({style: "percent"}) + "% " + wyn.strings.info_likes + " | " + dislikesa.toLocaleString({style: "percent"}) + "% " + wyn.strings.info_dislikes,
 		buttons: [{
 			title: wyn.strings.notification_watch,
 			iconUrl: wyn.strings.notification_watch_icon
@@ -1161,9 +1148,9 @@ function onReceiveExtendedToken(videoInfo) {
 		}, function(access_token) {
 			if(chrome.runtime.lastError)
 				return;
-			
+
 			var settings = JSON.parse(localStorage.getItem("settings"));
-			
+
 			if(settings.watchlater.id == "") {
 				var xhr = new XMLHttpRequest();
 				xhr.open("GET", "https://www.googleapis.com/youtube/v3/channels?part=contentDetails&mine=true");
@@ -1171,10 +1158,10 @@ function onReceiveExtendedToken(videoInfo) {
 				xhr.onload = function(){
 					var data = JSON.parse(this.response),
 						watchLaterPlaylist = data.items[0].contentDetails.relatedPlaylists.watchLater;
-					
+
 					settings.watchlater.id = watchLaterPlaylist;
 					localStorage.setItem("settings", JSON.stringify(settings));
-					
+
 					onReceiveExtendedTokenPost(access_token, videoInfo);
 				};
 				xhr.send();
@@ -1198,7 +1185,7 @@ function onReceiveExtendedTokenPost(access_token, videoInfo) {
 				}
 			}
 		};
-	
+
 	xhr.open("POST", "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet");
 	xhr.setRequestHeader("Authorization", "Bearer " + access_token);
 	xhr.setRequestHeader("Content-Type", "application/json");
@@ -1206,7 +1193,7 @@ function onReceiveExtendedTokenPost(access_token, videoInfo) {
 		var data = JSON.parse(this.response),
 			title = "Video added to Watch Later",
 			message = "\"" + videoInfo.title + "\" has been added to the Watch Later playlist.";
-		
+
 		if(data.error) {
 			if(data.error.code == 409) {
 				title = "Video already exists in Watch Later";
@@ -1216,7 +1203,7 @@ function onReceiveExtendedTokenPost(access_token, videoInfo) {
 				message = data.error.message
 			}
 		}
-		
+
 		var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + videoInfo.index;
 		var options = {
 			type: "basic",
@@ -1229,7 +1216,7 @@ function onReceiveExtendedTokenPost(access_token, videoInfo) {
 				iconUrl: wyn.strings.notification_watch_icon
 			}]
 		};
-		
+
 		chrome.notifications.create(ntID, options, function(){
 			playNotificationSound();
 			notifyTTS(options);

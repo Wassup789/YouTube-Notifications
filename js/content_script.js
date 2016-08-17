@@ -8,7 +8,7 @@ $(function(){
 			}, 1000);
 		}
 	});
-	
+
 	chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 		switch (request.type) {
 			case "contentScript_response":
@@ -16,11 +16,11 @@ $(function(){
 				break;
 		}
 	});
-	
+
 	$(document).on("click", "#ytn-btn, .ytn-btn", function(){
 		var elem = $(this),
 			channelId = elem.attr("data-channelId");
-		
+
 		if(elem.hasClass("yt-uix-button-subscribe-branded")){// Add channel
 			awaitingResponse.push({
 				id: channelId,
@@ -55,9 +55,9 @@ function launch(){
 	if(slashes.indexOf("subscription_manager") > -1 && $(".ytn-btn").length == 0){// If is on page: https://www.youtube.com/subscription_manager
 		var elem = '<button class="yt-uix-button yt-uix-button-size-default yt-uix-button-has-icon no-icon-markup hover-enabled ytn-btn" type="button" style="margin-left: 5px;">\
 			<span class="yt-uix-button-content">\
-				<span class="subscribe-label" aria-label="Add to YouTube Notifications">Add to YouTube Notifications</span>\
-				<span class="subscribed-label" aria-label="Added to YouTube Notifications">Added to YouTube Notifications</span>\
-				<span class="unsubscribe-label" aria-label="Remove from YouTube Notifications">Remove from YouTube Notifications</span>\
+				<span class="subscribe-label" aria-label="' + chrome.i18n.getMessage("yt_addChannel") + '">' + chrome.i18n.getMessage("yt_addChannel") + '</span>\
+				<span class="subscribed-label" aria-label="' + chrome.i18n.getMessage("yt_channelAdded") + '">' + chrome.i18n.getMessage("yt_channelAdded") + '</span>\
+				<span class="unsubscribe-label" aria-label="' + chrome.i18n.getMessage("yt_removeChannel") + '">' + chrome.i18n.getMessage("yt_removeAdded") + '</span>\
 			</span>\
 		</button>';
 		var elems = $(elem).insertBefore(".yt-uix-overlay");
@@ -74,13 +74,13 @@ function launch(){
 	}else if($("#ytn-btn").length == 0 && slashes.indexOf("subscription_manager") < 0){// For everything else
 		var elem = '<button id="ytn-btn" class="yt-uix-button yt-uix-button-size-default yt-uix-button-has-icon no-icon-markup hover-enabled" type="button" style="margin-left: 5px;">\
 			<span class="yt-uix-button-content">\
-				<span class="subscribe-label" aria-label="Add to YouTube Notifications">Add to YouTube Notifications</span>\
-				<span class="subscribed-label" aria-label="Added to YouTube Notifications">Added to YouTube Notifications</span>\
-				<span class="unsubscribe-label" aria-label="Remove from YouTube Notifications">Remove from YouTube Notifications</span>\
+				<span class="subscribe-label" aria-label="' + chrome.i18n.getMessage("yt_addChannel") + '">' + chrome.i18n.getMessage("yt_addChannel") + '</span>\
+				<span class="subscribed-label" aria-label="' + chrome.i18n.getMessage("yt_channelAdded") + '">' + chrome.i18n.getMessage("yt_channelAdded") + '</span>\
+				<span class="unsubscribe-label" aria-label="' + chrome.i18n.getMessage("yt_removeChannel") + '">' + chrome.i18n.getMessage("yt_removeAdded") + '</span>\
 			</span>\
 		</button>';
 		$(elem).insertBefore(".yt-uix-overlay");
-		
+
 		var channelId = $(".yt-uix-button.yt-uix-subscription-button").attr("data-channel-external-id");
 		$("#ytn-btn").attr("data-channelId", channelId);
 		chrome.runtime.sendMessage({type: "doesYoutubeExist", id: channelId}, function(response){

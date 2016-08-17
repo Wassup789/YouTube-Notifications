@@ -48,7 +48,7 @@ var sortElem_custom, sortElem_latestUpload, sortElem_abc;
 window.addEventListener("WebComponentsReady", function(e){
     $(function(){
         $Poly = Polymer.dom;
-        
+
         wyns.databaseRequest = indexedDB.open("default", 2);
         wyns.databaseRequest.onsuccess = function(e) {
             wyns.database = e.target.result;
@@ -217,7 +217,7 @@ function getVideoList(index) {
         elem.find(".channelColumn:nth-child(1) .channel_img").attr("src", channels[i].thumbnail);
         elem.find(".channelColumn:nth-child(1) .channel_a").attr("href", "https://www.youtube.com/channel/" + channels[i].id);
         elem.find(".channelColumn:nth-child(2) .channel_author").text(channels[i].name);
-        elem.find(".channelColumn:nth-child(2) .channel_author_info").text(addCommas(channels[i].subscriberCount) + " " + wyns.strings.info_subscribers + " \u2022 " + addCommas(channels[i].viewCount) + " " + wyns.strings.info_views);
+        elem.find(".channelColumn:nth-child(2) .channel_author_info").text(parseInt(channels[i].subscriberCount).toLocaleString() + " " + wyns.strings.info_subscribers + " \u2022 " + parseInt(channels[i].viewCount).toLocaleString() + " " + wyns.strings.info_views);
         elem.find(".channelColumn:nth-child(2) .channel_a").attr("href", "https://www.youtube.com/channel/" + channels[i].id);
         elem.find(".channelColumn:nth-child(2) .channel_a").attr("title",  channels[i].name);
         elem.find(".channelColumn:nth-child(3) .channel_video_img").attr("src", channels[i].latestVideo.thumbnail);
@@ -892,8 +892,6 @@ function setChannelVideos(data){
         else
             date = wyns.strings.info_published + " " + date + " " + wyns.strings.info_ago;
 
-        if(data[i].views == "301")
-            data[i].views = "301+";
         data[i].likes = parseInt(data[i].likes);
         data[i].dislikes = parseInt(data[i].dislikes);
         var likesa = Math.round((data[i].likes / (data[i].likes + data[i].dislikes)) * 100);
@@ -909,7 +907,7 @@ function setChannelVideos(data){
         elem.find("a .videoListColumn:nth-child(1) .videoList_img").attr("src", data[i].thumbnail);
         elem.find("a .videoListColumn:nth-child(2) .videoList_title").text(data[i].title);
         elem.find("a .videoListColumn:nth-child(2) .videoList_sub").text(date);
-        elem.find("a .videoListColumn:nth-child(3) .videoList_title").text(addCommas(data[i].views) + " " + wyns.strings.info_views + " | " + likesa + "% " + wyns.strings.info_likes + " | " + dislikesa + "% " + wyns.strings.info_dislikes);
+        elem.find("a .videoListColumn:nth-child(3) .videoList_title").text(parseInt(data[i].views).toLocaleString() + " " + wyns.strings.info_views + " | " + likesa + "% " + wyns.strings.info_likes + " | " + dislikesa + "% " + wyns.strings.info_dislikes);
         elem.find("a .videoListColumn:nth-child(3) .videoList_sub").text(data[i].duration);
     }
 
@@ -1242,15 +1240,6 @@ function getUrlVar(name, url) {
     var results = regex.exec( url );
     return results == null ? null : results[1];
 }
-
-/**
- *  Add commas to numbers > 3
- *  Ex: 1234567 -> 1,234,567
- *
- *  @param {number} num The number to add commas to
- *  @returns {string} Number inputted with commas
- */
-function addCommas(num) {return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");}
 
 /**
  *  Converts an ISO-8601 formatted string to a different timestamp format (HH:MM:SS)
