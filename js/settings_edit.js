@@ -27,7 +27,7 @@ wyns.apiKey = chrome.extension.getBackgroundPage().wyn.apiKey,
         "date_minutes": getCommonString("dateMinutes"),
         "date_second": getCommonString("dateSecond"),
         "date_seconds": getCommonString("dateSeconds"),
-        "playlist_by": getCommonString("playlistBy"),
+        "playlist_by": getCommonString("playlistBy")
     },
     wyns.previousLastListItem;
 wyns.importData;
@@ -45,10 +45,11 @@ var NOTIFICATIONSOUND_DEFAULT = 0,
 
 var sortElem_custom, sortElem_latestUpload, sortElem_abc;
 
-window.addEventListener("WebComponentsReady", function(e){
+window.addEventListener("WebComponentsReady", function(){
     $(function(){
         $Poly = Polymer.dom;
-        
+
+        // Open up the indexedDB vault
         wyns.databaseRequest = indexedDB.open("default", 2);
         wyns.databaseRequest.onsuccess = function(e) {
             wyns.database = e.target.result;
@@ -111,13 +112,15 @@ window.addEventListener("WebComponentsReady", function(e){
 
         getVideoList();
         registerListeners();
-        setTimeout(function(){
-            initDesign();
-            initSearch();// This includes the listener for search
-            configureSettings();
-        }, 500);
+        initDesign();
+        initSearch();// This includes the listener for search
+        configureSettings();
 
         checkImportToken();
+
+        setTimeout(function() {// Timeout 500 since script prediction is difficult
+            $("#launch_screen").fadeOut("fast");
+        }, 500);
     });
 });
 
@@ -241,7 +244,7 @@ function getVideoList(index) {
 
     if(index != -1) {
         var newElem = $(".channelRow[data-id='" + index + "']");
-        newElem[0].scrollIntoViewIfNeeded();
+        newElem[0].scrollIntoViewIfNeeded();// Waiting for Chrome's support for smoothing
         newElem.css("background-color", "#C1C1C1");
         setTimeout(function(){newElem.css("transition", "background 3s").css("background-color", "#FFFFFF");}, 0);
         setTimeout(function(){newElem.css("transition", "");}, 3000)
@@ -318,10 +321,10 @@ function registerListeners(){
     //Start of add channels
     $("#paper_card-addChannels paper-input")[0].label = chrome.i18n.getMessage("settings_addChannel_placeholder");
     $("#overlay").on("click", function(){
-        $("#overlay").hide();
-        $($("#overlay").attr("data-target")).attr("data-toggle", "false");
+        $(this).hide();
+        $($(this).attr("data-target")).attr("data-toggle", "false");
 
-        if($("#overlay").attr("data-target") == "#paper_card-changelog")
+        if($(this).attr("data-target") == "#paper_card-changelog")
             disableUpdateContainer();
     });
     $("#add_channels-fab").on("click", function(){
@@ -343,7 +346,7 @@ function registerListeners(){
         $("#add_channels-container").attr("data-toggle", "false");
 
         var num = 0;
-        $("#paper_card-addChannels .card-content paper-input").each(function(i){
+        $("#paper_card-addChannels .card-content paper-input").each(function(){
             if($(this).val() != ""){
                 var playlist = getUrlVar("list", $(this).val());
 
@@ -361,7 +364,7 @@ function registerListeners(){
             wyns.channelsToAdd = num;
 
         $("#overlay").click();
-        $("#paper_card-addChannels .card-content paper-input:not(:first-child)").remove()
+        $("#paper_card-addChannels .card-content paper-input:not(:first-child)").remove();
         $("#paper_card-addChannels .card-content paper-input").val("");
     });
     $("body").on("keyup", ".add_channel_input", function(e){
@@ -652,9 +655,8 @@ function configureSettings(){
 
     $("#settings_notifications_volume").val(settings.notifications.volume);
     $("#settings_notifications_volume").on("change", function(){
-        var value = $("#settings_notifications_volume").val(),
-            settings = JSON.parse(localStorage.getItem("settings"));
-        settings.notifications.volume = value;
+        var settings = JSON.parse(localStorage.getItem("settings"));
+        settings.notifications.volume = $("#settings_notifications_volume").val();
         localStorage.setItem("settings", JSON.stringify(settings));
         createSnackbar(wyns.strings.saved);
     });
@@ -666,9 +668,8 @@ function configureSettings(){
         $("#settings_tts_toggle")[0].active = false;
     }
     $("#settings_tts_toggle").on("change", function(){
-        var value = $(this)[0].checked,
-            settings = JSON.parse(localStorage.getItem("settings"));
-        settings.tts.enabled = value;
+        var settings = JSON.parse(localStorage.getItem("settings"));
+        settings.tts.enabled = $(this)[0].checked;
         localStorage.setItem("settings", JSON.stringify(settings));
         createSnackbar(wyns.strings.saved);
     });
@@ -680,9 +681,8 @@ function configureSettings(){
         $("#settings_addbtn_toggle")[0].active = false;
     }
     $("#settings_addbtn_toggle").on("change", function(){
-        var value = $(this)[0].checked,
-            settings = JSON.parse(localStorage.getItem("settings"));
-        settings.addBtn.enabled = value;
+        var settings = JSON.parse(localStorage.getItem("settings"));
+        settings.addBtn.enabled = $(this)[0].checked;
         localStorage.setItem("settings", JSON.stringify(settings));
         createSnackbar(wyns.strings.saved);
     });
@@ -707,11 +707,10 @@ function launchSpeechSynthesis(){
             addPaperItem(selectElem[0], speechSynthesisList[i].name, i);
 
         selectElem[0].selected = JSON.parse(localStorage.getItem("settings")).tts.type;
-        setTimeout(function(){//Set timeout so saved doesn't get triggered
+        setTimeout(function(){//Set timeout so saving doesn't get triggered
             selectElem.on("iron-select", function(){
-                var value = parseInt(selectElem[0].selected),
-                    settings = JSON.parse(localStorage.getItem("settings"));
-                settings.tts.type = value;
+                var settings = JSON.parse(localStorage.getItem("settings"));
+                settings.tts.type = parseInt(selectElem[0].selected);
                 localStorage.setItem("settings", JSON.stringify(settings));
                 createSnackbar(wyns.strings.saved);
             });
@@ -727,59 +726,61 @@ function launchSpeechSynthesis(){
 var popupId = -1, savedData = {}, publishedBeforeDate;
 function displayPopupCard(num){
     if(typeof $("#channels .channelRow:not(#masterChannelRow)")[num] !== "undefined"){
-        if($("#popup_card").attr("data-toggle") != "true"){
+        var popup_card = $("#popup_card");
+
+        if(popup_card.attr("data-toggle") != "true"){
             popupId = num;
             $("#mainContainer").addClass("unscrollable");//Disable scrolling so popup_card doesn't look weird
-            $("#popup_card").children(":not(#popup_videoList):not(#popup_loading_container)").remove();//Remove items from popup before
-            $("#popup_card").children("#popup_videoList").children(":not(#masterVideoListRow):not(#popup_videoList_more_container)").remove();//Remove video list items from popup before
-            $("#popup_card").prepend($("#channels .channelRow:not(#masterChannelRow)")[num].outerHTML);//Prepend clicked contents
-            $("#popup_card").css("top", $("#channels .channelRow:not(#masterChannelRow)")[num].getBoundingClientRect().top - parseInt($($("#main_card")[0]).css("marginTop")));//Align popup with clicked card
-            $("#popup_card").css("height", 76);
+            popup_card.children(":not(#popup_videoList):not(#popup_loading_container)").remove();//Remove items from popup before
+            popup_card.children("#popup_videoList").children(":not(#masterVideoListRow):not(#popup_videoList_more_container)").remove();//Remove video list items from popup before
+            popup_card.prepend($("#channels .channelRow:not(#masterChannelRow)")[num].outerHTML);//Prepend clicked contents
+            popup_card.css("top", $("#channels .channelRow:not(#masterChannelRow)")[num].getBoundingClientRect().top - parseInt($($("#main_card")[0]).css("marginTop")));//Align popup with clicked card
+            popup_card.css("height", 76);
 
             $("#popup_videoList_more_container").hide();//Hides the display of the button whilst loading the popup
 
-            $("#popup_card").fadeIn("fast");
-            $("#popup_card").animate({//Card appears to be lifted
+            popup_card.fadeIn("fast");
+            popup_card.animate({//Card appears to be lifted
                 boxShadow: "0 16px 24px 2px rgba(0,0,0,.14),0 6px 30px 5px rgba(0,0,0,.12),0 8px 10px -5px rgba(0,0,0,.2)",
             }, 350);
-            $("#popup_card .channel_info_btn").animate({//Seamless info button on transition from cards
+            popup_card.find(".channel_info_btn").animate({//Seamless info button on transition from cards
                 marginTop: -23
             }, 350);
-            $("#popup_card").delay(150).animate({//Stretch card to fill content
+            popup_card.delay(150).animate({//Stretch card to fill content
                 top: 104,
                 height: 466
             }, 350);
             $("#popup_overlay").delay(650).fadeIn("fast");
             setTimeout(function(){
-                $("#popup_card .channel_info_btn").css("marginTop", "");//Reset info button
-                $("#popup_card .channelColumn").not(".popup_show").hide();//Remove unneeded content
-                $("#popup_card .channel_remove_btn").fadeOut("fast");//Remove the X button thats behind the info button
+                popup_card.find(".channel_info_btn").css("marginTop", "");//Reset info button
+                popup_card.find(".channelColumn").not(".popup_show").hide();//Remove unneeded content
+                popup_card.find(".channel_remove_btn").fadeOut("fast");//Remove the X button thats behind the info button
                 $("#popup_card").attr("data-toggle", "true");
                 getChannelVideos();
             }, 750);
         }else{
-            $("#popup_card").animate({ scrollTop: 0 }, "fast");//Scroll to top for info button transition alignment
+            popup_card.animate({ scrollTop: 0 }, "fast");//Scroll to top for info button transition alignment
             $("#popup_loading")[0].active = false;//Remove loading if exists
-            $("#popup_card").animate({//Transform card to original size
+            popup_card.animate({//Transform card to original size
                 top: $("#channels .channelRow:not(#masterChannelRow)")[popupId].getBoundingClientRect().top - parseInt($($("#main_card")[0]).css("marginTop")),
                 height: 76
             }, 350);
-            $("#popup_card .channel_info_btn").animate({//Seamless info button transition
+            popup_card.find(".channel_info_btn").animate({//Seamless info button transition
                 marginTop: 27,
                 marginRight: 0
             }, 350);
-            $("#popup_card .channel_remove_btn").fadeIn("fast");//Fade in the X button
-            $("#popup_card").delay(150).animate({//Card goes back to content
+            popup_card.find(".channel_remove_btn").fadeIn("fast");//Fade in the X button
+            popup_card.delay(150).animate({//Card goes back to content
                 boxShadow: "0 0 0 0 rgba(0,0,0,0),0 0 0 0 rgba(0,0,0,0),0 0 0 0 rgba(0,0,0,0)",
             }, 350);
             $("#popup_overlay").delay(500).fadeOut("fast");
             setTimeout(function(){
-                $("#popup_card .channel_info_btn").css("marginTop", "");//Reset info button
-                $("#popup_card .channelColumn").not(":first").not(":last").show();//Re-add buttons
-                $("#popup_card").attr("data-toggle", "false");
+                popup_card.find(".channel_info_btn").css("marginTop", "");//Reset info button
+                popup_card.find(".channelColumn").not(":first").not(":last").show();//Re-add buttons
+                popup_card.attr("data-toggle", "false");
             }, 550);
             setTimeout(function(){
-                $("#popup_card").hide();
+                popup_card.hide();
                 $("#mainContainer").removeClass("unscrollable");//Delays scrollability until popup_card completely disapears
             }, 700);
             popupId = -1;
@@ -800,7 +801,7 @@ function getChannelVideos(publishedBefore){
         //url = "https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&maxResults=10&playlistId=" + playlistId + "&key=" + wyns.apiKey;
         url = "https://www.googleapis.com/youtube/v3/search?part=snippet&order=date&safeSearch=none&type=video&maxResults=10" + (typeof publishedBefore === "undefined" ? "" : "&publishedBefore=" + publishedBefore) + "&channelId=" + channelId + "&key=" + wyns.apiKey;
 
-    if(channelId == playlistId)
+    if(channelId == playlistId)// Determines if this is a playlist
         url = "https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&maxResults=10&playlistId=" + playlistId + (typeof publishedBefore === "undefined" ? "" : "&pageToken=" + publishedBefore) + "&key=" + wyns.apiKey;
 
     if(publishedBeforeDate == -1){
@@ -811,7 +812,7 @@ function getChannelVideos(publishedBefore){
     if(typeof savedData[channelId] !== "undefined" && typeof publishedBefore === "undefined")
         setChannelVideos(savedData[channelId]);
     else{
-        //$("#popup_loading")[0].active = true;//Fade in loading (will look strange without fades)
+        $("#popup_loading")[0].active = true;//Fade in loading (will look strange without fades)
         $.ajax({
             type: "GET",
             dataType: "json",
@@ -913,7 +914,7 @@ function setChannelVideos(data){
         elem.find("a .videoListColumn:nth-child(3) .videoList_sub").text(data[i].duration);
     }
 
-    $("#popup_videoList_more_container").show();//Display the "load more" container incase the button is removed due to the lack of videos
+    $("#popup_videoList_more_container").show();//Display the "load more" container in case the button is removed due to the lack of videos
 }
 
 
@@ -1030,7 +1031,7 @@ function showImportPopup() {
     else
         $("#import_channels-overRecommended").hide();
 
-    $("#import_channels-contentTitle").children("span.num").text(size)
+    $("#import_channels-contentTitle").children("span.num").text(size);
     $("#import_channels-requests").text("~" + size);
 
     var downloadSize = 0.00275 * size;
@@ -1138,7 +1139,7 @@ function updateNotificationMedia(registerListeners) {
     selectElem[0].selected = JSON.parse(localStorage.getItem("settings")).notificationSound;
 
     if(registerListeners) {
-        setTimeout(function(){//Set timeout so saved doesn't get triggered
+        setTimeout(function(){//Set timeout so saving doesn't get triggered
             selectElem.on("iron-select", function(){
                 var value = parseInt(selectElem[0].selected),
                     settings = JSON.parse(localStorage.getItem("settings"));

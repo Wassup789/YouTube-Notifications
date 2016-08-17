@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-
     <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
 
     <link rel="import" href="bower_components/iron-pages/iron-pages.html">
@@ -39,6 +37,11 @@
     <script type="text/javascript" src="js/settings_edit.js"></script>
 </head>
 <body>
+    <div id="launch_screen">
+        <div id="launch_screen-header"></div>
+        <div id="launch_screen-logo"></div>
+        <div id="launch_screen-ripple"></div>
+    </div>
     <dom-module id="main-element">
         <template>
             <style>
@@ -373,7 +376,7 @@
                         <div id="import_channels-contentTitle" class="content-header">
                             <span i18n="settings_importChannels_titlePrefix"></span> <span class="num"></span> <span i18n="settings_importChannels_titleSuffix"></span>
                         </div>
-                        <span id="import_channels-overRecommended" i18n="settings_importChannels_contentOverRecommended"></span>
+                        <div id="import_channels-overRecommended" i18n="settings_importChannels_contentOverRecommended"></div>
                         <span id="import_channels-duplicateInfo" i18n="settings_importChannels_contentDuplicate"></span>
                         <div id="import_channels-statisticsTitle" i18n="settings_importChannels_contentStatisticsTitle"></div>
                         <ul>

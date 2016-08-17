@@ -25,19 +25,19 @@
 	},
 	"settings_noChannels_header": {
 		"description": "The channels list, content header text if no channels are found",
-		"message": "No Channels Found"
+		"message": "No channels found"
 	},
 	"settings_noChannels_subheader": {
 		"description": "The channels list, content subheader text if no channels are found",
-		"message": "Import Subscriptions"
+		"message": "Import subscriptions"
 	},
 	"settings_editSettings_useNotifications": {
 		"description": "The label for the enable notifications checkbox",
-		"message": "Use Notifications"
+		"message": "Use notifications"
 	},
 	"settings_editSettings_notificationVolume": {
 		"description": "The label for the notification volume slider",
-		"message": "Notification Volume"
+		"message": "Notification volume"
 	},
 	"settings_editSettings_notificationTest": {
 		"description": "The label for the notification test button",
@@ -45,15 +45,15 @@
 	},
 	"settings_editSettings_tts": {
 		"description": "The label for the enable text-to-speech checkbox",
-		"message": "Use Text-To-Speech"
+		"message": "Use text-to-speech"
 	},
 	"settings_editSettings_ttsVoice": {
 		"description": "The label for the text-to-speech selector",
-		"message": "Text-To-Speech Voice"
+		"message": "Text-To-Speech voice"
 	},
 	"settings_editSettings_addButtons": {
 		"description": "The label for the enable add buttons checkbox",
-		"message": "Enable Add buttons on YouTube"
+		"message": "Enable add buttons on YouTube"
 	},
 	"settings_editSettings_addButtonsSubs": {
 		"description": "The label for the view subscriptions button",
@@ -73,7 +73,7 @@
 	},
 	"settings_editSettings_notificationSound": {
 		"description": "The label for the notification sounds label",
-		"message": "Notification Sound"
+		"message": "Notification sound"
 	},
 	"settings_editSettings_uploadSound": {
 		"description": "The label for the upload sound button",
@@ -161,7 +161,7 @@
 	},
 	"settings_importChannels_titleSuffix": {
 		"description": "The suffix for the import channel popup's title",
-		"message": "total channels"
+		"message": "total channel(s)"
 	},
 	"settings_importChannels_contentOverRecommended": {
 		"description": "The label for the import channel popup's content for over recommended amount of channels",
@@ -185,7 +185,7 @@
 	},
 	"settings_importChannelsSelection_title": {
 		"description": "The title of the import channel selection popup",
-		"message": "Select Channels to Import"
+		"message": "Select channels to import"
 	},
 	"settings_searchPlaceholder": {
 		"description": "The label for the search input",
