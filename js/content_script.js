@@ -1,4 +1,9 @@
 var awaitingResponse = [];
+
+function getString(name) {
+	return chrome.i18n.getMessage("contentScript_" + name);
+}
+
 $(function(){
 	chrome.runtime.sendMessage({type: "showAddButton"}, function(response){
 		if(response){
@@ -55,9 +60,9 @@ function launch(){
 	if(slashes.indexOf("subscription_manager") > -1 && $(".ytn-btn").length == 0){// If is on page: https://www.youtube.com/subscription_manager
 		var elem = '<button class="yt-uix-button yt-uix-button-size-default yt-uix-button-has-icon no-icon-markup hover-enabled ytn-btn" type="button" style="margin-left: 5px;">\
 			<span class="yt-uix-button-content">\
-				<span class="subscribe-label" aria-label="' + chrome.i18n.getMessage("yt_addChannel") + '">' + chrome.i18n.getMessage("yt_addChannel") + '</span>\
-				<span class="subscribed-label" aria-label="' + chrome.i18n.getMessage("yt_channelAdded") + '">' + chrome.i18n.getMessage("yt_channelAdded") + '</span>\
-				<span class="unsubscribe-label" aria-label="' + chrome.i18n.getMessage("yt_removeChannel") + '">' + chrome.i18n.getMessage("yt_removeAdded") + '</span>\
+				<span class="subscribe-label" aria-label="' + getString("addChannel") + '">' + getString("addChannel") + '</span>\
+				<span class="subscribed-label" aria-label="' + getString("channelAdded") + '">' + getString("channelAdded") + '</span>\
+				<span class="unsubscribe-label" aria-label="' + getString("removeChannel") + '">' + getString("removeAdded") + '</span>\
 			</span>\
 		</button>';
 		var elems = $(elem).insertBefore(".yt-uix-overlay");
@@ -74,9 +79,9 @@ function launch(){
 	}else if($("#ytn-btn").length == 0 && slashes.indexOf("subscription_manager") < 0){// For everything else
 		var elem = '<button id="ytn-btn" class="yt-uix-button yt-uix-button-size-default yt-uix-button-has-icon no-icon-markup hover-enabled" type="button" style="margin-left: 5px;">\
 			<span class="yt-uix-button-content">\
-				<span class="subscribe-label" aria-label="' + chrome.i18n.getMessage("yt_addChannel") + '">' + chrome.i18n.getMessage("yt_addChannel") + '</span>\
-				<span class="subscribed-label" aria-label="' + chrome.i18n.getMessage("yt_channelAdded") + '">' + chrome.i18n.getMessage("yt_channelAdded") + '</span>\
-				<span class="unsubscribe-label" aria-label="' + chrome.i18n.getMessage("yt_removeChannel") + '">' + chrome.i18n.getMessage("yt_removeAdded") + '</span>\
+				<span class="subscribe-label" aria-label="' + getString("addChannel") + '">' + getString("addChannel") + '</span>\
+				<span class="subscribed-label" aria-label="' + getString("channelAdded") + '">' + getString("channelAdded") + '</span>\
+				<span class="unsubscribe-label" aria-label="' + getString("removeChannel") + '">' + getString("removeAdded") + '</span>\
 			</span>\
 		</button>';
 		$(elem).insertBefore(".yt-uix-overlay");

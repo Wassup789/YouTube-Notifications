@@ -371,15 +371,15 @@
 		"description": "",
 		"message": "Échec de l'importation, s'il vous plaît essayer à nouveau..."
 	},
-	"yt_addChannel": {
+	"contentScript_addChannel": {
 		"description": "The add to YouTube Notifications button on YouTube",
 		"message": "Ajouter à YouTube Notifications"
 	},
-	"yt_channelAdded": {
+	"contentScript_channelAdded": {
 		"description": "The add to YouTube Notifications button on YouTube when clicked",
 		"message": "Ajouté à YouTube Notifications"
 	},
-	"yt_removeChannel": {
+	"contentScript_removeChannel": {
 		"description": "The remove from YouTube Notifications button on YouTube displayed after the channel is added",
 		"message": "Supprimer de YouTube Notifications"
 	}
