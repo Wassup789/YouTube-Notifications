@@ -1,5 +1,11 @@
 var awaitingResponse = [];
 
+/**
+ *  Gets the string from the locales
+ *
+ *  @param {string} name A valid localized string which doesn't include 'settingsJs'
+ *  @returns {string} The localized string
+ */
 function getString(name) {
 	return chrome.i18n.getMessage("contentScript_" + name);
 }
