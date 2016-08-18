@@ -109,7 +109,7 @@
 	},
 	"settings_vertSettings_sortMode_abc": {
 		"description": "The label for the sort mode: abc",
-		"message": "Alphabétiquement"
+		"message": "Alphabétique"
 	},
 	"settings_addChannel_title": {
 		"description": "The label for the title of the add channel popup",
@@ -197,7 +197,7 @@
 	},
 	"settingsJs_saved": {
 		"description": "",
-		"message": "Sauvegarder"
+		"message": "Sauvegardé"
 	},
 	"settingsJs_userRemoveChannel": {
 		"description": "",
@@ -370,5 +370,17 @@
 	"background_importFailed": {
 		"description": "",
 		"message": "Échec de l'importation, s'il vous plaît essayer à nouveau..."
+	},
+	"contentScript_addChannel": {
+		"description": "The add to YouTube Notifications button on YouTube",
+		"message": "Ajouter à YouTube Notifications"
+	},
+	"contentScript_channelAdded": {
+		"description": "The add to YouTube Notifications button on YouTube when clicked",
+		"message": "Ajouté à YouTube Notifications"
+	},
+	"contentScript_removeChannel": {
+		"description": "The remove from YouTube Notifications button on YouTube displayed after the channel is added",
+		"message": "Supprimer de YouTube Notifications"
 	}
 }
