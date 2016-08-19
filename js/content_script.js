@@ -87,7 +87,7 @@ function launch(){
 			<span class="yt-uix-button-content">\
 				<span class="subscribe-label" aria-label="' + getString("addChannel") + '">' + getString("addChannel") + '</span>\
 				<span class="subscribed-label" aria-label="' + getString("channelAdded") + '">' + getString("channelAdded") + '</span>\
-				<span class="unsubscribe-label" aria-label="' + getString("removeChannel") + '">' + getString("removeAdded") + '</span>\
+				<span class="unsubscribe-label" aria-label="' + getString("removeChannel") + '">' + getString("removeChannel") + '</span>\
 			</span>\
 		</button>';
 		$(elem).insertBefore(".yt-uix-overlay");
