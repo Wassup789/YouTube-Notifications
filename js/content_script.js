@@ -28,7 +28,7 @@ $(function(){
 		}
 	});
 
-	$(document).on("click", "#ytn-btn, .ytn-btn", function(){
+	$(document).on("click", ".ytn-btn", function(){
 		var elem = $(this),
 			channelId = elem.attr("data-channelId");
 
@@ -63,14 +63,16 @@ function launch(){
 	if(slashes.indexOf("user") < 0 && slashes.indexOf("channel") < 0 && slashes.indexOf("subscription_manager") < 0 && slashes.pop().split("?").shift() != "watch"){
 		return;
 	}
-	if(slashes.indexOf("subscription_manager") > -1 && $(".ytn-btn").length == 0){// If is on page: https://www.youtube.com/subscription_manager
-		var elem = '<button class="yt-uix-button yt-uix-button-size-default yt-uix-button-has-icon no-icon-markup hover-enabled ytn-btn" type="button" style="margin-left: 5px;">\
+	
+	var elem = '<button class="yt-uix-button yt-uix-button-size-default yt-uix-button-has-icon no-icon-markup hover-enabled ytn-btn" type="button" style="margin-left: 5px;">\
 			<span class="yt-uix-button-content">\
 				<span class="subscribe-label" aria-label="' + getString("addChannel") + '">' + getString("addChannel") + '</span>\
 				<span class="subscribed-label" aria-label="' + getString("channelAdded") + '">' + getString("channelAdded") + '</span>\
 				<span class="unsubscribe-label" aria-label="' + getString("removeChannel") + '">' + getString("removeChannel") + '</span>\
 			</span>\
 		</button>';
+	
+	if(slashes.indexOf("subscription_manager") > -1 && $(".ytn-btn").length == 0){// If is on page: https://www.youtube.com/subscription_manager
 		var elems = $(elem).insertBefore(".yt-uix-overlay");
 		for(var i = 0; i < elems.length; i++){
 			var channelId = $($(".yt-uix-overlay")[i]).parent().children(".yt-uix-button").attr("data-channel-external-id");
@@ -82,23 +84,16 @@ function launch(){
 					$(elems[response.index]).addClass("yt-uix-button-subscribe-branded").removeClass("yt-uix-button-subscribed-branded");
 			});
 		}
-	}else if($("#ytn-btn").length == 0 && slashes.indexOf("subscription_manager") < 0){// For everything else
-		var elem = '<button id="ytn-btn" class="yt-uix-button yt-uix-button-size-default yt-uix-button-has-icon no-icon-markup hover-enabled" type="button" style="margin-left: 5px;">\
-			<span class="yt-uix-button-content">\
-				<span class="subscribe-label" aria-label="' + getString("addChannel") + '">' + getString("addChannel") + '</span>\
-				<span class="subscribed-label" aria-label="' + getString("channelAdded") + '">' + getString("channelAdded") + '</span>\
-				<span class="unsubscribe-label" aria-label="' + getString("removeChannel") + '">' + getString("removeChannel") + '</span>\
-			</span>\
-		</button>';
+	}else if($(".ytn-btn").length == 0){// For everything else
 		$(elem).insertBefore(".yt-uix-overlay");
 
 		var channelId = $(".yt-uix-button.yt-uix-subscription-button").attr("data-channel-external-id");
-		$("#ytn-btn").attr("data-channelId", channelId);
+		$(".ytn-btn").attr("data-channelId", channelId);
 		chrome.runtime.sendMessage({type: "doesYoutubeExist", id: channelId}, function(response){
 			if(response.status)
-				$("#ytn-btn").removeClass("yt-uix-button-subscribe-branded").addClass("yt-uix-button-subscribed-branded");
+				$(".ytn-btn").removeClass("yt-uix-button-subscribe-branded").addClass("yt-uix-button-subscribed-branded");
 			else
-				$("#ytn-btn").addClass("yt-uix-button-subscribe-branded").removeClass("yt-uix-button-subscribed-branded");
+				$(".ytn-btn").addClass("yt-uix-button-subscribe-branded").removeClass("yt-uix-button-subscribed-branded");
 		});
 	}
 }

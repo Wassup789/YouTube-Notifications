@@ -1,6 +1,6 @@
 Changelog
 =====
-## v1.1.X.X (XX-XX-20XX)
+## v1.X.X.X (XX-XX-20XX)
  * Added channel sorting
  * Added playlist support
  * Added custom notification sounds via local upload
@@ -10,6 +10,9 @@ Changelog
  * Video thumbnails now use less data
  * Switched table layout to flexbox
  * Ported from Material Design Lite to Polymer
+   * `<select>` tags are now material
+   * Added launch screen for loading the vulcanized file
+   * Read the [INSTALL.md](https://github.com/Wassup789/YouTube-Notifications/blob/master/INSTALL.md) file for installation instructions
 
 ## v1.1.2.0 (08-05-2016)
  * Altered the popup's uploads search to include video titles
