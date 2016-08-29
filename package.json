@@ -4,8 +4,9 @@
   "description": "Get updates from your favorite YouTube users using this Chrome Extension. This extension uses the YouTube Data API Version 3.0 for it's data.",
   "main": "gruntfile.js",
   "dependencies": {
-    "grunt-vulcanize": "^1.0.0",
-    "grunt-contrib-watch": "^1.0.0"
+    "grunt": "^1.0.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-vulcanize": "^1.0.0"
   },
   "devDependencies": {},
   "scripts": {
