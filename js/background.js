@@ -50,6 +50,7 @@ var wyn = {};
 	wyn.apiKey = wyn.apiKeys[apiKeyIndex];
 	wyn.databaseRequest = indexedDB.open("default", 2);
 	wyn.database;
+	wyn.notificationSoundFinished = true;
 
 //Deal with the indexedDB
 wyn.databaseRequest.onupgradeneeded = function(e) {
@@ -279,8 +280,10 @@ function updateChannelsInfo(){
 						break;
 					}
 				}
+				var channelsSave = JSON.parse(localStorage.getItem("channels"));
+				channelsSave[i] = channels[i];
+				localStorage.setItem("channels", JSON.stringify(channelsSave));
 			}
-			localStorage.setItem("channels", JSON.stringify(channels));
 
 			$.ajax({
 				url: url2,
@@ -297,8 +300,10 @@ function updateChannelsInfo(){
 								break;
 							}
 						}
+						var channelsSave = JSON.parse(localStorage.getItem("channels"));
+						channelsSave[i] = channels[i];
+						localStorage.setItem("channels", JSON.stringify(channelsSave));
 					}
-					localStorage.setItem("channels", JSON.stringify(channels));
 				}
 			});
 		}
@@ -652,9 +657,9 @@ function checkYoutube(num, batch, isNewItem) {
 					channels[num].latestVideo.likes = data.items[0].statistics.likeCount;
 					channels[num].latestVideo.dislikes = data.items[0].statistics.dislikeCount;
 
-					var channels2 = JSON.parse(localStorage.getItem("channels"));
-					channels2[num] = channels[num];
-					localStorage.setItem("channels", JSON.stringify(channels2));
+					var channelsSave = JSON.parse(localStorage.getItem("channels"));
+					channelsSave[num] = channels[num];
+					localStorage.setItem("channels", JSON.stringify(channelsSave));
 
 					var info = channels[num];
 
@@ -831,12 +836,20 @@ function notify(ntID, options){
 	});
 }
 
+/**
+ * Plays the notification sound
+ */
 function playNotificationSound() {
+	if(!wyn.notificationSoundFinished)
+		return;
+	wyn.notificationSoundFinished = false;
+
 	$(wyn.notificationSound).stop();
 	wyn.notificationSound.currentTime = 0;
 	wyn.notificationSound.volume = parseInt(JSON.parse(localStorage.getItem("settings"))["notifications"]["volume"])/100;
 	wyn.notificationSound.play();
 	setTimeout(function(){
+		wyn.notificationSoundFinished = true;//Set to true here to prevent multiple overlapping notification sounds
 		$(wyn.notificationSound).animate({volume: 0}, {
 			duration: 5000,
 			complete: function() {
