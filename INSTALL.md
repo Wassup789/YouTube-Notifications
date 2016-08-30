@@ -6,6 +6,8 @@ To build, run the following commands (Node.JS must be installed):
     npm install -g grunt-cli vulcanize bower
     bower install
     npm install
+
+(Note: On linux, you need to run the first command as root, to do so, simply run `sudo npm install -g grunt-cli vulcanize bower` and type your password)
 ## Debug
 To debug, run this command in the background
 
