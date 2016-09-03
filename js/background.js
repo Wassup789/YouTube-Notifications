@@ -252,7 +252,7 @@ function getCommonString(name) {
  *  Updates all channels stored's information
  *  Request is made once.
  */
-function updateChannelsInfo(){
+function updateChannelsInfo(runBatch){
 	console.log(wyn.strings.update_channels_init);
 
 	var channels = JSON.parse(localStorage.getItem("channels"));
@@ -304,6 +304,8 @@ function updateChannelsInfo(){
 						channelsSave[i] = channels[i];
 						localStorage.setItem("channels", JSON.stringify(channelsSave));
 					}
+					if(runBatch)
+						checkYoutubeBatch();
 				}
 			});
 		}
@@ -325,7 +327,6 @@ function checkYoutubeStatus(){
 				chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.connect_success});
 				console.log(wyn.strings.log_color_prefix + wyn.strings.connect_success, wyn.strings.log_color_green);
 				updateChannelsInfo(true);
-				checkYoutubeBatch();
 				setInterval(function(){
 					checkYoutubeBatch();
 				}, 1000*60*5);
@@ -366,7 +367,6 @@ function checkYoutubeStatus(){
 				chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.connect_success});
 				console.log(wyn.strings.log_color_prefix + wyn.strings.connect_success, wyn.strings.log_color_green);
 				updateChannelsInfo(true);
-				checkYoutubeBatch();
 				setInterval(function(){
 					checkYoutubeBatch();
 				}, 1000*60*5);
@@ -850,6 +850,7 @@ function playNotificationSound() {
 	wyn.notificationSound.play();
 	setTimeout(function(){
 		wyn.notificationSoundFinished = true;//Set to true here to prevent multiple overlapping notification sounds
+
 		$(wyn.notificationSound).animate({volume: 0}, {
 			duration: 5000,
 			complete: function() {
