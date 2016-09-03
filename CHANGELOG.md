@@ -13,6 +13,7 @@ Changelog
    * `<select>` tags are now material
    * Added launch screen for loading the vulcanized file
    * Read the [INSTALL.md](https://github.com/Wassup789/YouTube-Notifications/blob/master/INSTALL.md) file for installation instructions
+ * Fixed bug where channels would not save properly
 
 ## v1.1.2.0 (08-05-2016)
  * Altered the popup's uploads search to include video titles

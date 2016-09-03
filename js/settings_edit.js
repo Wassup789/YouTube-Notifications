@@ -242,6 +242,8 @@ function getVideoList(index) {
 
     if(showEmpty)
         $("#emptyChannelsList").attr("data-type", 0).show();
+    else
+        $("#emptyChannelsList").hide();
 
     if(index != -1) {
         var newElem = $(".channelRow[data-id='" + index + "']");

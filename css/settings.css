@@ -58,7 +58,7 @@ paper-toolbar paper-tabs {
     width: 572px;
 }
 #page-latestUploads #main_card {
-    margin-bottom: 100px;
+    /*margin-bottom: 100px;*/
 }
 #channels, #settings {
     display: flex;
@@ -578,3 +578,19 @@ paper-card .content-header {
         opacity: 0;
     }
 }
+#version {
+    position: relative;
+    display: inline-block;
+    left: 50%;
+    width: 150px;
+    height: 75px;
+    margin: -7px auto 10px -75px;
+    font-size: 10px;
+    font-weight: normal;
+    text-align: center;
+    line-height: 13px;
+    color: #777;
+    cursor: default;
+}
+#version a {color: #3178B1;}
+#version a:hover {color: #16334A;}
