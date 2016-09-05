@@ -273,7 +273,7 @@ paper-toolbar paper-tabs {
 }
 #popup_loading {
     position: fixed;
-    top: calc(50% - 14px + 100px);
+    top: calc(50% - 14px + 56px);
     left: calc(50% - 14px);
 }
 #popup_videoList a {

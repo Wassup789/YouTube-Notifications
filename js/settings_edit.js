@@ -750,8 +750,8 @@ function displayPopupCard(num){
                 marginTop: -23
             }, 350);
             popup_card.delay(150).animate({//Stretch card to fill content
-                top: 104,
-                height: 466
+                top: 112,
+                height: 458
             }, 350);
             $("#popup_overlay").delay(650).fadeIn("fast");
             setTimeout(function(){
