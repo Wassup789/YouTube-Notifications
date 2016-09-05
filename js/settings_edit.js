@@ -332,6 +332,7 @@ function registerListeners(){
     });
     $("#add_channels-fab").on("click", function(){
         showFloatingCard("#paper_card-addChannels");
+        $("#paper_card-addChannels paper-input")[0].focus();
     });
     $("#add_channels-container .overlay").on("click", function(){
         if(!$("#loading").is(":visible"))
@@ -340,7 +341,8 @@ function registerListeners(){
     $("#add_channels-more-button").on("click", function(){
         var element = document.createElement("paper-input");
         element.label = chrome.i18n.getMessage("settings_addChannel_placeholder");
-        $Poly($("#paper_card-addChannels .card-content")[0]).appendChild(element)
+        $Poly($("#paper_card-addChannels .card-content")[0]).appendChild(element);
+        $("#paper_card-addChannels paper-input:last-child")[0].focus();
     });
 
     $("#add_channels-add-button").on("click", function(){

@@ -70,6 +70,9 @@ a:hover {
 	font-weight: 300;
 	display: none;
 }
+#add-channel-1, #add-channel-2, #add-channel-3, #add-channel-4 {
+	vertical-align: middle;
+}
 #add-channel-1 {
 	height: 750px;
 }
