@@ -22,7 +22,7 @@ This code is licensed under the MIT License.
 
 [![ChromeWebStore](https://raw.githubusercontent.com/Wassup789/Youtube-Notifications/master/img/chromewebstore.png)](https://chrome.google.com/webstore/detail/youtube-notifications/cilgbgkmanbbecbjihnbpeaoodmgchom)
 
-**Latest Version:** ***v1.1.2.0***
+**Latest Version:** ***v1.2.0.0***
 
 **Release Archive:**
 
@@ -33,19 +33,19 @@ This code is licensed under the MIT License.
 ## Screenshots
 **Options - Channel List**
 
-[![Screenshot 1](http://i.imgur.com/fOSP26C.png)](http://i.imgur.com/fOSP26C.png)
+[![Screenshot 1](https://i.imgur.com/bPdhM83.png)](https://i.imgur.com/bPdhM83.png)
 
 **Options - Settings**
 
-[![Screenshot 2](http://i.imgur.com/22c7cwQ.png)](http://i.imgur.com/22c7cwQ.png)
+[![Screenshot 2](https://i.imgur.com/QUJT5cz.png)](https://i.imgur.com/QUJT5cz.png)
 
 **Options - Channel Information**
 
-[![Screenshot 3](http://i.imgur.com/H8KbSTG.png)](http://i.imgur.com/H8KbSTG.png)
+[![Screenshot 3](https://i.imgur.com/iDCVMyV.png)](https://i.imgur.com/iDCVMyV.png)
 
 **Example Notification**
 
-[![Screenshot 4](http://i.imgur.com/6owdPVw.png)](http://i.imgur.com/6owdPVw.png)
+[![Screenshot 4](https://i.imgur.com/8DaIDrx.png)](https://i.imgur.com/8DaIDrx.png)
 
 ## Changelog
 [See CHANGELOG.md][CLog.md]

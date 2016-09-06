@@ -1,6 +1,6 @@
 Changelog
 =====
-## v1.X.X.X (XX-XX-20XX)
+## v1.2.0.0 (09-06-2016)
  * Added channel sorting
  * Added playlist support
  * Added custom notification sounds via local upload

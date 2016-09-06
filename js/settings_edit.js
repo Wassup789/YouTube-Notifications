@@ -106,10 +106,9 @@ window.addEventListener("WebComponentsReady", function(){
 
         var settings = JSON.parse(localStorage.getItem("settings"));
         if(settings.updated.enabled){
-            $("#changelog-dialog .card-header").text("v" + chrome.runtime.getManifest().version);
-            $("#changelog-container").attr("data-toggle", true);
+            $("#paper_card-changelog .content-header").text("v" + chrome.runtime.getManifest().version);
+            showFloatingCard("#paper_card-changelog");
         }
-        //$("#version-updated").show();
 
         getVideoList();
         registerListeners();
