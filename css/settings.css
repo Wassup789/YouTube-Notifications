@@ -420,7 +420,8 @@ paper-card .content-header {
     display: block;
     font-size: 13px;
 }
-#emptyChannelsList[data-type="1"] #emptyChannelsList_subheader {display: none;}
+#emptyChannelsList[data-type="0"] #emptyChannelsList_subheader span:after {content: "__MSG_settings_noChannels_subheader__";}
+#emptyChannelsList[data-type="1"] #emptyChannelsList_subheader span:after {content: "__MSG_settings_addMissingChannel__";}
 #emptyChannelsList_content iron-icon {
     fill: #B3B3B3;
     width: 100px;

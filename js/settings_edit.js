@@ -504,8 +504,29 @@ function registerListeners(){
         changeImportOAuthToken();
     });
     $("#emptyChannelsList_subheader").on("click", function(){
-        setPage(1);
-        requestImportToken();
+        switch($("#emptyChannelsList").attr("data-type")) {
+            case "0":
+                setPage(1);
+                requestImportToken();
+                break;
+            case "1":
+                var value = $("#search-input").val();
+                if(value != ""){
+                    createSnackbar("Adding channel...");
+
+                    var playlist = getUrlVar("list", value);
+
+                    if(playlist != null)
+                        chrome.extension.sendMessage({type: "addYoutubePlaylist", name: playlist});
+                    else
+                        chrome.extension.sendMessage({type: "addYoutubeChannel", name: value});
+
+                    $("#search-input").val("");
+                    $("#toolbar .label-is-hidden").removeClass("label-is-hidden");
+                    updateSearch();
+                }
+                break;
+        }
     });
 
     //Start of import channel selection
@@ -630,6 +651,7 @@ function disableButtons(bool){
         $("#search-textbox").css("opacity", 0).addClass("noninteractable").removeClass("is-dirty");
         $("#search-btn").css("opacity", 0).addClass("noninteractable");
         $("#search-input").val("");
+        $("#toolbar .label-is-hidden").removeClass("label-is-hidden");
         updateSearch()
     }else{
         $(".channelRow:not(#masterChannelRow) .channelColumn:nth-child(5) .channel_info_btn").show();
