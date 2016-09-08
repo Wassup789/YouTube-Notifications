@@ -28,7 +28,7 @@ $(function(){
 		}
 	});
 
-	$(document).on("click", ".ytn-btn", function(){
+	$(document).on("click", "#ytn-btn, .ytn-btn", function(){
 		var elem = $(this),
 			channelId = elem.attr("data-channelId");
 
@@ -84,8 +84,13 @@ function launch(){
 					$(elems[response.index]).addClass("yt-uix-button-subscribe-branded").removeClass("yt-uix-button-subscribed-branded");
 			});
 		}
-	}else if($(".ytn-btn").length == 0){// For everything else
-		$(elem).insertBefore(".yt-uix-overlay");
+	}else if($(".ytn-btn").length < 1){// For everything else
+        $(".yt-uix-overlay").each(function(){
+            if($(this).hasClass("channel-settings-overlay") || $(this).hasClass("featured-content-picker-overlay"))
+                return;
+            else
+                $(elem).insertBefore($(this));
+        });
 
 		var channelId = $(".yt-uix-button.yt-uix-subscription-button").attr("data-channel-external-id");
 		$(".ytn-btn").attr("data-channelId", channelId);

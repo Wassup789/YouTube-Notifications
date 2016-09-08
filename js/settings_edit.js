@@ -106,7 +106,7 @@ window.addEventListener("WebComponentsReady", function(){
 
         var settings = JSON.parse(localStorage.getItem("settings"));
         if(settings.updated.enabled){
-            $("#paper_card-changelog .content-header").text("v" + chrome.runtime.getManifest().version);
+            //$("#paper_card-changelog .content-header").text("v" + chrome.runtime.getManifest().version);
             showFloatingCard("#paper_card-changelog");
         }
 
@@ -468,7 +468,7 @@ function registerListeners(){
         }
     });
     $("#menu_viewChangelog").on("click", function(){
-        $("#paper_card-changelog .content-header").text("v" + chrome.runtime.getManifest().version);
+        //$("#paper_card-changelog .content-header").text("v" + chrome.runtime.getManifest().version);
         showFloatingCard("#paper_card-changelog");
     });
     $("#menu_help").on("click", function(){

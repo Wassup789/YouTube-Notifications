@@ -1,5 +1,8 @@
 Changelog
 =====
+## v1.2.0.1 (09-XX-2016)
+ * Fixed bug where the add buttons would appear multiple times for the user's channel
+
 ## v1.2.0.0 (09-06-2016)
  * Added channel sorting
  * Added playlist support
