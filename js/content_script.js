@@ -64,7 +64,7 @@ function launch(){
 		return;
 	}
 	
-	var elem = '<button class="yt-uix-button yt-uix-button-size-default yt-uix-button-has-icon no-icon-markup hover-enabled ytn-btn" type="button" style="margin-left: 5px;">\
+	var elem = '<button class="yt-uix-button yt-uix-button-size-default yt-uix-button-has-icon no-icon-markup hover-enabled ytn-btn" type="button" style="margin-left: 5px;float: initial;">\
 			<span class="yt-uix-button-content">\
 				<span class="subscribe-label" aria-label="' + getString("addChannel") + '">' + getString("addChannel") + '</span>\
 				<span class="subscribed-label" aria-label="' + getString("channelAdded") + '">' + getString("channelAdded") + '</span>\
@@ -86,10 +86,15 @@ function launch(){
 		}
 	}else if($(".ytn-btn").length < 1){// For everything else
         $(".yt-uix-overlay").each(function(){
-            if($(this).hasClass("channel-settings-overlay") || $(this).hasClass("featured-content-picker-overlay"))
+            if($(this).hasClass("channel-settings-overlay") || $(this).hasClass("featured-content-picker-overlay") || $(this).hasClass("settings-dialog-container") || $(".about-metadata-container").find(this).length > 0)
                 return;
-            else
-                $(elem).insertBefore($(this));
+            else{
+                if($(".primary-header-actions").find(this).length > 0){
+                    var elem2 = elem.replace("float: initial", "float: right");
+                    $(".primary-header-actions").prepend(elem2);
+                }else
+                    $(elem).insertBefore($(this));
+            }
         });
 
 		var channelId = $(".yt-uix-button.yt-uix-subscription-button").attr("data-channel-external-id");
