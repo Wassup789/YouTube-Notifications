@@ -191,6 +191,10 @@
 		"description": "The label for the search input",
 		"message": "Chercher..."
 	},
+	"settings_addMissingChannel": {
+ 		"description": "The label for the empty channels subheader",
+ 		"message": "Ajouter cette chaîne"
+ 	},
 	"settingsJs_updating": {
 		"description": "",
 		"message": "Mise à jour..."
