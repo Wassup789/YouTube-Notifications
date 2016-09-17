@@ -79,6 +79,10 @@
 		"description": "The label for the upload sound button",
 		"message": "Upload Sound"
 	},
+	"settings_editSettings_notificationCustomizer": {
+		"description": "The label for the notification customizer button",
+		"message": "Notification Customizer"
+	},
 	"settings_vertSettings_viewChangelog": {
 		"description": "The label for the view changelog button",
 		"message": "View Changelog"

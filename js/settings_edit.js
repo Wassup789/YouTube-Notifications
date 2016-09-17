@@ -497,6 +497,9 @@ function registerListeners(){
     $("#settings_addbtn_viewsubs").on("click", function(){
         chrome.tabs.create({url: "https://www.youtube.com/subscription_manager"});
     });
+    $("#settings_notificationCustomizer").on("click", function(){
+        chrome.tabs.create({url: "chrome-extension://" + chrome.runtime.id + "/pages/edit-notification.html"});
+    });
     $("#settings_import").on("click", function(){
         requestImportToken();
     });

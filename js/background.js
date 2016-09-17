@@ -15,6 +15,7 @@ var wyn = {};
         "notification_watchlater": getString("notificationWatchLater"),
         "notification_watchlater_icon": "img/ic_watchlater.png",
         "notification_main_icon": "img/ic_youtube.png",
+        "notification_appIconMaskUrl": "img/alpha.png",
         "notification_log_check": getString("notificationLogCheck"),
         "notification_log_new": getString("notificationLogNew"),
         "snackbar_nonewvideos": getString("snackbarNoNewVideos"),
@@ -678,7 +679,8 @@ function checkYoutube(num, batch, isNewItem) {
                         title: trimTitle(info.latestVideo.title, info.name),
                         message: info.latestVideo.description,
                         imageUrl: info.latestVideo.thumbnail,
-                        iconUrl: wyn.strings.notification_main_icon,
+                        /*iconUrl: wyn.strings.notification_main_icon,*/
+                        iconUrl: channels[num].thumbnail,
                         contextMessage: info.latestVideo.duration + " | "+ info.latestVideo.views.toLocaleString() + " " + wyn.strings.info_views + " | " + likesa.toLocaleString({style: "percent"}) + "% " + wyn.strings.info_likes + " | " + dislikesa.toLocaleString({style: "percent"}) + "% " + wyn.strings.info_dislikes,
                         buttons: [{
                             title: wyn.strings.notification_watch,
@@ -1002,7 +1004,8 @@ wyn.forceNotification = function(id) {
         title: trimTitle(info.latestVideo.title, info.name),
         message: info.latestVideo.description,
         imageUrl: info.latestVideo.thumbnail,
-        iconUrl: wyn.strings.notification_main_icon,
+        /*iconUrl: wyn.strings.notification_main_icon,*/
+        iconUrl: info.thumbnail,
         contextMessage: info.latestVideo.duration + " | "+ info.latestVideo.views.toLocaleString() + " " + wyn.strings.info_views + " | " + likesa.toLocaleString({style: "percent"}) + "% " + wyn.strings.info_likes + " | " + dislikesa.toLocaleString({style: "percent"}) + "% " + wyn.strings.info_dislikes,
         buttons: [{
             title: wyn.strings.notification_watch,

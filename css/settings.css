@@ -339,9 +339,12 @@ paper-toolbar paper-tabs {
 #settings_notifications_volume {
     width: 90px;
 }
-#settings_refresh, #settings_import {
+#settings_refresh, #settings_import, #settings_notificationCustomizer {
     width: 100%;
     background: #8BC34A;
+}
+#settings_notificationCustomizer {
+    background: #6C6AEC;
 }
 #settings_import.double, #settings_import_changeUser {
     width: 50%;
