@@ -125,9 +125,16 @@
                 }
 
                 paper-card .card-content {font-size: 13px;}
+
+                #removalToast paper-button {
+                    color: var(--primary-color);
+                }
             </style>
             <input id="fileUploader" type="file" accept="audio/*" hidden>
             <paper-toast text=""></paper-toast>
+            <paper-toast id="removalToast">
+                <paper-button i18n="settings_remove"></paper-button>
+            </paper-toast>
             <paper-header-panel mode="waterfall">
                 <paper-toolbar id="toolbar" class="medium-tall">
                     <img id="header_img" src="img/yt_logo.png" />

@@ -199,6 +199,10 @@
 		"description": "The label for the empty channels subheader",
 		"message": "Add channel"
 	},
+	"settings_remove": {
+		"description": "The label for the removalToast button",
+		"message": "Remove"
+	},
 	"settingsJs_updating": {
 		"description": "",
 		"message": "Updating..."
@@ -234,6 +238,10 @@
 	"settingsJs_uploadComplete": {
 		"description": "",
 		"message": "Upload Complete"
+	},
+	"settingsJs_removalPrompt": {
+		"description": "",
+		"message": "Are you sure you want to remove "
 	},
 	"common_published": {
 		"description": "First letter is capitalized",

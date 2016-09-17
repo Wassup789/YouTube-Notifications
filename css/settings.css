@@ -598,3 +598,7 @@ paper-card .content-header {
 }
 #version a {color: #3178B1;}
 #version a:hover {color: #16334A;}
+
+paper-menu-button iron-dropdown ::-webkit-scrollbar {
+    display: none;
+}

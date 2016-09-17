@@ -10,6 +10,7 @@ wyns.apiKey = chrome.extension.getBackgroundPage().wyn.apiKey,
         "add_channels_failed": getString("addChannelsFailed"),
         "please_wait": getString("pleaseWait"),
         "please_wait_while": getString("pleaseWaitWhile"),
+        "removalPrompt": getString("removalPrompt"),
         "info_published": getCommonString("published"),
         "info_subscribers": getCommonString("subscribers"),
         "info_views": getCommonString("views"),
@@ -33,6 +34,7 @@ wyns.apiKey = chrome.extension.getBackgroundPage().wyn.apiKey,
 wyns.importData;
 wyns.databaseRequest;
 wyns.database;
+wyns.currentRemovalId = -1;
 
 var $Poly;
 
@@ -378,17 +380,29 @@ function registerListeners(){
 
     $("body").on("click", ".channel_remove_btn", function(){
         if(sortable.option("disabled")){
-            var id = parseInt($(this).parent().parent().attr("data-id"));
+            wyns.currentRemovalId = parseInt($(this).parent().parent().attr("data-id"));
+
             var channels = JSON.parse(localStorage.getItem("channels")),
-                name = channels[id].name;
-            channels.splice(id, 1);
-            localStorage.setItem("channels", JSON.stringify(channels));
+                name = channels[wyns.currentRemovalId].name;
 
-            getVideoList();
-
-            createSnackbar(wyns.strings.user_remove_channel + "\"" + name + "\"");
-            console.log(wyns.strings.user_remove_channel + name);
+            $("paper-toast")[0].opened = false;
+            $("#removalToast")[0].show({text: wyns.strings.removalPrompt + "\"" + name + "\"?", duration: 7000});
+            $("#removalToast")[0].refit();
         }
+    });
+    $("#removalToast paper-button").on("click", function(){
+        if(wyns.currentRemovalId == -1)
+            return;
+
+        var channels = JSON.parse(localStorage.getItem("channels")),
+            name = channels[wyns.currentRemovalId].name;
+        channels.splice(wyns.currentRemovalId, 1);
+        localStorage.setItem("channels", JSON.stringify(channels));
+
+        getVideoList();
+
+        createSnackbar(wyns.strings.user_remove_channel + "\"" + name + "\"");
+        console.log(wyns.strings.user_remove_channel + name);
     });
     $("body").on("click", ".channel_info_btn", function(){
         var id = parseInt($(this).parent().parent().attr("data-index"));
@@ -1289,6 +1303,7 @@ function createSnackbar(text){
     $("paper-toast")[0].show({
         text: text
     });
+    $("paper-toast")[0].refit();
 }
 
 // SHADOW TRANSITION
