@@ -69,7 +69,7 @@ window.addEventListener("WebComponentsReady", function(){
         setLocales();
 
         if(!chrome.extension.getBackgroundPage().wyn.isConnected)
-            createSnackbar(wyns.strings.connect_failed);
+            createToast(wyns.strings.connect_failed);
 
         chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
             switch (request.type) {
@@ -89,12 +89,12 @@ window.addEventListener("WebComponentsReady", function(){
                         $("#loading").stop().hide();
                         $("#add_channels-dialog").stop().show().css("opacity", 1);
                         $("#add_channels-container").attr("data-toggle", "false");
-                        createSnackbar(wyns.strings.add_channels_failed);
+                        createToast(wyns.strings.add_channels_failed);
                         wyns.channelsToAdd2 = -1;
                     }
                     break;
-                case "createSnackbar":
-                    createSnackbar(request.message);
+                case "createToast":
+                    createToast(request.message);
                     break;
                 case "importData":
                     displayImportData(request.message);
@@ -347,7 +347,7 @@ function registerListeners(){
     });
 
     $("#add_channels-add-button").on("click", function(){
-        createSnackbar("Adding channels...");
+        createToast("Adding channels...");
 
         $("#add_channels-container").attr("data-toggle", "false");
 
@@ -365,7 +365,7 @@ function registerListeners(){
             }
         });
         if(num < 1)
-            createSnackbar(wyns.strings.add_channels_failed);
+            createToast(wyns.strings.add_channels_failed);
         else
             wyns.channelsToAdd = num;
 
@@ -401,7 +401,7 @@ function registerListeners(){
 
         getVideoList();
 
-        createSnackbar(wyns.strings.user_remove_channel + "\"" + name + "\"");
+        createToast(wyns.strings.user_remove_channel + "\"" + name + "\"");
         console.log(wyns.strings.user_remove_channel + name);
     });
     $("body").on("click", ".channel_info_btn", function(){
@@ -419,7 +419,7 @@ function registerListeners(){
 
     $("#settings_refresh").on("click", function(){
         chrome.extension.sendMessage({type: "checkYoutubeBatch"});
-        createSnackbar(wyns.strings.updating);
+        createToast(wyns.strings.updating);
     });
 
     $("#settings_notifications_test").on("click", function(){
@@ -470,7 +470,7 @@ function registerListeners(){
                 sortElem_custom.click();
             }
 
-            createSnackbar(wyns.strings.saved);
+            createToast(wyns.strings.saved);
 
             $(this).attr("data-toggle", "false");
         }else{
@@ -502,7 +502,7 @@ function registerListeners(){
     });
     $("#import_channels-import-button").on("click", function(){
         $("#overlay").click();
-        createSnackbar(wyns.strings.please_wait_while);
+        createToast(wyns.strings.please_wait_while);
         chrome.extension.sendMessage({type: "importUserApproved", data: wyns.importData});
     });
     $("#popup_videoList_more").on("click", function(){
@@ -529,7 +529,7 @@ function registerListeners(){
             case "1":
                 var value = $("#search-input").val();
                 if(value != ""){
-                    createSnackbar("Adding channel...");
+                    createToast("Adding channel...");
 
                     var playlist = getUrlVar("list", value);
 
@@ -623,7 +623,7 @@ function registerListeners(){
         $("#fileUploader").click();
     });
     $("#fileUploader").on("change", function(){
-        createSnackbar(getString("uploading"));
+        createToast(getString("uploading"));
 
         var file = $("#fileUploader")[0].files[0],
             fileReader = new FileReader();
@@ -643,7 +643,7 @@ function registerListeners(){
                 store = transaction.objectStore("customMedia");
                 request = store.add(data, 0);
 
-                createSnackbar(getString("uploadcomplete"));
+                createToast(getString("uploadcomplete"));
                 updateNotificationMedia(false);
 
                 chrome.extension.sendMessage({type: "updateNotificationSound"});
@@ -693,7 +693,7 @@ function configureSettings(){
             settings = JSON.parse(localStorage.getItem("settings"));
         settings.notifications.enabled = value;
         localStorage.setItem("settings", JSON.stringify(settings));
-        createSnackbar(wyns.strings.saved);
+        createToast(wyns.strings.saved);
     });
 
     $("#settings_notifications_volume").val(settings.notifications.volume);
@@ -701,7 +701,7 @@ function configureSettings(){
         var settings = JSON.parse(localStorage.getItem("settings"));
         settings.notifications.volume = $("#settings_notifications_volume").val();
         localStorage.setItem("settings", JSON.stringify(settings));
-        createSnackbar(wyns.strings.saved);
+        createToast(wyns.strings.saved);
     });
 
 
@@ -714,7 +714,7 @@ function configureSettings(){
         var settings = JSON.parse(localStorage.getItem("settings"));
         settings.tts.enabled = $(this)[0].checked;
         localStorage.setItem("settings", JSON.stringify(settings));
-        createSnackbar(wyns.strings.saved);
+        createToast(wyns.strings.saved);
     });
 
 
@@ -727,7 +727,7 @@ function configureSettings(){
         var settings = JSON.parse(localStorage.getItem("settings"));
         settings.addBtn.enabled = $(this)[0].checked;
         localStorage.setItem("settings", JSON.stringify(settings));
-        createSnackbar(wyns.strings.saved);
+        createToast(wyns.strings.saved);
     });
 
     launchSpeechSynthesis();
@@ -755,7 +755,7 @@ function launchSpeechSynthesis(){
                 var settings = JSON.parse(localStorage.getItem("settings"));
                 settings.tts.type = parseInt(selectElem[0].selected);
                 localStorage.setItem("settings", JSON.stringify(settings));
-                createSnackbar(wyns.strings.saved);
+                createToast(wyns.strings.saved);
             });
         }, 10);
     }
@@ -1033,8 +1033,8 @@ function showFloatingCard(elemId) {
  *  Requests the user to approve the OAuth request
  */
 function requestImportToken() {
-    if($(".paper-snackbar").text() != wyns.strings.please_wait)
-        createSnackbar(wyns.strings.please_wait);
+    createToast(wyns.strings.please_wait);
+
     chrome.identity.getAuthToken({
             interactive: true,
             scopes: [
@@ -1043,7 +1043,7 @@ function requestImportToken() {
         },
         function(token){
             if(chrome.runtime.lastError){
-                createSnackbar("Error: " + chrome.runtime.lastError.message);
+                createToast("Error: " + chrome.runtime.lastError.message);
             }else{
                 chrome.extension.sendMessage({type: "onReceiveImportToken"});
             }
@@ -1136,7 +1136,7 @@ function displayImportData(data) {
  *  Change user token
  */
 function changeImportOAuthToken() {
-    createSnackbar(wyns.strings.please_wait);
+    createToast(wyns.strings.please_wait);
     chrome.identity.getAuthToken({
             interactive: true,
             scopes: [
@@ -1186,7 +1186,7 @@ function updateNotificationMedia(registerListeners) {
                     settings = JSON.parse(localStorage.getItem("settings"));
                 settings.notificationSound = value;
                 localStorage.setItem("settings", JSON.stringify(settings));
-                createSnackbar(wyns.strings.saved);
+                createToast(wyns.strings.saved);
 
                 chrome.extension.sendMessage({type: "updateNotificationSound"});
             });
@@ -1295,15 +1295,17 @@ function getUrlVar(name, url) {
 function convertISO8601Duration(r){var e=r.split("T"),t="",i={},n={},s="string",a="variables",l="letters",v={period:{string:e[0].substring(1,e[0].length),len:4,letters:["Y","M","W","D"],variables:{}},time:{string:e[1],len:3,letters:["H","M","S"],variables:{}}};v.time.string||(v.time.string="");for(var g in v)for(var o=v[g].len,M=0;o>M;M++)v[g][s]=v[g][s].split(v[g][l][M]),v[g][s].length>1?(v[g][a][v[g][l][M]]=parseInt(v[g][s][0],10),v[g][s]=v[g][s][1]):(v[g][a][v[g][l][M]]=0,v[g][s]=v[g][s][0]);return n=v.period.variables,i=v.time.variables,i.H+=24*n.D+168*n.W+672*n.M+8064*n.Y,i.H&&(t=i.H+":",i.M<10&&(i.M="0"+i.M)),i.S<10&&(i.S="0"+i.S),t+=i.M+":"+i.S}
 
 /**
- * Shows and creates a snackbar
+ * Shows and creates a toast
  * @param text The message to display
  */
-function createSnackbar(text){
+function createToast(text){
     $("paper-toast")[0].opened = false;
-    $("paper-toast")[0].show({
-        text: text
-    });
     $("paper-toast")[0].refit();
+    setTimeout(function() {
+        $("paper-toast")[0].show({
+            text: text
+        });
+    }, 1);
 }
 
 // SHADOW TRANSITION

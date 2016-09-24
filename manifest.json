@@ -12,7 +12,7 @@
     "identity",
 	"*://*.youtube.com/*",
     "*://*.ytimg.com/*",
-    "*://*.ggpht.com/*"
+    "*://yt3.ggpht.com/*"
   ],
   "browser_action": {
     "default_icon": "img/48.png",

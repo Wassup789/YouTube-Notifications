@@ -14,6 +14,10 @@ var wyn = {};
         "notification_close_icon": "img/ic_close.png",
         "notification_watchlater": getString("notificationWatchLater"),
         "notification_watchlater_icon": "img/ic_watchlater.png",
+        "notification_addPotplayer": getString("notificationAddPotplayer"),
+        "notification_addPotplayer_icon": "img/ic_library_add.png",
+        "notification_playPotplayer": getString("notificationPlayPotplayer"),
+        "notification_playPotplayer_icon": "img/ic_play.png",
         "notification_main_icon": "img/ic_youtube.png",
         "notification_appIconMaskUrl": "img/alpha.png",
         "notification_log_check": getString("notificationLogCheck"),
@@ -74,6 +78,74 @@ var SORTMODE_USER = 0,
 var NOTIFICATIONSOUND_DEFAULT = 0,
     NOTIFICATIONSOUND_CUSTOM = 100;
 
+var NOTIFICATION_ACTION_WATCHVIDEO = 0,
+    NOTIFICATION_ACTION_WATCHLATER = 1,
+    NOTIFICATION_ACTION_DISMISS = 2,
+    NOTIFICATION_ACTION_PLAYPOTPLAYER = 100,
+    NOTIFICATION_ACTION_ADDPOTPLAYER = 101;
+
+var NOTIFICATION_ACTIONS = {
+    [-1]: {
+        action: function(){},
+        button: {}
+    },
+    [NOTIFICATION_ACTION_WATCHVIDEO]: {
+        action: function(ntID){
+            var channels = JSON.parse(localStorage.getItem("channels"));
+            createTab("https://www.youtube.com/watch?v=" + channels[ntID.split("-")[4]].latestVideo.id);
+            console.log("User clicked on \"" + wyn.strings.notification_watch + "\" button; NTID: " + ntID);
+            console.log("Sending user to https://www.youtube.com/watch?v=" + channels[ntID.split("-")[4]].latestVideo.id);
+        },
+        button: {
+            title: wyn.strings.notification_watch,
+            iconUrl: wyn.strings.notification_watch_icon
+        }
+    },
+    [NOTIFICATION_ACTION_WATCHLATER]: {
+        action: function(ntID){
+            var channels = JSON.parse(localStorage.getItem("channels")),
+                data = channels[ntID.split("-")[4]].latestVideo;
+            data.index = ntID.split("-")[4];
+
+            requestExtendedToken(data);
+            console.log("User clicked on \"" + wyn.strings.notification_watchlater + "\" button; NTID: " + ntID);
+        },
+        button: {
+            title: wyn.strings.notification_watchlater,
+            iconUrl: wyn.strings.notification_watchlater_icon
+        }
+    },
+    [NOTIFICATION_ACTION_DISMISS]: {
+        action: function(ntID){
+            console.log("User clicked on \"" + wyn.strings.notification_close + "\" button; NTID: " + ntID);
+        },
+        button: {
+            title: wyn.strings.notification_close,
+            iconUrl: wyn.strings.notification_close_icon
+        }
+    },
+    [NOTIFICATION_ACTION_PLAYPOTPLAYER]: {
+        action: function(ntID) {
+            var channels = JSON.parse(localStorage.getItem("channels"));
+            createTab("potplayer://" + "https://www.youtube.com/watch?v=" + channels[ntID.split("-")[4]].latestVideo.id);
+        },
+        button: {
+            title: wyn.strings.notification_playPotplayer,
+            iconUrl: wyn.strings.notification_playPotplayer_icon
+        }
+    },
+    [NOTIFICATION_ACTION_ADDPOTPLAYER]: {
+        action: function(ntID) {
+            var channels = JSON.parse(localStorage.getItem("channels"));
+            createTab("potplayer://" + "https://www.youtube.com/watch?v=" + channels[ntID.split("-")[4]].latestVideo.id + " /ADD");
+        },
+        button: {
+            title: wyn.strings.notification_addPotplayer,
+            iconUrl: wyn.strings.notification_addPotplayer_icon
+        }
+    }
+};
+
 if(localStorage.getItem("channels") == null)
     localStorage.setItem("channels", JSON.stringify([]));
 if(localStorage.getItem("settings") == null)
@@ -97,7 +169,8 @@ if(localStorage.getItem("settings") == null)
         },
         extendedAuthToken: "",
         sortOrder: SORTMODE_USER,
-        notificationSound: NOTIFICATIONSOUND_DEFAULT
+        notificationSound: NOTIFICATIONSOUND_DEFAULT,
+        notificationActions: [NOTIFICATION_ACTION_WATCHVIDEO, NOTIFICATION_ACTION_WATCHLATER]
     }));
 
 fixItems();
@@ -111,7 +184,7 @@ function fixItems(){
         localStorage.setItem("settings", JSON.stringify(settings));
     }
     if(typeof settings.tts === "undefined" || settings.tts.enabled === "undefined" || settings.tts.type === "undefined"){
-        settings.notifications = {
+        settings.tts = {
             enabled: false,
             type: 1
         };
@@ -145,6 +218,10 @@ function fixItems(){
     }
     if(typeof settings.notificationSound === "undefined"){
         settings.notificationSound = NOTIFICATIONSOUND_DEFAULT;
+        localStorage.setItem("settings", JSON.stringify(settings));
+    }
+    if(typeof settings.notificationActions === "undefined"){
+        settings.notificationActions = [NOTIFICATION_ACTION_WATCHVIDEO, NOTIFICATION_ACTION_WATCHLATER];
         localStorage.setItem("settings", JSON.stringify(settings));
     }
 }
@@ -325,7 +402,7 @@ function checkYoutubeStatus(){
         statusCode: {
             400: function() {
                 wyn.isConnected = true;
-                chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.connect_success});
+                chrome.extension.sendMessage({type: "createToast", message: wyn.strings.connect_success});
                 console.log(wyn.strings.log_color_prefix + wyn.strings.connect_success, wyn.strings.log_color_green);
                 updateChannelsInfo(true);
                 setInterval(function(){
@@ -351,7 +428,7 @@ function checkYoutubeStatus(){
 
             if(XMLHttpRequest.statusText != "OK" && XMLHttpRequest.status != 400){
                 wyn.isConnected = false;
-                chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.connect_failed});
+                chrome.extension.sendMessage({type: "createToast", message: wyn.strings.connect_failed});
                 console.log(wyn.strings.log_color_prefix + wyn.strings.connect_failed, wyn.strings.log_color_green);
                 if(!wyn.isTimedout){
                     wyn.isTimedout = true;
@@ -365,7 +442,7 @@ function checkYoutubeStatus(){
         success: function(data) {
             if(data.status == "success" && !wyn.isConnected){
                 wyn.isConnected = true;
-                chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.connect_success});
+                chrome.extension.sendMessage({type: "createToast", message: wyn.strings.connect_success});
                 console.log(wyn.strings.log_color_prefix + wyn.strings.connect_success, wyn.strings.log_color_green);
                 updateChannelsInfo(true);
                 setInterval(function(){
@@ -373,7 +450,7 @@ function checkYoutubeStatus(){
                 }, 1000*60*5);
             }else{
                 wyn.isConnected = false;
-                chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.connect_failed});
+                chrome.extension.sendMessage({type: "createToast", message: wyn.strings.connect_failed});
                 console.log(wyn.strings.log_color_prefix + wyn.strings.connect_failed, wyn.strings.log_color_green);
                 if(!wyn.isTimedout){
                     wyn.isTimedout = true;
@@ -522,7 +599,7 @@ function removeYoutube(type, name, fromContentScript){
         localStorage.setItem("channels", JSON.stringify(channels));
 
         chrome.extension.sendMessage({type: "updateData", newData: false});
-        chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.removed_channel + "\"" + channelName + "\""});
+        chrome.extension.sendMessage({type: "createToast", message: wyn.strings.removed_channel + "\"" + channelName + "\""});
     }else if(type == 1){
         var channels = JSON.parse(localStorage.getItem("channels"));
         for(var i = 0; i < channels.length; i++){
@@ -533,7 +610,7 @@ function removeYoutube(type, name, fromContentScript){
                 localStorage.setItem("channels", JSON.stringify(channels));
 
                 chrome.extension.sendMessage({type: "updateData", newData: false});
-                chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.removed_channel + "\"" + channelName + "\""});
+                chrome.extension.sendMessage({type: "createToast", message: wyn.strings.removed_channel + "\"" + channelName + "\""});
                 if(fromContentScript){
                     chrome.tabs.query({active: true}, function(tabs){
                         tabs.forEach(function(tab){
@@ -636,7 +713,7 @@ function checkYoutube(num, batch, isNewItem) {
                     }
 
                     chrome.extension.sendMessage({type: "updateData", newData: false});
-                    chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.snackbar_nonewvideos});
+                    chrome.extension.sendMessage({type: "createToast", message: wyn.strings.snackbar_nonewvideos});
                 }
                 if(isNewItem)
                     chrome.extension.sendMessage({type: "updateData", newData: true, newDataIndex: num});
@@ -673,6 +750,8 @@ function checkYoutube(num, batch, isNewItem) {
                     if((likesa + dislikesa) > 100)
                         dislikesa--;
 
+                    var settings = JSON.parse(localStorage.getItem("settings"));
+
                     var options = {
                         type: "image",
                         priority: 0,
@@ -682,16 +761,10 @@ function checkYoutube(num, batch, isNewItem) {
                         /*iconUrl: wyn.strings.notification_main_icon,*/
                         iconUrl: channels[num].thumbnail,
                         contextMessage: info.latestVideo.duration + " | "+ info.latestVideo.views.toLocaleString() + " " + wyn.strings.info_views + " | " + likesa.toLocaleString({style: "percent"}) + "% " + wyn.strings.info_likes + " | " + dislikesa.toLocaleString({style: "percent"}) + "% " + wyn.strings.info_dislikes,
-                        buttons: [{
-                            title: wyn.strings.notification_watch,
-                            iconUrl: wyn.strings.notification_watch_icon
-                        }, {
-                            title: wyn.strings.notification_watchlater,
-                            iconUrl: wyn.strings.notification_watchlater_icon
-                        }, {
-                            title: wyn.strings.notification_close,
-                            iconUrl: wyn.strings.notification_close_icon
-                        }]
+                        buttons: [
+                            NOTIFICATION_ACTIONS[settings.notificationActions[0]].button,
+                            NOTIFICATION_ACTIONS[settings.notificationActions[1]].button
+                        ]
                     };
                     var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + num;
                     console.log(wyn.strings.log_color_prefix + wyn.strings.notification_log_new + info.name, wyn.strings.log_color_green);
@@ -827,6 +900,14 @@ function rndStr(len){
  *  @param {object} options Notification options (see: https://developer.chrome.com/apps/notifications#type-NotificationOptions)
  */
 function notify(ntID, options){
+    if(typeof options.buttons[0].title === "undefined") {
+        if(typeof options.buttons[1].title === "undefined")
+            options.buttons = [];
+        else
+            options.buttons.splice(0, 1);
+    }else if(typeof options.buttons[1].title === "undefined")
+        options.buttons.splice(1, 1);
+
     chrome.notifications.create(ntID, options, function(){
         /*var bc = localStorage.getItem("badgeCount");
         localStorage.setItem("badgeCount", ++bc);
@@ -882,28 +963,12 @@ function onNotificationClick(ntID){
  *  Ran when a notification's buttons are clicked
  *
  *  @param {string} ntID A random string used to identify the notification
+ *  @param {number} btnID The button index
  */
 function onNotificationButtonClick(ntID, btnID){
-    if(typeof ntID.split("-")[4] !== "undefined") {
-        switch(btnID) {
-            case 0:
-                var channels = JSON.parse(localStorage.getItem("channels"));
-                createTab("https://www.youtube.com/watch?v=" + channels[ntID.split("-")[4]].latestVideo.id);
-                console.log("User clicked on \"" + wyn.strings.notification_watch + "\" button; NTID: " + ntID);
-                console.log("Sending user to https://www.youtube.com/watch?v=" + channels[ntID.split("-")[4]].latestVideo.id);
-                break;
-            case 1:
-                var channels = JSON.parse(localStorage.getItem("channels")),
-                    data = channels[ntID.split("-")[4]].latestVideo;
-                data.index = ntID.split("-")[4];
-
-                requestExtendedToken(data);
-                console.log("User clicked on \"" + wyn.strings.notification_watchlater + "\" button; NTID: " + ntID);
-                break;
-            case 2:
-                console.log("User clicked on \"" + wyn.strings.notification_close + "\" button; NTID: " + ntID);
-                break;
-        }
+    var settings = JSON.parse(localStorage.getItem("settings"));
+    if(typeof ntID.split("-")[4] !== "undefined" && typeof NOTIFICATION_ACTIONS[settings.notificationActions[btnID]] !== "undefined") {
+        NOTIFICATION_ACTIONS[settings.notificationActions[btnID]].action(ntID);
     }
     chrome.notifications.clear(ntID);
 }
@@ -925,14 +990,7 @@ function onNotificationClosed(ntID, byUser){
  *  @param {string} url The URL to open
  */
 function createTab(url) {
-    var numTabs = 0;
-    chrome.windows.getAll(function(data){
-        numTabs = data.length;
-        if(numTabs > 0)
-            chrome.tabs.create({url: url});
-        else
-            chrome.windows.create({url: url});
-    });
+    chrome.tabs.create({url: url});
 }
 
 /**
@@ -940,7 +998,8 @@ function createTab(url) {
  *  Can be launched in the option settings.js
  */
 wyn.testNotify = function(){
-    var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5);
+    var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5),
+        settings = JSON.parse(localStorage.getItem("settings"));
     var options = {
         type: "image",
         priority: 0,
@@ -949,16 +1008,10 @@ wyn.testNotify = function(){
         imageUrl: "img/notification_placeholder.png",
         iconUrl: wyn.strings.notification_main_icon,
         contextMessage: "12:34 | " + (5678).toLocaleString() + " " + wyn.strings.info_views + " | " + (90).toLocaleString({style: "percent"}) + "% " + wyn.strings.info_likes + " | " + (10).toLocaleString({style: "percent"}) + "% " + wyn.strings.info_dislikes,
-        buttons: [{
-            title: wyn.strings.notification_watch,
-            iconUrl: wyn.strings.notification_watch_icon
-        }, {
-            title: wyn.strings.notification_watchlater,
-            iconUrl: wyn.strings.notification_watchlater_icon
-        }, {
-            title: wyn.strings.notification_close,
-            iconUrl: wyn.strings.notification_close_icon
-        }]
+        buttons: [
+            NOTIFICATION_ACTIONS[settings.notificationActions[0]].button,
+            NOTIFICATION_ACTIONS[settings.notificationActions[1]].button
+        ]
     };
 
     notify(ntID, options);
@@ -998,6 +1051,8 @@ wyn.forceNotification = function(id) {
     if((likesa + dislikesa) > 100)
         dislikesa--;
 
+    var settings = JSON.parse(localStorage.getItem("settings"));
+
     var options = {
         type: "image",
         priority: 0,
@@ -1007,16 +1062,10 @@ wyn.forceNotification = function(id) {
         /*iconUrl: wyn.strings.notification_main_icon,*/
         iconUrl: info.thumbnail,
         contextMessage: info.latestVideo.duration + " | "+ info.latestVideo.views.toLocaleString() + " " + wyn.strings.info_views + " | " + likesa.toLocaleString({style: "percent"}) + "% " + wyn.strings.info_likes + " | " + dislikesa.toLocaleString({style: "percent"}) + "% " + wyn.strings.info_dislikes,
-        buttons: [{
-            title: wyn.strings.notification_watch,
-            iconUrl: wyn.strings.notification_watch_icon
-        }, {
-            title: wyn.strings.notification_watchlater,
-            iconUrl: wyn.strings.notification_watchlater_icon
-        }, {
-            title: wyn.strings.notification_close,
-            iconUrl: wyn.strings.notification_close_icon
-        }]
+        buttons: [
+            NOTIFICATION_ACTIONS[settings.notificationActions[0]].button,
+            NOTIFICATION_ACTIONS[settings.notificationActions[1]].button
+        ]
     };
     var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + id;
     console.log(wyn.strings.log_color_prefix + wyn.strings.notification_log_new + info.name, wyn.strings.log_color_green);
@@ -1050,7 +1099,7 @@ function onReceiveImportToken() {
             xhr.onload = function(){
                 var data = JSON.parse(this.response);
                 if(data.error)
-                    chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.import_failed + " \"" + data.error.message + "\""});
+                    chrome.extension.sendMessage({type: "createToast", message: wyn.strings.import_failed + " \"" + data.error.message + "\""});
                 else {
                     var output = [];
                     for(var i = 0; i < data.items.length; i++) {
@@ -1087,7 +1136,7 @@ function onReceiveImportTokenContinued(access_token, nextPageToken, output) {
     xhr.onload = function(){
         var data = JSON.parse(this.response);
         if(data.error)
-            chrome.extension.sendMessage({type: "createSnackbar", message: wyn.strings.import_failed + " \"" + data.error.message + "\""});
+            chrome.extension.sendMessage({type: "createToast", message: wyn.strings.import_failed + " \"" + data.error.message + "\""});
         else {
             for(var i = 0; i < data.items.length; i++) {
                 output.push({

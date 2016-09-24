@@ -17,7 +17,7 @@ This code is licensed under the MIT License.
  - identity (For subscription importing & watch later)
  - \*://\*.youtube.com/\*
  - \*://\*.ytimg.com/\*
- - \*://\*.ggpht.com/\*
+ - \*://\yt3.ggpht.com/\*
 
 ## Downloads
 

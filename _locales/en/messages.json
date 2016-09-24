@@ -327,6 +327,14 @@
 		"description": "",
 		"message": "Watch Later"
 	},
+	"background_notificationAddPotplayer": {
+		"description": "",
+		"message": "Add to PotPlayer"
+	},
+	"background_notificationPlayPotplayer": {
+		"description": "",
+		"message": "Play with Potplayer"
+	},
 	"background_notificationLogCheck": {
 		"description": "",
 		"message": "Checking YouTube User: "
@@ -398,5 +406,9 @@
 	"contentScript_removeChannel": {
 		"description": "The remove from YouTube Notifications button on YouTube displayed after the channel is added",
 		"message": "Remove from YouTube Notifications"
+	},
+	"notificationCustomizer_buttons_title": {
+		"description": "The title for the notification customizer tools",
+		"message": "Available Buttons"
 	}
 }
