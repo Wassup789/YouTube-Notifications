@@ -422,5 +422,13 @@
 	"notificationCustomizer_buttonSave": {
         "description": "The text for the paper-button save in the notification customizer page",
         "message": "Save"
+    },
+	"notificationCustomizer_separatorGeneral": {
+        "description": "The text for the general separator in the notification customizer page",
+        "message": "General"
+    },
+	"notificationCustomizer_separatorPotplayer": {
+        "description": "The text for the general separator in the notification customizer page",
+        "message": "PotPlayer"
     }
 }

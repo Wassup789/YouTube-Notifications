@@ -173,8 +173,9 @@ if(localStorage.getItem("settings") == null)
         notificationActions: [NOTIFICATION_ACTION_WATCHVIDEO, NOTIFICATION_ACTION_WATCHLATER]
     }));
 
-fixItems();
-function fixItems(){
+fixSettingsStructure();
+fixChannelStructure();
+function fixSettingsStructure(){
     var settings = JSON.parse(localStorage.getItem("settings"));
     if(typeof settings.notifications === "undefined" || settings.notifications.enabled === "undefined" || settings.notifications.volume === "undefined"){
         settings.notifications = {
@@ -223,6 +224,21 @@ function fixItems(){
     if(typeof settings.notificationActions === "undefined"){
         settings.notificationActions = [NOTIFICATION_ACTION_WATCHVIDEO, NOTIFICATION_ACTION_WATCHLATER];
         localStorage.setItem("settings", JSON.stringify(settings));
+    }
+}
+
+/**
+ * Fixes objects prior to and including 1.2.0.0
+ *
+ * Uses another object
+ */
+function fixChannelStructure() {
+    var channels = JSON.parse(localStorage.getItem("channels"));
+    for(var i = 0; i < channels.length; i++) {
+        if(typeof channels[i].hasNewVideo !== "boolean") {
+            channels[i].hasNewVideo = false;
+            localStorage.setItem("channels", JSON.stringify(channels));
+        }
     }
 }
 
@@ -299,6 +315,9 @@ $(function(){
                 break;
             case "updateNotificationSound":
                 sendResponse(updateNotificationSound());
+                break;
+            case "onSettingsOpen":
+                sendResponse(resetChannelsHasNewVideo(true));
                 break;
         }
     });
@@ -519,7 +538,8 @@ function addYoutubeChannel(name, fromContentScript, type){
                             "duration": "",
                             "likes": "",
                             "dislikes": ""
-                        }
+                        },
+                        "hasNewVideo": false
                     };
 
                     var arr = JSON.parse(localStorage.getItem("channels"));
@@ -550,7 +570,8 @@ function addYoutubeChannel(name, fromContentScript, type){
                                     "duration": "",
                                     "likes": "",
                                     "dislikes": ""
-                                }
+                                },
+                                "hasNewVideo": false
                             };
                             var arr = JSON.parse(localStorage.getItem("channels"));
                             arr.push(output);
@@ -730,6 +751,8 @@ function checkYoutube(num, batch, isNewItem) {
                     wyn.batchChecking = false;*/
                 },
                 success: function(data) {
+                    channels[num].hasNewVideo = true;
+
                     channels[num].latestVideo.views = parseInt(data.items[0].statistics.viewCount);
                     channels[num].latestVideo.duration = convertISO8601Duration(data.items[0].contentDetails.duration);
                     channels[num].latestVideo.likes = data.items[0].statistics.likeCount;
@@ -769,6 +792,8 @@ function checkYoutube(num, batch, isNewItem) {
                     var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + num;
                     console.log(wyn.strings.log_color_prefix + wyn.strings.notification_log_new + info.name, wyn.strings.log_color_green);
                     notify(ntID, options);
+
+                    updateBadge();
 
                     wyn.activeCheckings[num] = false;
                     if(!batch){
@@ -955,6 +980,8 @@ function onNotificationClick(ntID){
         createTab("https://www.youtube.com/watch?v=" + channels[ntID.split("-")[4]].latestVideo.id);
         console.log("User clicked on notification; NTID: " + ntID);
         console.log("Sending user to https://www.youtube.com/watch?v=" + channels[ntID.split("-")[4]].latestVideo.id);
+
+        resetChannelHasNewVideo(ntID.split("-")[4], true);
     }
     chrome.notifications.clear(ntID);
 }
@@ -969,6 +996,8 @@ function onNotificationButtonClick(ntID, btnID){
     var settings = JSON.parse(localStorage.getItem("settings"));
     if(typeof ntID.split("-")[4] !== "undefined" && typeof NOTIFICATION_ACTIONS[settings.notificationActions[btnID]] !== "undefined") {
         NOTIFICATION_ACTIONS[settings.notificationActions[btnID]].action(ntID);
+
+        resetChannelHasNewVideo(ntID.split("-")[4], true);
     }
     chrome.notifications.clear(ntID);
 }
@@ -980,8 +1009,11 @@ function onNotificationButtonClick(ntID, btnID){
  *  @param {boolean} byUser If the notification was closed by the user
  */
 function onNotificationClosed(ntID, byUser){
-    if(typeof ntID.split("-")[4] !== "undefined" && byUser)
+    if(typeof ntID.split("-")[4] !== "undefined" && byUser) {
         console.log("User clicked on \"X\" button; NTID: " + ntID);
+
+        resetChannelHasNewVideo(ntID.split("-")[4], true);
+    }
 }
 
 /**
@@ -1072,7 +1104,23 @@ wyn.forceNotification = function(id) {
     notify(ntID, options);
 };
 
-wyn.resetVideos = function(){
+/**
+ * Resets a channel's timestamp
+ *
+ * @param num The channel index
+ */
+wyn.resetChannel = function(num){
+    var channels = JSON.parse(localStorage.getItem("channels"));
+    if(typeof channels[num] !== "undefined") {
+        channels[num].latestVideo.timestamp = 0;
+        localStorage.setItem("channels", JSON.stringify(channels));
+    }
+};
+
+/**
+ * Resets all channel timestamps
+ */
+wyn.resetChannels = function(){
     var channels = JSON.parse(localStorage.getItem("channels"));
     for(var i = 0; i < channels.length; i++){
         channels[i].latestVideo.timestamp = 0;
@@ -1331,4 +1379,63 @@ function trimTitle(title, name) {
         title = title.substring(0, title.length - 3) + "...";
 
     return title + suffix;
+}
+
+/**
+ * Updates the badge count to the proper amount
+ */
+function updateBadge() {
+    var channels = JSON.parse(localStorage.getItem("channels")),
+        count = 0;
+    for (var i = 0; i < channels.length; i++) {
+        if (channels[i].hasNewVideo)
+            count++;
+    }
+
+    if(count < 1)
+        chrome.browserAction.setBadgeText({text: ""});
+    else{
+        chrome.browserAction.getBadgeText({}, function(result){
+            if(result == "new")
+                return;
+            else
+                chrome.browserAction.setBadgeText({text: count.toString()});
+        });
+    }
+}
+
+/**
+ * Resets all channels' hasNewVideo variable to false
+ *
+ * Not to be mistaken with resetChannelHasNewVideo
+ *
+ * @param updateSettingsBadge Should the badges be updated
+ */
+function resetChannelsHasNewVideo(updateSettingsBadge) {
+    var channels = JSON.parse(localStorage.getItem("channels"));
+    for (var i = 0; i < channels.length; i++) {
+        channels[i].hasNewVideo = false;
+    }
+    localStorage.setItem("channels", JSON.stringify(channels));
+
+    if(updateSettingsBadge)
+        updateBadge();
+}
+
+/**
+ * Resets a singular channel's hasNewVideo variable to false
+ *
+ * Not to be mistaken with resetChannelsHasNewVideo
+ *
+ * @param num The channel's index
+ * @param updateSettingsBadge Should the badges be updated
+ */
+function resetChannelHasNewVideo(num, updateSettingsBadge) {
+    var channels = JSON.parse(localStorage.getItem("channels"));
+    if(typeof channels[num] !== "undefined")
+        channels[num].hasNewVideo = false;
+    localStorage.setItem("channels", JSON.stringify(channels));
+
+    if(updateSettingsBadge)
+        updateBadge();
 }

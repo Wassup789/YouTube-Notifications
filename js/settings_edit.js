@@ -66,6 +66,8 @@ window.addEventListener("WebComponentsReady", function(){
 
         chrome.browserAction.setBadgeText({text: ""});
 
+        chrome.extension.sendMessage({type: "onSettingsOpen"});
+
         setLocales();
 
         if(!chrome.extension.getBackgroundPage().wyn.isConnected)

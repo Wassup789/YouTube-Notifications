@@ -15,7 +15,7 @@ window.addEventListener("WebComponentsReady", function() {
 
         $("#header #header_button_test").on("click", function() {
             saveIndex++;
-            save();
+            save(true);
             chrome.extension.getBackgroundPage().wyn.testNotify();
         });
         $("#header #header_button_save").on("click", function() {
@@ -144,7 +144,7 @@ function attemptSave() {
 /**
  * Saves the current notification settings
  */
-function save() {
+function save(override) {
     var arr = [];
     $("#notification_buttons .notification_button").each(function(){
         arr.push(parseInt($(this).attr("data-id")));
@@ -158,7 +158,8 @@ function save() {
     settings.notificationActions = arr;
     localStorage.setItem("settings", JSON.stringify(settings));
 
-    createToast(chrome.i18n.getMessage("settingsJs_saved"));
+    if(!override)
+        createToast(chrome.i18n.getMessage("settingsJs_saved"));
 }
 
 /**
