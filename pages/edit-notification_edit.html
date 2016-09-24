@@ -68,10 +68,15 @@
             paper-button[raised] {
                 background-color: var(--primary-color);
                 color: white;
-            }/*
+            }
+            paper-button iron-icon {
+                margin: 0 6px 0 2px;
+            }
             paper-card {
-                --paper-card-header-color: white;
-            }*/
+                --paper-card-header: {
+                    border-bottom: 1px solid #C5C5C5;
+                }
+            }
             paper-card .card-actions {
                 color: var(--primary-color);
             }
@@ -84,14 +89,24 @@
             </paper-toolbar>
             <div id="content" class="fit">
                 <div id="header">
-                    <span>Drag and drop buttons from the list to the notification on the right.</span>
-                    <span>Notification buttons are limited to two buttons.</span>
-                    <paper-button raised>Save</paper-button>
+                    <span class="title" i18n="notificationCustomizer_headerTitle"></span>
+                    <span class="subtitle" i18n="notificationCustomizer_headerSubtitle"></span>
+                    <div id="header_buttons">
+                        <paper-button id="header_button_test" raised>
+                            <iron-icon icon="av:volume-up"></iron-icon>
+                            <span i18n="settings_editSettings_notificationTest"></span>
+                        </paper-button>
+                        <paper-button id="header_button_save" raised>
+                            <iron-icon icon="icons:save"></iron-icon>
+                            <span i18n="notificationCustomizer_buttonSave"></span>
+                        </paper-button>
+                    </div>
                 </div>
                 <div id="content_container">
-                    <div id="notificationCustomizer_buttons_container">
-                        <paper-card id="notificationCustomizer_buttons" i18n="notificationCustomizer_buttons_title">
+                    <div id="notificationCustomizer_card_container">
+                    <paper-card id="notificationCustomizer_buttons" i18n="notificationCustomizer_buttons_title">
                             <div class="card-content">
+                                <div class="notification_separator">General</div>
                                 <div class="notification_button" data-id="0">
                                     <div class="notification_button_icon" style="background-image: url('../img/ic_play.png');"></div>
                                     <div class="notification_button_text" i18n="background_notificationWatch"></div>
@@ -113,6 +128,7 @@
                                         <span class="notification_button_remove_btn">&#10006;</span>
                                     </div>
                                 </div>
+                                <div class="notification_separator">PotPlayer</div>
                                 <div class="notification_button" data-id="100">
                                     <div class="notification_button_icon" style="background-image: url('../img/ic_play.png');"></div>
                                     <div class="notification_button_text" i18n="background_notificationPlayPotplayer"></div>

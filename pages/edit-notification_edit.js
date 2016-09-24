@@ -13,7 +13,12 @@ window.addEventListener("WebComponentsReady", function() {
         $(".notification_button[data-id=" + settings.notificationActions[0] + "]").clone().appendTo("#notification_buttons");
         $(".notification_button[data-id=" + settings.notificationActions[1] + "]").clone().appendTo("#notification_buttons");
 
-        $("#header paper-button").on("click", function() {
+        $("#header #header_button_test").on("click", function() {
+            saveIndex++;
+            save();
+            chrome.extension.getBackgroundPage().wyn.testNotify();
+        });
+        $("#header #header_button_save").on("click", function() {
             var arr = [];
             $("#notification_buttons .notification_button").each(function(){
                 arr.push(parseInt($(this).attr("data-id")));

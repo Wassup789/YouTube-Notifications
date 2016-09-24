@@ -1,7 +1,8 @@
 # Remove auto-generated files
 settings.html
 js/settings.js
-
+pages/edit-notification.js
+pages/edit-notification.html
 
 # Windows image file caches
 Thumbs.db

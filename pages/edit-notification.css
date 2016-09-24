@@ -190,9 +190,6 @@ a, .link{
     margin-left: 16px;
 }
 
-#notification {
-    transition: transform 0.1s;
-}
 #content {
     display: flex;
     flex-direction: column;
@@ -205,17 +202,25 @@ a, .link{
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: calc(100vh - 64px);
 }
 #content_container > * {
     display: flex;
     width: 50vw;
     justify-content: center;
+    align-items: center;
 }
 
 #notification_container {
     display: flex;
     justify-content: center;
+}
+
+#notificationCustomizer_card_container {
+    flex-direction: column;
+}
+#notificationCustomizer_card_container paper-card {
+    margin: 10px 0;
 }
 #notificationCustomizer_buttons {
     width: 80%;
@@ -270,17 +275,17 @@ a, .link{
     padding: 20px 40px;
 }
 
-#header * {
+#header > * {
     display: block;
     text-align: center;
 }
 
-#header span:nth-child(1) {
+#header .title {
     font-size: 28px;
     font-weight: 300;
 }
 
-#header span:nth-child(2) {
+#header .subtitle {
     color: #797979;
     font-size: 16px;
     font-weight: 300;
@@ -293,4 +298,14 @@ a, .link{
     line-height: 22px;
     border-radius: 5px;
     margin-top: 20px;
+}
+
+.notification_separator {
+    padding: 15px 0 5px 0;
+    font-size: 21px;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.notification_separator:nth-child(1) {
+    padding-top: 0;
 }

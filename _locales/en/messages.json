@@ -333,7 +333,7 @@
 	},
 	"background_notificationPlayPotplayer": {
 		"description": "",
-		"message": "Play with Potplayer"
+		"message": "Play with PotPlayer"
 	},
 	"background_notificationLogCheck": {
 		"description": "",
@@ -408,7 +408,19 @@
 		"message": "Remove from YouTube Notifications"
 	},
 	"notificationCustomizer_buttons_title": {
-		"description": "The title for the notification customizer tools",
+		"description": "The title for the notification customizer button card",
 		"message": "Available Buttons"
-	}
+	},
+	"notificationCustomizer_headerTitle": {
+        "description": "The title for the notification customizer header",
+        "message": "Drag and drop buttons from the list to the notification on the right."
+    },
+	"notificationCustomizer_headerSubtitle": {
+        "description": "The subtitle for the notification customizer header",
+        "message": "Notification buttons are limited to two buttons."
+    },
+	"notificationCustomizer_buttonSave": {
+        "description": "The text for the paper-button save in the notification customizer page",
+        "message": "Save"
+    }
 }
