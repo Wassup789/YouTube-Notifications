@@ -79,6 +79,10 @@
 		"description": "The label for the upload sound button",
 		"message": "Ajouter un son"
 	},
+	"settings_editSettings_notificationCustomizer": {
+		"description": "The label for the notification customizer button",
+		"message": "Personnalisateur de notifications"
+	},
 	"settings_vertSettings_viewChangelog": {
 		"description": "The label for the view changelog button",
 		"message": "Voir les changelogs"
@@ -192,9 +196,13 @@
 		"message": "Chercher..."
 	},
 	"settings_addMissingChannel": {
- 		"description": "The label for the empty channels subheader",
- 		"message": "Ajouter cette chaîne"
- 	},
+		"description": "The label for the empty channels subheader",
+		"message": "Ajouter cette chaîne"
+	},
+	"settings_remove": {
+		"description": "The label for the removalToast button",
+		"message": "Supprimer"
+	},
 	"settingsJs_updating": {
 		"description": "",
 		"message": "Mise à jour..."
@@ -230,6 +238,10 @@
 	"settingsJs_uploadComplete": {
 		"description": "",
 		"message": "Envoie Terminé"
+	},
+	"settingsJs_removalPrompt": {
+		"description": "",
+		"message": "Êtes-vous sûr que vous voulez supprimer  "
 	},
 	"common_published": {
 		"description": "First letter is capitalized",
@@ -315,6 +327,14 @@
 		"description": "",
 		"message": "À regarder plus tard"
 	},
+	"background_notificationAddPotplayer": {
+		"description": "",
+		"message": "Ajouter à PotPlayer"
+	},
+	"background_notificationPlayPotplayer": {
+		"description": "",
+		"message": "Lire avec Potplayer"
+	},
 	"background_notificationLogCheck": {
 		"description": "",
 		"message": "Vérification de l'utilisateur YouTube: "
@@ -386,5 +406,29 @@
 	"contentScript_removeChannel": {
 		"description": "The remove from YouTube Notifications button on YouTube displayed after the channel is added",
 		"message": "Supprimer de YouTube Notifications"
+	},
+	"notificationCustomizer_buttons_title": {
+		"description": "The title for the notification customizer button card",
+		"message": "Boutons disponibles"
+	},
+	"notificationCustomizer_headerTitle": {
+		"description": "The title for the notification customizer header",
+		"message": "Glissez et déposez des boutons de la liste vers les notifications à droite."
+	},
+	"notificationCustomizer_headerSubtitle": {
+		"description": "The subtitle for the notification customizer header",
+		"message": "Les boutons de notification sont limités à deux boutons"
+	},
+	"notificationCustomizer_buttonSave": {
+		"description": "The text for the paper-button save in the notification customizer page",
+		"message": "Sauvegarder"
+	},
+	"notificationCustomizer_separatorGeneral": {
+		"description": "The text for the general separator in the notification customizer page",
+		"message": "Général"
+	},
+	"notificationCustomizer_separatorPotplayer": {
+		"description": "The text for the general separator in the notification customizer page",
+		"message": "PotPlayer"
 	}
 }
