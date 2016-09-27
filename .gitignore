@@ -3,6 +3,8 @@ settings.html
 js/settings.js
 pages/edit-notification.js
 pages/edit-notification.html
+pages/upload-file.js
+pages/upload-file.html
 
 # Windows image file caches
 Thumbs.db

@@ -622,7 +622,12 @@ function registerListeners(){
 
     //Start of file uploader
     $("#settings_sound_upload").on("click", function(){
-        $("#fileUploader").click();
+        chrome.runtime.getPlatformInfo(function(info) {
+            if(info.os == "linux")
+                chrome.windows.create({url: "pages/upload-file.html", type: "popup", width: 600, height: 270});
+            else
+                $("#fileUploader").click();
+        });
     });
     $("#fileUploader").on("change", function(){
         createToast(getString("uploading"));
@@ -1209,7 +1214,7 @@ function addPaperItem(listboxElem, title, value) {
  * Clears all items from the paper-listbox
  */
 function clearPaperItems(listboxElem) {
-    $Poly(listboxElem).innerHTML = ""
+    $Poly(listboxElem).innerHTML = "";
 }
 
 /**

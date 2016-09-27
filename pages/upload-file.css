@@ -1,0 +1,126 @@
+* {
+    box-sizing:border-box;
+    -webkit-user-select: none;
+}
+.selectable {-webkit-user-select: text;}
+.noninteractable {pointer-events: none;}
+
+body{
+    font-size:12px;
+    color:#252525;
+    padding: 0;
+    margin: 0;
+    text-shadow: none;
+    font-family: Roboto, Arial, sans-serif;
+    font-weight: 400;
+    overflow-x:hidden;
+    background: #efefef;
+    width: 100%;
+    height: 100%;
+    box-sizing:border-box;
+}
+.unscrollable {overflow: hidden!important;}
+
+a, .link{
+    text-decoration: none;
+    cursor:pointer;
+    color: #448aff;
+    font-weight: 500;
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background: rgba(0,0,0,0.4);
+}
+#launch_screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #FFFFFF;
+    z-index: 10000;
+}
+#launch_screen-header {
+    height: 56px;
+    background: #f44336;
+}
+#launch_screen-logo {
+    position: absolute;
+    height: 128px;
+    width: 128px;
+    top: calc(50% + 28px - 64px);
+    left: calc(50% - 64px);
+    background: url("../img/128.png");
+    animation: shakeAnimation 4s linear infinite;
+    z-index: 1;
+}
+@keyframes shakeAnimation {
+    0% {transform:   rotate( 0deg);}
+    25% {transform:  rotate( 0deg);}
+    30% {transform:  rotate( 5deg);}
+    35% {transform:  rotate(-5deg);}
+    40% {transform:  rotate( 5deg);}
+    45% {transform:  rotate(-5deg);}
+    50% {transform:  rotate( 5deg);}
+    55% {transform:  rotate(-5deg);}
+    60% {transform:  rotate( 5deg);}
+    65% {transform:  rotate(-5deg);}
+    70% {transform:  rotate( 5deg);}
+    75% {transform:  rotate( 0deg);}
+    100% {transform: rotate( 0deg);}
+}
+#launch_screen-ripple {
+    position: absolute;
+    top: calc(50% + 28px);
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: rgba(244,67,54,0.3);
+    animation: rippleAnimation 1.5s linear infinite;
+}
+@keyframes rippleAnimation {
+    0% {
+        width: 50px;
+        height: 50px;
+        opacity: 0;
+    }
+    25% {
+        opacity: 1;
+    }
+    50% {
+        width: 200px;
+        height: 200px;
+    }
+    100% {
+        width: 350px;
+        height: 350px;
+        opacity: 0;
+    }
+}
+
+#header_img {
+    height: 32px;
+}
+
+#content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 0;
+}
+
+.label[i18n] {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.label[i18n]:after {content: ":";margin-right: 4px;}
+
+#content paper-card .card-content {padding-top: 5px;}

@@ -16,6 +16,14 @@ module.exports = function(grunt){
                 },
                 files: ["pages/edit-notification_edit.html", "pages/edit-notification_edit.js", "pages/edit-notification.css"],
                 tasks: ["vulcanize"]
+            },
+            uploadFileTemporary: {
+                options: {
+                    spawn: false,
+                    interrupt: true
+                },
+                files: ["pages/upload-file_edit.html", "pages/upload-file_edit.js", "pages/upload-file.css"],
+                tasks: ["vulcanize"]
             }
         },
         vulcanize: {
@@ -36,7 +44,16 @@ module.exports = function(grunt){
                 files: {
                     "pages/edit-notification.html": "pages/edit-notification_edit.html"
                 }
-          }
+            },
+            uploadFileTemporary: {
+                options: {
+                    inlineCss: false,
+                    csp: "upload-file.js"
+                },
+                files: {
+                    "pages/upload-file.html": "pages/upload-file_edit.html"
+                }
+            }
         }
     });
     
@@ -45,4 +62,5 @@ module.exports = function(grunt){
     
     grunt.registerTask("default", ["vulcanize", "watch"]);
     grunt.registerTask("editNotification", ["vulcanize", "watch"]);
+    grunt.registerTask("uploadFileTemporary", ["vulcanize", "watch"]);
 };
