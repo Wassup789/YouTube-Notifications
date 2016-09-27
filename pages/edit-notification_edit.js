@@ -1,5 +1,7 @@
 var NOTIFICATION_ACTIONS = chrome.extension.getBackgroundPage().NOTIFICATION_ACTIONS;
 
+document.title = "YouTube Notifications - " + chrome.i18n.getMessage("settings_editSettings_notificationCustomizer");
+
 window.addEventListener("WebComponentsReady", function() {
     $(function () {
         $Poly = Polymer.dom;

@@ -1,7 +1,15 @@
+/*
+
+ALL CODE HERE IS TEMPORARY, WILL BE REMOVED ONCE THIS ISSUE IS RESOLVED ON CHROMIUM: https://bugs.chromium.org/p/chromium/issues/detail?id=650536
+
+*/
+
 var NOTIFICATIONSOUND_DEFAULT = 0,
     NOTIFICATIONSOUND_CUSTOM = 100;
 
 var database, databaseRequest;
+
+document.title = "YouTube Notifications - " + chrome.i18n.getMessage("settings_editSettings_notificationSound");
 
 window.addEventListener("WebComponentsReady", function() {
     $(function () {
