@@ -1106,7 +1106,11 @@ function displayImportData(data) {
         return (text1 < text2) ? -1 : (text1 > text2) ? 1 : 0;
     });
 
-    $("#importChannelsSelection-container paper-listbox").children(":not(#masterImportChannelRow)").remove();
+    // Using this instead of jQuery since Polymer doesn't work well with jQuery
+    var element = $Poly($("#importChannelsSelection-container paper-listbox")[0]);
+    while(element.firstChild)
+        element.removeChild(element.firstChild);
+
     for(var i = 0; i < data.length; i++) {
         if(data[i].thumbnail.startsWith("//"))
             data[i].thumbnail = "https:" + data[i].thumbnail;
