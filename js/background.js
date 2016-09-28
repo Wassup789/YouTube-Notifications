@@ -1228,7 +1228,7 @@ function onImportApproved(data){
         }
         // If no duplicates, add
         if(!duplicate)
-            addYoutubeChannel(data[i].channelId, false, false, ADD_TYPE_CHANNELID);
+            addYoutubeChannel(data[i].channelId, false, ADD_TYPE_CHANNELID);
     }
 }
 
