@@ -345,7 +345,7 @@
 	},
 	"background_snackbarNoNewVideos": {
 		"description": "",
-		"message": "Pas de nouvelle vidéo trouvé"
+		"message": "Pas de nouvelle vidéo trouvée"
 	},
 	"background_connectSuccess": {
 		"description": "",
