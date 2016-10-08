@@ -177,7 +177,7 @@
 	},
 	"settings_importChannels_contentStatisticsTitle": {
 		"description": "The title label for the import channel popup's content for statistics",
-		"message": "Toutes les 5 minutes, cela donneras..."
+		"message": "Toutes les 5 minutes, cela donnera..."
 	},
 	"settings_importChannels_contentStatisticsRequests": {
 		"description": "The suffix for the import channel popup's content for statistics requests",
@@ -233,7 +233,7 @@
 	},
 	"settingsJs_uploading": {
 		"description": "",
-		"message": "Envoie..."
+		"message": "Envoie en cours..."
 	},
 	"settingsJs_uploadComplete": {
 		"description": "",
@@ -369,11 +369,11 @@
 	},
 	"background_updateChannelsFailedChannelPrefix": {
 		"description": "",
-		"message": "Les chaîne Youtube: "
+		"message": "Les chaînes Youtube: "
 	},
 	"background_updateChannelsFailedChannelSuffix": {
 		"description": "",
-		"message": " n'ont pas pus être vérifiée"
+		"message": " n'ont pas pus être vérifiées"
 	},
 	"background_addChannelInit": {
 		"description": "",
@@ -417,7 +417,7 @@
 	},
 	"notificationCustomizer_headerSubtitle": {
 		"description": "The subtitle for the notification customizer header",
-		"message": "Les boutons de notification sont limités à deux boutons"
+		"message": "Vous ne pouvez pas mettre plus de deux boutons de notification."
 	},
 	"notificationCustomizer_buttonSave": {
 		"description": "The text for the paper-button save in the notification customizer page",
