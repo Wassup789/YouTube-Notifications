@@ -64,26 +64,26 @@ a:hover {
 #content-1, #content-2 {
 	vertical-align: top;
 }
-#get-started, #content-1-next, #content-2-next, #content-3-next, #content-4-next {
+#get-started, #content-1-next, #content-2-next, #content-3-next, #content-4-next, #content-5-next {
 	cursor: pointer;
 	font-size: 60px;
 	font-weight: 300;
 	display: none;
 }
-#add-channel-1, #add-channel-2, #add-channel-3, #add-channel-4 {
+#add-channel-1, #add-channel-2, #add-channel-3, #add-channel-4, #add-channel-5 {
 	vertical-align: middle;
 }
 #add-channel-1 {
 	height: 750px;
 }
-#content-1-rightnext, #content-2-rightnext, #content-3-rightnext, #content-4-rightnext {
+#content-1-rightnext, #content-2-rightnext, #content-3-rightnext, #content-4-rightnext, #content-5-rightnext {
 	cursor: pointer;
 	margin-left: 20px;
 	font-size: 64px;
 	color: #AAA;
 	-webkit-transition: color 0.3s;
 }
-#content-1-rightnext:hover, #content-2-rightnext:hover, #content-3-rightnext:hover, #content-4-rightnext:hover {
+#content-1-rightnext:hover, #content-2-rightnext:hover, #content-3-rightnext:hover, #content-4-rightnext:hover, #content-5-rightnext:hover {
     color: #353535;
 }
 .content-header {
@@ -102,4 +102,10 @@ a:hover {
 }
 .content-subheader a:hover {
 	color: #F00;
+}
+iframe {
+	border: none;
+	width: 70vw;
+	height: 80vh;
+	vertical-align: middle;
 }

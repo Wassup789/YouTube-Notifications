@@ -1147,7 +1147,7 @@ function onReceiveImportToken() {
             xhr.onload = function(){
                 var data = JSON.parse(this.response);
                 if(data.error)
-                    chrome.extension.sendMessage({type: "createToast", message: wyn.strings.import_failed + " \"" + data.error.message + "\""});
+                    chrome.extension.sendMessage({type: "createToast", message: wyn.strings.import_failed + " \"" + data.error.message + ": " + data.error.errors[0].reason +  "\""});
                 else {
                     var output = [];
                     for(var i = 0; i < data.items.length; i++) {

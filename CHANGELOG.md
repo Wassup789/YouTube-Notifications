@@ -1,6 +1,15 @@
 Changelog
 =====
-## v1.2.0.1 (09-XX-2016)
+## v1.2.1.0 (10-20-2016)
+ * Added Notification Customizer
+   * Access this option in the popup under edit settings
+ * Added badge number support
+ * Added support for file uploading via Linux
+ * Set notification icon to the channel's profile photo
+ * Removing channels no longer remove as easily (unless in the edit channel layout mode)
+ * Notifications titles have a maximum length to include the channel name
+ * Fixed bug where channel import included playlists
+ * Fixed bug where the add buttons appear at unwarranted locations
  * Fixed bug where the add buttons would appear multiple times for the user's channel
 
 ## v1.2.0.0 (09-06-2016)

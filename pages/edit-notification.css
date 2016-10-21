@@ -203,6 +203,7 @@ a, .link{
     justify-content: center;
     align-items: center;
     height: calc(100vh - 64px);
+    padding-top: 200px;
 }
 #content_container > * {
     display: flex;
@@ -308,4 +309,19 @@ a, .link{
 
 .notification_separator:nth-child(1) {
     padding-top: 0;
+}
+
+/*body[firstlaunch] paper-toolbar,
+body[firstlaunch] #mainPanel #dropShadow,
+body[firstlaunch] #launch_screen-header{*/
+body[firstlaunch] #header_img{
+    display: none;
+}
+body[firstlaunch] paper-toolbar {
+    color: transparent;
+    letter-spacing: -100px;
+}
+span[i18n="settings_editSettings_notificationCustomizer"] {
+    letter-spacing: normal;
+    color: white;
 }

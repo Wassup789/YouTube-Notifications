@@ -17,13 +17,13 @@ This code is licensed under the MIT License.
  - identity (For subscription importing & watch later)
  - \*://\*.youtube.com/\*
  - \*://\*.ytimg.com/\*
- - \*://\yt3.ggpht.com/\*
+ - \*://yt3.ggpht.com/\*
 
 ## Downloads
 
 [![ChromeWebStore](https://raw.githubusercontent.com/Wassup789/Youtube-Notifications/master/img/chromewebstore.png)](https://chrome.google.com/webstore/detail/youtube-notifications/cilgbgkmanbbecbjihnbpeaoodmgchom)
 
-**Latest Version:** ***v1.2.0.0***
+**Latest Version:** ***v1.2.1.0***
 
 **Release Archive:**
 

@@ -29,7 +29,8 @@ $(function(){
 	$("#content-2-next, #content-2-rightnext").on("click", function(){launchPage(3);});
 	$("#content-3-next, #content-3-rightnext").on("click", function(){launchPage(4);});
 	$("#content-4-next, #content-4-rightnext").on("click", function(){launchPage(5);});
-	
+	$("#content-5-next, #content-5-rightnext").on("click", function(){launchPage(6);});
+
 	/**
 	 *  Sends the user to the next page (page numbers HAS to be in order)
 	 *  @param {number} num The page number
