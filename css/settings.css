@@ -217,7 +217,7 @@ paper-toolbar paper-tabs {
 }
 
 #popup_card[data-toggle="true"] .channelRow {
-    display: block;
+    flex-direction: column;
 }
 #popup_card[data-toggle="true"] .channelColumn:nth-child(1), #popup_card[data-toggle="true"] .channelColumn:nth-child(2) {
     min-width: initial;
