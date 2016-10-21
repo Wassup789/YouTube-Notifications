@@ -979,7 +979,14 @@ function initSearch() {
         else
             updateSearch();
     });
-    $("#search-btn").on("click", updateSearchExact);
+    $("#search-btn").on("click", function(){
+        if($("#search-btn").attr("icon") == "close") {// Resets the search value
+            $("#search-input").val("");
+            $("#toolbar .label-is-hidden").removeClass("label-is-hidden");
+            updateSearch();
+        }
+        $("#search-input").focus();
+    });
 }
 
 /**
@@ -990,6 +997,8 @@ function updateSearch() {
         return;
 
     setPage(0);
+
+    $("#search-btn").attr("icon", ($("#search-input").val().length > 0 ? "close" : "search"));// Changes the icon of the search button depending on length
 
     var val = $("#search-input").val().toLowerCase().trim();
 
