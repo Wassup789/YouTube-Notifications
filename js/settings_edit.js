@@ -979,6 +979,7 @@ function initSearch() {
         else
             updateSearch();
     });
+
     $("#search-btn").on("click", function(){
         if($("#search-btn").attr("icon") == "close") {// Resets the search value
             $("#search-input").val("");
