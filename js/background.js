@@ -779,6 +779,7 @@ function checkYoutube(num, batch, isNewItem) {
                         type: "image",
                         priority: 0,
                         title: trimTitle(info.latestVideo.title, info.name),
+                        longTitle: info.latestVideo.title + " " + wyn.strings.info_by + " " + info.name,
                         message: info.latestVideo.description,
                         imageUrl: info.latestVideo.thumbnail,
                         /*iconUrl: wyn.strings.notification_main_icon,*/
@@ -933,6 +934,9 @@ function notify(ntID, options){
     }else if(typeof options.buttons[1].title === "undefined")
         options.buttons.splice(1, 1);
 
+    var ttsOptions = JSON.parse(JSON.stringify(options));// To circumvent the reference
+    delete options.longTitle;
+
     chrome.notifications.create(ntID, options, function(){
         /*var bc = localStorage.getItem("badgeCount");
         localStorage.setItem("badgeCount", ++bc);
@@ -940,7 +944,7 @@ function notify(ntID, options){
         updateBadge({colour:'#e12a27', text:"" + bc});*/
 
         playNotificationSound();
-        notifyTTS(options);
+        notifyTTS(ttsOptions);
     });
 }
 
@@ -1036,6 +1040,7 @@ wyn.testNotify = function(){
         type: "image",
         priority: 0,
         title: "Video " + wyn.strings.info_by + " YouTube Creator",
+        longTitle: "Video " + wyn.strings.info_by + " YouTube Creator",
         message: "Insert Description Here",
         imageUrl: "img/notification_placeholder.png",
         iconUrl: wyn.strings.notification_main_icon,
@@ -1062,8 +1067,8 @@ function notifyTTS(options) {
         var sList =  ["\\bEp\\b", "\\bEp.\\b", "\\bPt\\b", "\\bPt.\\b"];
         var sList2 = ["Episode", "Episode", "Part", "Part"];
         for(var i = 0; i < sList.length; i++)
-            options.title = options.title.replace(new RegExp(sList[i], "g"), sList2[i]);
-        message.text = options.title;
+            options.longTitle = options.longTitle.replace(new RegExp(sList[i], "g"), sList2[i]);
+        message.text = options.longTitle;
         speechSynthesis.speak(message);
     }
 }
@@ -1089,6 +1094,7 @@ wyn.forceNotification = function(id) {
         type: "image",
         priority: 0,
         title: trimTitle(info.latestVideo.title, info.name),
+        longTitle: info.latestVideo.title + " " + wyn.strings.info_by + " " + info.name,
         message: info.latestVideo.description,
         imageUrl: info.latestVideo.thumbnail,
         /*iconUrl: wyn.strings.notification_main_icon,*/
@@ -1323,6 +1329,7 @@ function onReceiveExtendedTokenPost(access_token, videoInfo) {
             type: "basic",
             priority: 0,
             title: title,
+            longTitle: title,
             message: message,
             iconUrl: videoInfo.thumbnail,
             buttons: [{
