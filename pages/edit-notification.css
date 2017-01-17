@@ -153,7 +153,7 @@ a, .link{
 
 #notification_video_container {
     padding: 10px 32px;
-    background: #222222;
+    background: #FFFFFF;
 }
 
 #notification_video {
@@ -188,6 +188,7 @@ a, .link{
 
 .notification_button_text {
     margin-left: 16px;
+    white-space: pre-wrap;
 }
 
 #content {
@@ -267,6 +268,15 @@ a, .link{
     color: #6b6b6b;
 }
 
+#notificationCustomizer_buttons .notification_button .notification_button_placeholder2,
+#notification .notification_button .notification_button_placeholder1 {
+    display: none;
+}
+
+#notification paper-dropdown-menu .floated-label-placeholder {
+    display: none;
+}
+
 #header {
     position: absolute;
     top: 0;
@@ -324,4 +334,11 @@ body[firstlaunch] paper-toolbar {
 span[i18n="settings_editSettings_notificationCustomizer"] {
     letter-spacing: normal;
     color: white;
+}
+
+#notification select {
+    border: none;
+    font-size: 12px;
+    font-family: Roboto;
+    cursor: pointer;
 }

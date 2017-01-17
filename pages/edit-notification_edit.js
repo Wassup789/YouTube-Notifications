@@ -14,9 +14,9 @@ window.addEventListener("WebComponentsReady", function() {
         });
         onWindowResize();
 
-        var settings = JSON.parse(localStorage.getItem("settings"))
-        $(".notification_button[data-id=" + settings.notificationActions[0] + "]").clone().appendTo("#notification_buttons");
-        $(".notification_button[data-id=" + settings.notificationActions[1] + "]").clone().appendTo("#notification_buttons");
+        var settings = JSON.parse(localStorage.getItem("settings"));
+        $(".notification_button[data-id=" + settings.notificationActions[0].id + "]").clone().appendTo("#notification_buttons");
+        $(".notification_button[data-id=" + settings.notificationActions[1].id + "]").clone().appendTo("#notification_buttons");
 
         $("#header #header_button_test").on("click", function() {
             saveIndex++;
@@ -38,6 +38,38 @@ window.addEventListener("WebComponentsReady", function() {
             localStorage.setItem("settings", JSON.stringify(settings));
 
             createToast(chrome.i18n.getMessage("settingsJs_saved"));
+        });
+
+        $("body").on("click", "#notification .notification_button select", function(e){
+            if($(this).children().length < 2) {
+                e.preventDefault(true);
+
+                createToast(chrome.i18n.getMessage("settingsJs_pleaseWait"));
+
+                chrome.identity.getAuthToken({
+                        interactive: true,
+                        scopes: [
+                            "https://www.googleapis.com/auth/youtube.readonly"
+                        ]
+                    },
+                    function(token){
+                        if(!chrome.runtime.lastError){
+                            onReceiveExtendedToken();
+                        }
+                    }
+                );
+            }
+        });
+
+        $("body").on("input", "#notification .notification_button select", function(e){
+            $this = $(this);
+            if($this.val() != "-1") {
+                var elem = $(this).parent();
+                elem.attr("data-playlistId", $this.val());
+                elem.attr("data-playlistName", $this.find(":selected").text());
+
+                attemptSave();
+            }
         });
     });
 
@@ -152,14 +184,21 @@ function attemptSave() {
 function save(override) {
     var arr = [];
     $("#notification_buttons .notification_button").each(function(){
-        arr.push(parseInt($(this).attr("data-id")));
+        arr.push({
+            id: parseInt($(this).attr("data-id")),
+            playlist: {
+                id: (typeof $(this).attr("data-playlistId") !== "undefined") ? $(this).attr("data-playlistId") : -1,
+                name: (typeof $(this).attr("data-playlistName") !== "undefined") ? $(this).attr("data-playlistName") : ""
+            }
+        });
     });
     if(arr.length == 1)
-        arr.push(-1);
+        arr.push({id: -1, playlist: {id: -1, name: ""}});
     else if(arr.length == 0)
-        arr = [-1, -1];
+        arr = [{id: -1, playlist: {id: -1, name: ""}}, {id: -1, playlist: {id: -1, name: ""}}];
 
-    var settings = JSON.parse(localStorage.getItem("settings"))
+
+    var settings = JSON.parse(localStorage.getItem("settings"));
     settings.notificationActions = arr;
     localStorage.setItem("settings", JSON.stringify(settings));
 
@@ -179,4 +218,35 @@ function createToast(text){
             text: text
         });
     }, 1);
+}
+
+/**
+ * Ran when the extended token is approved by the user
+ */
+function onReceiveExtendedToken() {
+    chrome.identity.getAuthToken({
+        interactive: false,
+        scopes: [
+            "https://www.googleapis.com/auth/youtube.readonly"
+        ]
+    }, function(access_token) {
+        if(chrome.runtime.lastError)
+            return;
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "https://www.googleapis.com/youtube/v3/playlists?part=snippet&mine=true");
+        xhr.setRequestHeader("Authorization", "Bearer " + access_token);
+        xhr.onload = function(){
+            var data = JSON.parse(this.response);
+
+            if(data.items.length > 0) {
+                for(var i = 0; i < data.items.length; i++) {
+                    $("#notification .notification_button select").append("<option value=\"" + data.items[i].id + "\">" + (data.items[i].snippet.title).replace(/[\""]/g, '\\"') + "</option>");
+                }
+            }else{
+                createToast(chrome.i18n.getMessage("settingsJs_noPlaylistsFound"));
+            }
+        };
+        xhr.send();
+    });
 }

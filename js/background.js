@@ -14,6 +14,9 @@ var wyn = {};
         "notification_close_icon": "img/ic_close.png",
         "notification_watchlater": getString("notificationWatchLater"),
         "notification_watchlater_icon": "img/ic_watchlater.png",
+        "notification_addPlaylist": getString("notificationAddPlaylistPrefix"),
+        "notification_addPlaylistPlaceholder": getString("background_notificationAddPlaylistPlaceholder"),
+        "notification_addPlaylist_icon": "img/ic_library_add.png",
         "notification_addPotplayer": getString("notificationAddPotplayer"),
         "notification_addPotplayer_icon": "img/ic_library_add.png",
         "notification_playPotplayer": getString("notificationPlayPotplayer"),
@@ -81,69 +84,97 @@ var NOTIFICATIONSOUND_DEFAULT = 0,
 var NOTIFICATION_ACTION_WATCHVIDEO = 0,
     NOTIFICATION_ACTION_WATCHLATER = 1,
     NOTIFICATION_ACTION_DISMISS = 2,
+    NOTIFICATION_ACTION_ADDPLAYLIST = 3,
     NOTIFICATION_ACTION_PLAYPOTPLAYER = 100,
     NOTIFICATION_ACTION_ADDPOTPLAYER = 101;
 
+var NotificationAction = function(action, button){
+    this.action = action;
+    this.button = button;
+};
+NotificationAction.prototype.getButton = function(index){
+    var settings = JSON.parse(localStorage.getItem("settings"));
+    if(settings.notificationActions[index].id == NOTIFICATION_ACTION_ADDPLAYLIST) {
+        return {
+            title: this.button.title + settings.notificationActions[index].playlist.name,
+            iconUrl: this.button.iconUrl
+        };
+    }else
+        return this.button;
+};
+
 var NOTIFICATION_ACTIONS = {
-    [-1]: {
-        action: function(){},
-        button: {}
-    },
-    [NOTIFICATION_ACTION_WATCHVIDEO]: {
-        action: function(ntID){
+    [-1]: new NotificationAction(function(){},{}),
+    [NOTIFICATION_ACTION_WATCHVIDEO]: new NotificationAction(
+        function(ntID, btnID){
             var channels = JSON.parse(localStorage.getItem("channels"));
             createTab("https://www.youtube.com/watch?v=" + channels[ntID.split("-")[4]].latestVideo.id);
             console.log("User clicked on \"" + wyn.strings.notification_watch + "\" button; NTID: " + ntID);
             console.log("Sending user to https://www.youtube.com/watch?v=" + channels[ntID.split("-")[4]].latestVideo.id);
         },
-        button: {
+        {
             title: wyn.strings.notification_watch,
             iconUrl: wyn.strings.notification_watch_icon
         }
-    },
-    [NOTIFICATION_ACTION_WATCHLATER]: {
-        action: function(ntID){
+    ),
+    [NOTIFICATION_ACTION_WATCHLATER]: new NotificationAction(
+        function(ntID, btnID){
             var channels = JSON.parse(localStorage.getItem("channels")),
                 data = channels[ntID.split("-")[4]].latestVideo;
             data.index = ntID.split("-")[4];
 
-            requestExtendedToken(data);
+            requestExtendedToken(data, NOTIFICATION_ACTION_WATCHLATER);
             console.log("User clicked on \"" + wyn.strings.notification_watchlater + "\" button; NTID: " + ntID);
         },
-        button: {
+        {
             title: wyn.strings.notification_watchlater,
             iconUrl: wyn.strings.notification_watchlater_icon
         }
-    },
-    [NOTIFICATION_ACTION_DISMISS]: {
-        action: function(ntID){
+    ),
+    [NOTIFICATION_ACTION_DISMISS]: new NotificationAction(
+        function(ntID, btnID){
             console.log("User clicked on \"" + wyn.strings.notification_close + "\" button; NTID: " + ntID);
         },
-        button: {
+        {
             title: wyn.strings.notification_close,
             iconUrl: wyn.strings.notification_close_icon
         }
-    },
-    [NOTIFICATION_ACTION_PLAYPOTPLAYER]: {
-        action: function(ntID) {
+    ),
+    [NOTIFICATION_ACTION_ADDPLAYLIST]: new NotificationAction(
+        function(ntID, btnID){
+            var settings = JSON.parse(localStorage.getItem("settings")),
+                channels = JSON.parse(localStorage.getItem("channels")),
+                data = channels[ntID.split("-")[4]].latestVideo;
+            data.index = ntID.split("-")[4];
+            requestExtendedToken(data, NOTIFICATION_ACTION_ADDPLAYLIST, settings.notificationActions[btnID].playlist);
+
+            console.log("User clicked on \"" + wyn.strings.notification_addPlaylist + wyn.strings.notification_addPlaylistPlaceholder + "\" button; NTID: " + ntID);
+        },
+        {
+            title: wyn.strings.notification_addPlaylist,
+            iconUrl: wyn.strings.notification_addPlaylist_icon
+        }
+    ),
+    [NOTIFICATION_ACTION_PLAYPOTPLAYER]: new NotificationAction(
+        function(ntID, btnID) {
             var channels = JSON.parse(localStorage.getItem("channels"));
             createTab("potplayer://" + "https://www.youtube.com/watch?v=" + channels[ntID.split("-")[4]].latestVideo.id);
         },
-        button: {
+        {
             title: wyn.strings.notification_playPotplayer,
             iconUrl: wyn.strings.notification_playPotplayer_icon
         }
-    },
-    [NOTIFICATION_ACTION_ADDPOTPLAYER]: {
-        action: function(ntID) {
+    ),
+    [NOTIFICATION_ACTION_ADDPOTPLAYER]: new NotificationAction(
+        function(ntID, btnID) {
             var channels = JSON.parse(localStorage.getItem("channels"));
             createTab("potplayer://" + "https://www.youtube.com/watch?v=" + channels[ntID.split("-")[4]].latestVideo.id + " /ADD");
         },
-        button: {
+        {
             title: wyn.strings.notification_addPotplayer,
             iconUrl: wyn.strings.notification_addPotplayer_icon
         }
-    }
+    )
 };
 
 if(localStorage.getItem("channels") == null)
@@ -222,7 +253,36 @@ function fixSettingsStructure(){
         localStorage.setItem("settings", JSON.stringify(settings));
     }
     if(typeof settings.notificationActions === "undefined"){
-        settings.notificationActions = [NOTIFICATION_ACTION_WATCHVIDEO, NOTIFICATION_ACTION_WATCHLATER];
+        settings.notificationActions = [
+            {
+                id: NOTIFICATION_ACTION_WATCHVIDEO,
+                playlist: {
+                    id: -1,
+                    name: ""
+                }
+            },
+            {
+                id: NOTIFICATION_ACTION_WATCHLATER,
+                playlist: {
+                    id: -1,
+                    name: ""
+                }
+            }
+        ];
+        localStorage.setItem("settings", JSON.stringify(settings));
+    }
+    if(typeof settings.notificationActions !== "undefined" && settings.notificationActions.length > 0 && typeof settings.notificationActions[0] !== "object"){
+        var arr = [];
+        for(var i = 0; i < settings.notificationActions.length; i++) {
+            arr.push({
+                id: settings.notificationActions[i],
+                playlist: {
+                    id: -1,
+                    name: ""
+                }
+            });
+        }
+        settings.notificationActions = arr;
         localStorage.setItem("settings", JSON.stringify(settings));
     }
 }
@@ -786,8 +846,8 @@ function checkYoutube(num, batch, isNewItem) {
                         iconUrl: channels[num].thumbnail,
                         contextMessage: info.latestVideo.duration + " | "+ info.latestVideo.views.toLocaleString() + " " + wyn.strings.info_views + " | " + likesa.toLocaleString({style: "percent"}) + "% " + wyn.strings.info_likes + " | " + dislikesa.toLocaleString({style: "percent"}) + "% " + wyn.strings.info_dislikes,
                         buttons: [
-                            NOTIFICATION_ACTIONS[settings.notificationActions[0]].button,
-                            NOTIFICATION_ACTIONS[settings.notificationActions[1]].button
+                            NOTIFICATION_ACTIONS[settings.notificationActions[0].id].getButton(0),
+                            NOTIFICATION_ACTIONS[settings.notificationActions[1].id].getButton(1)
                         ]
                     };
                     var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + num;
@@ -966,7 +1026,7 @@ function playNotificationSound() {
         $(wyn.notificationSound).animate({volume: 0}, {
             duration: 5000,
             complete: function() {
-                wyn.notificationSound.pause()
+                wyn.notificationSound.pause();
                 wyn.notificationSound.currentTime = 0;
             }
         });
@@ -998,8 +1058,10 @@ function onNotificationClick(ntID){
  */
 function onNotificationButtonClick(ntID, btnID){
     var settings = JSON.parse(localStorage.getItem("settings"));
-    if(typeof ntID.split("-")[4] !== "undefined" && typeof NOTIFICATION_ACTIONS[settings.notificationActions[btnID]] !== "undefined") {
-        NOTIFICATION_ACTIONS[settings.notificationActions[btnID]].action(ntID);
+    if(typeof ntID.split("-")[5] !== "undefined") {
+        NOTIFICATION_ACTIONS[NOTIFICATION_ACTION_WATCHVIDEO].action(ntID, btnID);
+    }else if(typeof ntID.split("-")[4] !== "undefined" && typeof NOTIFICATION_ACTIONS[settings.notificationActions[btnID].id] !== "undefined") {
+        NOTIFICATION_ACTIONS[settings.notificationActions[btnID].id].action(ntID, btnID);
 
         resetChannelHasNewVideo(ntID.split("-")[4], true);
     }
@@ -1046,8 +1108,8 @@ wyn.testNotify = function(){
         iconUrl: wyn.strings.notification_main_icon,
         contextMessage: "12:34 | " + (5678).toLocaleString() + " " + wyn.strings.info_views + " | " + (90).toLocaleString({style: "percent"}) + "% " + wyn.strings.info_likes + " | " + (10).toLocaleString({style: "percent"}) + "% " + wyn.strings.info_dislikes,
         buttons: [
-            NOTIFICATION_ACTIONS[settings.notificationActions[0]].button,
-            NOTIFICATION_ACTIONS[settings.notificationActions[1]].button
+            NOTIFICATION_ACTIONS[settings.notificationActions[0].id].getButton(0),
+            NOTIFICATION_ACTIONS[settings.notificationActions[1].id].getButton(1)
         ]
     };
 
@@ -1101,8 +1163,8 @@ wyn.forceNotification = function(id) {
         iconUrl: info.thumbnail,
         contextMessage: info.latestVideo.duration + " | "+ info.latestVideo.views.toLocaleString() + " " + wyn.strings.info_views + " | " + likesa.toLocaleString({style: "percent"}) + "% " + wyn.strings.info_likes + " | " + dislikesa.toLocaleString({style: "percent"}) + "% " + wyn.strings.info_dislikes,
         buttons: [
-            NOTIFICATION_ACTIONS[settings.notificationActions[0]].button,
-            NOTIFICATION_ACTIONS[settings.notificationActions[1]].button
+            NOTIFICATION_ACTIONS[settings.notificationActions[0].id].getButton(0),
+            NOTIFICATION_ACTIONS[settings.notificationActions[1].id].getButton(1)
         ]
     };
     var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + id;
@@ -1241,7 +1303,7 @@ function onImportApproved(data){
 /**
  *  Requests the user to approve the extended OAuth request
  */
-function requestExtendedToken(videoInfo) {
+function requestExtendedToken(videoInfo, type, playlistInfo) {
     chrome.identity.getAuthToken({
             interactive: true,
             scopes: [
@@ -1250,7 +1312,7 @@ function requestExtendedToken(videoInfo) {
         },
         function(token){
             if(!chrome.runtime.lastError){
-                onReceiveExtendedToken(videoInfo);
+                onReceiveExtendedToken(videoInfo, type, playlistInfo);
             }
         }
     );
@@ -1259,7 +1321,7 @@ function requestExtendedToken(videoInfo) {
 /**
  *  Ran when the extended token is approved
  */
-function onReceiveExtendedToken(videoInfo) {
+function onReceiveExtendedToken(videoInfo, type, playlistInfo) {
     chrome.identity.getAuthToken({
             interactive: false,
             scopes: [
@@ -1271,34 +1333,38 @@ function onReceiveExtendedToken(videoInfo) {
 
             var settings = JSON.parse(localStorage.getItem("settings"));
 
-            if(settings.watchlater.id == "") {
-                var xhr = new XMLHttpRequest();
-                xhr.open("GET", "https://www.googleapis.com/youtube/v3/channels?part=contentDetails&mine=true");
-                xhr.setRequestHeader("Authorization", "Bearer " + access_token);
-                xhr.onload = function(){
-                    var data = JSON.parse(this.response),
-                        watchLaterPlaylist = data.items[0].contentDetails.relatedPlaylists.watchLater;
+            if(type != NOTIFICATION_ACTION_WATCHLATER) {
+                onReceiveExtendedTokenPost(access_token, videoInfo, playlistInfo);
+            }else{
+                if (settings.watchlater.id == "") {
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("GET", "https://www.googleapis.com/youtube/v3/channels?part=contentDetails&mine=true");
+                    xhr.setRequestHeader("Authorization", "Bearer " + access_token);
+                    xhr.onload = function () {
+                        var data = JSON.parse(this.response),
+                            watchLaterPlaylist = data.items[0].contentDetails.relatedPlaylists.watchLater;
 
-                    settings.watchlater.id = watchLaterPlaylist;
-                    localStorage.setItem("settings", JSON.stringify(settings));
+                        settings.watchlater.id = watchLaterPlaylist;
+                        localStorage.setItem("settings", JSON.stringify(settings));
 
-                    onReceiveExtendedTokenPost(access_token, videoInfo);
-                };
-                xhr.send();
-            }else
-                onReceiveExtendedTokenPost(access_token, videoInfo);
+                        onReceiveExtendedTokenPost(access_token, videoInfo, {id: settings.watchlater.id, name: "Watch Later"});
+                    };
+                    xhr.send();
+                } else
+                    onReceiveExtendedTokenPost(access_token, videoInfo, {id: settings.watchlater.id, name: "Watch Later"});
+            }
     });
 }
 
 /**
- *  Ran after we receive the access token and watch later playlist
+ *  Ran after we receive the access token and playlist
  */
-function onReceiveExtendedTokenPost(access_token, videoInfo) {
+function onReceiveExtendedTokenPost(access_token, videoInfo, playlistInfo) {
     var settings = JSON.parse(localStorage.getItem("settings")),
         xhr = new XMLHttpRequest(),
         requestData = {
             snippet: {
-                playlistId: settings.watchlater.id,
+                playlistId: playlistInfo.id,
                 resourceId: {
                     kind: "youtube#video",
                     videoId: videoInfo.id
@@ -1311,31 +1377,45 @@ function onReceiveExtendedTokenPost(access_token, videoInfo) {
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onload = function(){
         var data = JSON.parse(this.response),
-            title = "Video added to Watch Later",
-            message = "\"" + videoInfo.title + "\" has been added to the Watch Later playlist.";
+            title = "Video added to " + playlistInfo.name,
+            message = "\"" + videoInfo.title + "\" has been added to the " + playlistInfo.name + " playlist.";
 
         if(data.error) {
             if(data.error.code == 409) {
-                title = "Video already exists in Watch Later";
-                message = "\"" + videoInfo.title + "\" already exists in the Watch Later playlist.";
+                title = "Video already exists in " + playlistInfo.name;
+                message = "\"" + videoInfo.title + "\" already exists in the " + playlistInfo.name + " playlist.";
             }else{
                 title = "Error Code: " + data.error.code;
-                message = data.error.message
+                message = "Error message: " + data.error.message + "\nReason: " + data.error.errors[0].reason;
+
+                if(data.error.code == 403) {// Revoke token because access issue
+                    chrome.identity.getAuthToken({
+                            interactive: true,
+                            scopes: [
+                                "https://www.googleapis.com/auth/youtube.force-ssl"
+                            ]
+                        },
+                        function (current_token) {
+                            if (!chrome.runtime.lastError) {
+                                chrome.identity.removeCachedAuthToken({token: current_token});
+                                var xhr = new XMLHttpRequest();
+                                xhr.open("GET", "https://accounts.google.com/o/oauth2/revoke?token=" + current_token);
+                                xhr.send();
+                            }
+                        }
+                    );
+                }
             }
         }
 
-        var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + videoInfo.index;
+        var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + videoInfo.index + "-" + rndStr(1);
         var options = {
             type: "basic",
             priority: 0,
             title: title,
-            longTitle: title,
             message: message,
             iconUrl: videoInfo.thumbnail,
-            buttons: [{
-                title: wyn.strings.notification_watch,
-                iconUrl: wyn.strings.notification_watch_icon
-            }]
+            buttons: [NOTIFICATION_ACTIONS[NOTIFICATION_ACTION_WATCHVIDEO].getButton(0)]
         };
 
         chrome.notifications.create(ntID, options, function(){

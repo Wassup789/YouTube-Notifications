@@ -10,6 +10,9 @@
     <link rel="import" href="../bower_components/paper-slider/paper-slider.html">
     <link rel="import" href="../bower_components/paper-button/paper-button.html">
     <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+    <link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+    <link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+    <link rel="import" href="../bower_components/paper-item/paper-item.html">
     <link rel="import" href="../bower_components/iron-icon/iron-icon.html">
     <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
     <link rel="import" href="../bower_components/iron-icons/av-icons.html">
@@ -107,6 +110,17 @@
                                 <div class="notification_button" data-id="2">
                                     <div class="notification_button_icon" style="background-image: url('../img/ic_close.png');"></div>
                                     <div class="notification_button_text" i18n="background_notificationClose"></div>
+                                    <div class="notification_button_remove">
+                                        <span class="notification_button_remove_btn">&#10006;</span>
+                                    </div>
+                                </div>
+                                <div class="notification_button" data-id="3" data-playlistId="-1" data-playlistName="">
+                                    <div class="notification_button_icon" style="background-image: url('../img/ic_library_add.png');"></div>
+                                    <div class="notification_button_text" i18n="background_notificationAddPlaylistPrefix"></div>
+                                    <span class="notification_button_placeholder1" i18n="background_notificationAddPlaylistPlaceholder"></span>
+                                    <select class="notification_button_placeholder2">
+                                        <option i18n="background_notificationAddPlaylistPlaceholder" value="-1"></option>
+                                    </select>
                                     <div class="notification_button_remove">
                                         <span class="notification_button_remove_btn">&#10006;</span>
                                     </div>

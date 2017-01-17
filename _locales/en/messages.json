@@ -243,6 +243,10 @@
 		"description": "",
 		"message": "Are you sure you want to remove "
 	},
+	"settingsJs_noPlaylistsFound": {
+		"description": "",
+		"message": "No playlists found "
+	},
 	"common_published": {
 		"description": "First letter is capitalized",
 		"message": "Published"
@@ -334,6 +338,14 @@
 	"background_notificationPlayPotplayer": {
 		"description": "",
 		"message": "Play with PotPlayer"
+	},
+	"background_notificationAddPlaylistPrefix": {
+		"description": "",
+		"message": "Add to "
+	},
+	"background_notificationAddPlaylistPlaceholder": {
+		"description": "",
+		"message": "Playlist"
 	},
 	"background_notificationLogCheck": {
 		"description": "",
