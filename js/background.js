@@ -557,107 +557,111 @@ function addYoutubeChannel(name, fromContentScript, type){
     fromContentScript = fromContentScript || false;
     type = type || ADD_TYPE_DEFAULT;
 
+    var url;
     switch(type) {
         case ADD_TYPE_DEFAULT:
-            var url = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel,playlist&maxResults=1&q=" + name + "&key=" + wyn.apiKey;
-            break;
-        case ADD_TYPE_CHANNELID:
-            var url = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&maxResults=1&channelId=" + name + "&key=" + wyn.apiKey;
+            url = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel,playlist&maxResults=1&q=" + name + "&key=" + wyn.apiKey;
             break;
         case ADD_TYPE_PLAYLIST:
-            var url = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=playlist&maxResults=1&q=" + name + "&key=" + wyn.apiKey;
+            url = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=playlist&maxResults=1&q=" + name + "&key=" + wyn.apiKey;
             break;
     }
 
     console.log(wyn.strings.add_channel_init + "\"" + name + "\"");
-    $.ajax({
-        url: url,
-        error: function(data) {
-            console.log(wyn.strings.add_channel_failed + "\"" + name + "\"");
-            if(!fromContentScript)
-                chrome.extension.sendMessage({type: "addChannelFailed"});
-        },
-        success: function(data) {
-            if(data.items.length == 1){
-                if(type == ADD_TYPE_PLAYLIST || data.items[0].id.kind == "youtube#playlist") {// Playlists don't need another AJAX request
-                    var output = {
-                        "id": data.items[0].id.playlistId,
-                        "playlistId": data.items[0].id.playlistId,
-                        "name": data.items[0].snippet.title,
-                        "altName": data.items[0].snippet.channelTitle,
-                        "thumbnail": data.items[0].snippet.thumbnails.default.url,
-                        "viewCount": -1,
-                        "subscriberCount": -1,
-                        "latestVideo": {
-                            "id": "",
-                            "title": "",
-                            "description": "",
-                            "timestamp": "",
-                            "thumbnail": "",
-                            "views": "",
-                            "duration": "",
-                            "likes": "",
-                            "dislikes": ""
-                        },
-                        "hasNewVideo": false
-                    };
-
-                    var arr = JSON.parse(localStorage.getItem("channels"));
-                    arr.push(output);
-                    localStorage.setItem("channels", JSON.stringify(arr));
-                    checkYoutube(arr.length - 1, false, true);
-                }else {
-                    var id = data.items[0].id.channelId;
-                    var url = "https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&maxResults=1&id=" + id + "&key=" + wyn.apiKey;
-                    $.ajax({
-                        url: url,
-                        success: function (data) {
-                            var output = {
-                                "id": data.items[0].id,
-                                "playlistId": data.items[0].contentDetails.relatedPlaylists.uploads,
-                                "name": data.items[0].snippet.title,
-                                "altName" : "",
-                                "thumbnail": data.items[0].snippet.thumbnails.default.url,
-                                "viewCount": data.items[0].statistics.viewCount,
-                                "subscriberCount": data.items[0].statistics.subscriberCount,
-                                "latestVideo": {
-                                    "id": "",
-                                    "title": "",
-                                    "description": "",
-                                    "timestamp": "",
-                                    "thumbnail": "",
-                                    "views": "",
-                                    "duration": "",
-                                    "likes": "",
-                                    "dislikes": ""
-                                },
-                                "hasNewVideo": false
-                            };
-                            var arr = JSON.parse(localStorage.getItem("channels"));
-                            arr.push(output);
-                            localStorage.setItem("channels", JSON.stringify(arr));
-                            if (fromContentScript) {
-                                chrome.tabs.query({active: true}, function (tabs) {
-                                    tabs.forEach(function (tab) {
-                                        chrome.tabs.sendMessage(tab.id, {
-                                            type: "contentScript_response",
-                                            responseType: true,
-                                            id: data.items[0].id
-                                        });
-                                    });
-                                });
-                            }
-                            checkYoutube(arr.length - 1, false, true);
-                        }
-                    });
-                }
-            }else{
+    if(type == ADD_TYPE_CHANNELID){
+        addYoutubeChannelPost({items: [{id: {channelId: name}}]});
+    }else{
+        $.ajax({
+            url: url,
+            error: function(data) {
                 console.log(wyn.strings.add_channel_failed + "\"" + name + "\"");
                 if(!fromContentScript)
                     chrome.extension.sendMessage({type: "addChannelFailed"});
+            },
+            success: addYoutubeChannelPost
+        });
+    }
+    
+    function addYoutubeChannelPost(data) {
+        if(data.items.length == 1){
+            if(type == ADD_TYPE_PLAYLIST || data.items[0].id.kind == "youtube#playlist") {// Playlists don't need another AJAX request
+                var output = {
+                    "id": data.items[0].id.playlistId,
+                    "playlistId": data.items[0].id.playlistId,
+                    "name": data.items[0].snippet.title,
+                    "altName": data.items[0].snippet.channelTitle,
+                    "thumbnail": data.items[0].snippet.thumbnails.default.url,
+                    "viewCount": -1,
+                    "subscriberCount": -1,
+                    "latestVideo": {
+                        "id": "",
+                        "title": "",
+                        "description": "",
+                        "timestamp": "",
+                        "thumbnail": "",
+                        "views": "",
+                        "duration": "",
+                        "likes": "",
+                        "dislikes": ""
+                    },
+                    "hasNewVideo": false
+                };
+
+                var arr = JSON.parse(localStorage.getItem("channels"));
+                arr.push(output);
+                localStorage.setItem("channels", JSON.stringify(arr));
+                checkYoutube(arr.length - 1, false, true);
+            }else{
+                var id = data.items[0].id.channelId;
+                var url = "https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&maxResults=1&id=" + id + "&key=" + wyn.apiKey;
+                $.ajax({
+                    url: url,
+                    success: function (data) {
+                        var output = {
+                            "id": data.items[0].id,
+                            "playlistId": data.items[0].contentDetails.relatedPlaylists.uploads,
+                            "name": data.items[0].snippet.title,
+                            "altName" : "",
+                            "thumbnail": data.items[0].snippet.thumbnails.default.url,
+                            "viewCount": data.items[0].statistics.viewCount,
+                            "subscriberCount": data.items[0].statistics.subscriberCount,
+                            "latestVideo": {
+                                "id": "",
+                                "title": "",
+                                "description": "",
+                                "timestamp": "",
+                                "thumbnail": "",
+                                "views": "",
+                                "duration": "",
+                                "likes": "",
+                                "dislikes": ""
+                            },
+                            "hasNewVideo": false
+                        };
+                        var arr = JSON.parse(localStorage.getItem("channels"));
+                        arr.push(output);
+                        localStorage.setItem("channels", JSON.stringify(arr));
+                        if (fromContentScript) {
+                            chrome.tabs.query({active: true}, function (tabs) {
+                                tabs.forEach(function (tab) {
+                                    chrome.tabs.sendMessage(tab.id, {
+                                        type: "contentScript_response",
+                                        responseType: true,
+                                        id: data.items[0].id
+                                    });
+                                });
+                            });
+                        }
+                        checkYoutube(arr.length - 1, false, true);
+                    }
+                });
             }
+        }else{
+            console.log(wyn.strings.add_channel_failed + "\"" + name + "\"");
+            if(!fromContentScript)
+                chrome.extension.sendMessage({type: "addChannelFailed"});
         }
-    });
+    }
 }
 
 /**
