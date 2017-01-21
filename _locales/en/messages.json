@@ -347,6 +347,10 @@
 		"description": "",
 		"message": "Playlist"
 	},
+	"background_notificationRetry": {
+		"description": "",
+		"message": "Retry"
+	},
 	"background_notificationLogCheck": {
 		"description": "",
 		"message": "Checking YouTube User: "
@@ -406,6 +410,30 @@
 	"background_importFailed": {
 		"description": "",
 		"message": "Import failed, please try again..."
+	},
+	"background_playlistVideoAddSuccess": {
+		"description": "",
+		"message": "Video addded to "
+	},
+	"background_playlistVideoAddSuccessInfix": {
+		"description": "",
+		"message": " has been added to the "
+	},
+	"background_playlistVideoAddSuffix": {
+		"description": "",
+		"message": " playlist"
+	},
+	"background_playlistVideoAddExist": {
+		"description": "",
+		"message": "Video already exists in "
+	},
+	"background_playlistVideoAddExistInfix": {
+		"description": "",
+		"message": " already exists in the "
+	},
+	"background_playlistVideoAddFailure": {
+		"description": "",
+		"message": "Unable to add to playlist"
 	},
 	"contentScript_addChannel": {
 		"description": "The add to YouTube Notifications button on YouTube",

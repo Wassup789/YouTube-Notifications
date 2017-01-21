@@ -1,4 +1,5 @@
 {
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAkNmIeXJjsYD8aY7at5W7yJL0yWTTBo7pGFDBiNyzqZ6Iiducg0qaU6kjFnHsjwVDU8bl9jCucrCxOWQX6kvGwRXcATgpwC28IkCR0ulrO0HOSaPKDFHz/aJ/p1q08pbW7OYo4K0rbh1VlJhhVghaPHbYil6OI3WY41SsvqX8Kqg4cmpOBdSAtu1qiNa2Zg7XrhBDJ4N7OHdCVwL+qz11N66MN+XwrBJSWr8o+mfVdGDSTBgQIro/uBLIS/sALiLZilVvyAjNGCOzADGrxFVR7goc0i1IPK92Ot4mGwP4zfnV9e+hNnX3Dd1oncn3gctPVoSKLEaN1gjAvnRIFPlhrwIDAQAB",
   "manifest_version": 2,
   "background": {
       "page": "background.html"

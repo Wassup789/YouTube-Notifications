@@ -21,10 +21,18 @@ var wyn = {};
         "notification_addPotplayer_icon": "img/ic_library_add.png",
         "notification_playPotplayer": getString("notificationPlayPotplayer"),
         "notification_playPotplayer_icon": "img/ic_play.png",
+        "notification_retry": getString("notificationRetry"),
+        "notification_retry_icon": "img/ic_refresh.png",
         "notification_main_icon": "img/ic_youtube.png",
         "notification_appIconMaskUrl": "img/alpha.png",
         "notification_log_check": getString("notificationLogCheck"),
         "notification_log_new": getString("notificationLogNew"),
+        "notification_playlistVideoAddSuccess": getString("playlistVideoAddSuccess"),
+        "notification_playlistVideoAddSuccessInfix": getString("playlistVideoAddSuccessInfix"),
+        "notification_playlistVideoAddSuffix": getString("playlistVideoAddSuffix"),
+        "notification_playlistVideoAddExist": getString("playlistVideoAddExist"),
+        "notification_playlistVideoAddExistInfix": getString("playlistVideoAddExistInfix"),
+        "notification_playlistVideoAddFailure": getString("playlistVideoAddFailure"),
         "snackbar_nonewvideos": getString("snackbarNoNewVideos"),
         "connect_success": getString("connectSuccess"),
         "connect_failed": getString("connectFailed"),
@@ -59,6 +67,7 @@ var wyn = {};
     wyn.databaseRequest = indexedDB.open("default", 2);
     wyn.database;
     wyn.notificationSoundFinished = true;
+    wyn.previousPlaylistInfo = {};
 
 //Deal with the indexedDB
 wyn.databaseRequest.onupgradeneeded = function(e) {
@@ -86,7 +95,8 @@ var NOTIFICATION_ACTION_WATCHVIDEO = 0,
     NOTIFICATION_ACTION_DISMISS = 2,
     NOTIFICATION_ACTION_ADDPLAYLIST = 3,
     NOTIFICATION_ACTION_PLAYPOTPLAYER = 100,
-    NOTIFICATION_ACTION_ADDPOTPLAYER = 101;
+    NOTIFICATION_ACTION_ADDPOTPLAYER = 101,
+    NOTIFICATION_ACTION_SPECIAL_RETRY = 1000;
 
 var NotificationAction = function(action, button){
     this.action = action;
@@ -106,7 +116,7 @@ NotificationAction.prototype.getButton = function(index){
 var NOTIFICATION_ACTIONS = {
     [-1]: new NotificationAction(function(){},{}),
     [NOTIFICATION_ACTION_WATCHVIDEO]: new NotificationAction(
-        function(ntID, btnID){
+        function(ntID, btnIndex){
             var channels = JSON.parse(localStorage.getItem("channels"));
             createTab("https://www.youtube.com/watch?v=" + channels[ntID.split("-")[4]].latestVideo.id);
             console.log("User clicked on \"" + wyn.strings.notification_watch + "\" button; NTID: " + ntID);
@@ -118,7 +128,7 @@ var NOTIFICATION_ACTIONS = {
         }
     ),
     [NOTIFICATION_ACTION_WATCHLATER]: new NotificationAction(
-        function(ntID, btnID){
+        function(ntID, btnIndex){
             var channels = JSON.parse(localStorage.getItem("channels")),
                 data = channels[ntID.split("-")[4]].latestVideo;
             data.index = ntID.split("-")[4];
@@ -132,7 +142,7 @@ var NOTIFICATION_ACTIONS = {
         }
     ),
     [NOTIFICATION_ACTION_DISMISS]: new NotificationAction(
-        function(ntID, btnID){
+        function(ntID, btnIndex){
             console.log("User clicked on \"" + wyn.strings.notification_close + "\" button; NTID: " + ntID);
         },
         {
@@ -141,12 +151,12 @@ var NOTIFICATION_ACTIONS = {
         }
     ),
     [NOTIFICATION_ACTION_ADDPLAYLIST]: new NotificationAction(
-        function(ntID, btnID){
+        function(ntID, btnIndex){
             var settings = JSON.parse(localStorage.getItem("settings")),
                 channels = JSON.parse(localStorage.getItem("channels")),
                 data = channels[ntID.split("-")[4]].latestVideo;
             data.index = ntID.split("-")[4];
-            requestExtendedToken(data, NOTIFICATION_ACTION_ADDPLAYLIST, settings.notificationActions[btnID].playlist);
+            requestExtendedToken(data, NOTIFICATION_ACTION_ADDPLAYLIST, settings.notificationActions[btnIndex].playlist);
 
             console.log("User clicked on \"" + wyn.strings.notification_addPlaylist + wyn.strings.notification_addPlaylistPlaceholder + "\" button; NTID: " + ntID);
         },
@@ -156,7 +166,7 @@ var NOTIFICATION_ACTIONS = {
         }
     ),
     [NOTIFICATION_ACTION_PLAYPOTPLAYER]: new NotificationAction(
-        function(ntID, btnID) {
+        function(ntID, btnIndex) {
             var channels = JSON.parse(localStorage.getItem("channels"));
             createTab("potplayer://" + "https://www.youtube.com/watch?v=" + channels[ntID.split("-")[4]].latestVideo.id);
         },
@@ -166,13 +176,40 @@ var NOTIFICATION_ACTIONS = {
         }
     ),
     [NOTIFICATION_ACTION_ADDPOTPLAYER]: new NotificationAction(
-        function(ntID, btnID) {
+        function(ntID, btnIndex) {
             var channels = JSON.parse(localStorage.getItem("channels"));
             createTab("potplayer://" + "https://www.youtube.com/watch?v=" + channels[ntID.split("-")[4]].latestVideo.id + " /ADD");
         },
         {
             title: wyn.strings.notification_addPotplayer,
             iconUrl: wyn.strings.notification_addPotplayer_icon
+        }
+    ),
+    [NOTIFICATION_ACTION_SPECIAL_RETRY]: new NotificationAction(
+        function(ntID, btnIndex) {
+            chrome.identity.getAuthToken({
+                    interactive: true,
+                    scopes: [
+                        "https://www.googleapis.com/auth/youtube.force-ssl"
+                    ]
+                },
+                function (current_token) {
+                    if (!chrome.runtime.lastError) {
+                        chrome.identity.removeCachedAuthToken({token: current_token});
+
+                        var channels = JSON.parse(localStorage.getItem("channels")),
+                            data = channels[ntID.split("-")[4]].latestVideo,
+                            type = parseInt(ntID.split("-")[5]);
+                        data.index = ntID.split("-")[4];
+
+                        requestExtendedToken(data, type, wyn.previousPlaylistInfo);
+                    }
+                }
+            );
+        },
+        {
+            title: wyn.strings.notification_retry,
+            iconUrl: wyn.strings.notification_retry_icon
         }
     )
 };
@@ -1058,14 +1095,14 @@ function onNotificationClick(ntID){
  *  Ran when a notification's buttons are clicked
  *
  *  @param {string} ntID A random string used to identify the notification
- *  @param {number} btnID The button index
+ *  @param {number} btnIndex The button index
  */
-function onNotificationButtonClick(ntID, btnID){
+function onNotificationButtonClick(ntID, btnIndex){
     var settings = JSON.parse(localStorage.getItem("settings"));
     if(typeof ntID.split("-")[5] !== "undefined") {
-        NOTIFICATION_ACTIONS[NOTIFICATION_ACTION_WATCHVIDEO].action(ntID, btnID);
-    }else if(typeof ntID.split("-")[4] !== "undefined" && typeof NOTIFICATION_ACTIONS[settings.notificationActions[btnID].id] !== "undefined") {
-        NOTIFICATION_ACTIONS[settings.notificationActions[btnID].id].action(ntID, btnID);
+        NOTIFICATION_ACTIONS[(btnIndex == 0 ? NOTIFICATION_ACTION_WATCHVIDEO : NOTIFICATION_ACTION_SPECIAL_RETRY)].action(ntID, btnIndex);
+    }else if(typeof ntID.split("-")[4] !== "undefined" && typeof NOTIFICATION_ACTIONS[settings.notificationActions[btnIndex].id] !== "undefined") {
+        NOTIFICATION_ACTIONS[settings.notificationActions[btnIndex].id].action(ntID, btnIndex);
 
         resetChannelHasNewVideo(ntID.split("-")[4], true);
     }
@@ -1338,7 +1375,7 @@ function onReceiveExtendedToken(videoInfo, type, playlistInfo) {
             var settings = JSON.parse(localStorage.getItem("settings"));
 
             if(type != NOTIFICATION_ACTION_WATCHLATER) {
-                onReceiveExtendedTokenPost(access_token, videoInfo, playlistInfo);
+                onReceiveExtendedTokenPost(access_token, type, videoInfo, playlistInfo);
             }else{
                 if (settings.watchlater.id == "") {
                     var xhr = new XMLHttpRequest();
@@ -1351,11 +1388,11 @@ function onReceiveExtendedToken(videoInfo, type, playlistInfo) {
                         settings.watchlater.id = watchLaterPlaylist;
                         localStorage.setItem("settings", JSON.stringify(settings));
 
-                        onReceiveExtendedTokenPost(access_token, videoInfo, {id: settings.watchlater.id, name: "Watch Later"});
+                        onReceiveExtendedTokenPost(access_token, type, videoInfo, {id: settings.watchlater.id, name: "Watch Later"});
                     };
                     xhr.send();
                 } else
-                    onReceiveExtendedTokenPost(access_token, videoInfo, {id: settings.watchlater.id, name: "Watch Later"});
+                    onReceiveExtendedTokenPost(access_token, type, videoInfo, {id: settings.watchlater.id, name: "Watch Later"});
             }
     });
 }
@@ -1363,7 +1400,7 @@ function onReceiveExtendedToken(videoInfo, type, playlistInfo) {
 /**
  *  Ran after we receive the access token and playlist
  */
-function onReceiveExtendedTokenPost(access_token, videoInfo, playlistInfo) {
+function onReceiveExtendedTokenPost(access_token, type, videoInfo, playlistInfo) {
     var settings = JSON.parse(localStorage.getItem("settings")),
         xhr = new XMLHttpRequest(),
         requestData = {
@@ -1381,45 +1418,33 @@ function onReceiveExtendedTokenPost(access_token, videoInfo, playlistInfo) {
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onload = function(){
         var data = JSON.parse(this.response),
-            title = "Video added to " + playlistInfo.name,
-            message = "\"" + videoInfo.title + "\" has been added to the " + playlistInfo.name + " playlist.";
+            title = wyn.strings.notification_playlistVideoAddSuccess + playlistInfo.name,
+            message = "\"" + videoInfo.title + "\"" + wyn.strings.notification_playlistVideoAddSuccessInfix + playlistInfo.name + wyn.strings.notification_playlistVideoAddSuffix;
 
+        var buttons = [
+            NOTIFICATION_ACTIONS[NOTIFICATION_ACTION_WATCHVIDEO].getButton(0)
+        ];
         if(data.error) {
             if(data.error.code == 409) {
-                title = "Video already exists in " + playlistInfo.name;
-                message = "\"" + videoInfo.title + "\" already exists in the " + playlistInfo.name + " playlist.";
+                title = wyn.strings.notification_playlistVideoAddExist + playlistInfo.name;
+                message = "\"" + videoInfo.title + "\"" + wyn.strings.notification_playlistVideoAddExistInfix + playlistInfo.name + wyn.strings.notification_playlistVideoAddSuffix;
             }else{
-                title = "Error Code: " + data.error.code;
-                message = "Error message: " + data.error.message + "\nReason: " + data.error.errors[0].reason;
+                title = wyn.strings.notification_playlistVideoAddFailure;
+                message = "Error code: " + data.error.code + "\nError message: " + data.error.message + "\nReason: " + data.error.errors[0].reason;
 
-                if(data.error.code == 403) {// Revoke token because access issue
-                    chrome.identity.getAuthToken({
-                            interactive: true,
-                            scopes: [
-                                "https://www.googleapis.com/auth/youtube.force-ssl"
-                            ]
-                        },
-                        function (current_token) {
-                            if (!chrome.runtime.lastError) {
-                                chrome.identity.removeCachedAuthToken({token: current_token});
-                                var xhr = new XMLHttpRequest();
-                                xhr.open("GET", "https://accounts.google.com/o/oauth2/revoke?token=" + current_token);
-                                xhr.send();
-                            }
-                        }
-                    );
-                }
+                buttons.push(NOTIFICATION_ACTIONS[NOTIFICATION_ACTION_SPECIAL_RETRY].getButton(0));
             }
         }
+        wyn.previousPlaylistInfo = playlistInfo;
 
-        var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + videoInfo.index + "-" + rndStr(1);
+        var ntID = rndStr(10) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + rndStr(5) + "-" + videoInfo.index + "-" + type;
         var options = {
             type: "basic",
             priority: 0,
             title: title,
             message: message,
             iconUrl: videoInfo.thumbnail,
-            buttons: [NOTIFICATION_ACTIONS[NOTIFICATION_ACTION_WATCHVIDEO].getButton(0)]
+            buttons: buttons
         };
 
         chrome.notifications.create(ntID, options, function(){

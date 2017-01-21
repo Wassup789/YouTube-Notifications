@@ -1167,9 +1167,6 @@ function changeImportOAuthToken() {
         function(current_token) {
             if (!chrome.runtime.lastError) {
                 chrome.identity.removeCachedAuthToken({ token: current_token });
-                var xhr = new XMLHttpRequest();
-                xhr.open("GET", "https://accounts.google.com/o/oauth2/revoke?token=" + current_token);
-                xhr.send();
             }
             requestImportToken();
         }
