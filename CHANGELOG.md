@@ -1,5 +1,13 @@
 Changelog
 =====
+## v1.2.2.0 (02-08-2017)
+ * Added custom playlist support
+   * Accessable in the edit notifications page
+ * Fixed bug where channels would not be recognized
+ * Fixed bug where TTS would not output the full title
+ * Fixed bug where the add button would display multiple times
+ * Fixed bug where the popup card header layout would be inline
+
 ## v1.2.1.0 (10-20-2016)
  * Added Notification Customizer
    * Access this option in the popup under edit settings
