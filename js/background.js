@@ -214,6 +214,7 @@ var NOTIFICATION_ACTIONS = {
     )
 };
 
+// TODO: FIX "fixXXXXXStructure"
 if(localStorage.getItem("channels") == null)
     localStorage.setItem("channels", JSON.stringify([]));
 if(localStorage.getItem("settings") == null)
@@ -236,7 +237,7 @@ if(localStorage.getItem("settings") == null)
             id: ""
         },
         extendedAuthToken: "",
-        sortOrder: SORTMODE_USER,
+        sortOrder: SORTMODE_UPLOAD,
         notificationSound: NOTIFICATIONSOUND_DEFAULT,
         notificationActions: [NOTIFICATION_ACTION_WATCHVIDEO, NOTIFICATION_ACTION_WATCHLATER]
     }));
@@ -245,6 +246,7 @@ fixSettingsStructure();
 fixChannelStructure();
 function fixSettingsStructure(){
     var settings = JSON.parse(localStorage.getItem("settings"));
+
     if(typeof settings.notifications === "undefined" || settings.notifications.enabled === "undefined" || settings.notifications.volume === "undefined"){
         settings.notifications = {
             enabled: true,
@@ -331,6 +333,7 @@ function fixSettingsStructure(){
  */
 function fixChannelStructure() {
     var channels = JSON.parse(localStorage.getItem("channels"));
+
     for(var i = 0; i < channels.length; i++) {
         if(typeof channels[i].hasNewVideo !== "boolean") {
             channels[i].hasNewVideo = false;
