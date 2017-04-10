@@ -854,10 +854,10 @@ function checkYoutube(num, batch, isNewItem) {
                 success: function(data) {
                     channels[num].hasNewVideo = true;
 
-                    channels[num].latestVideo.views = parseInt(data.items[0].statistics.viewCount);
-                    channels[num].latestVideo.duration = convertISO8601Duration(data.items[0].contentDetails.duration);
-                    channels[num].latestVideo.likes = data.items[0].statistics.likeCount;
-                    channels[num].latestVideo.dislikes = data.items[0].statistics.dislikeCount;
+                    channels[num].latestVideo.views = parseInt(data.items[0].statistics ? data.items[0].statistics.viewCount : NaN);
+                    channels[num].latestVideo.duration = convertISO8601Duration(data.items[0].contentDetails ? data.items[0].contentDetails.duration : 0);
+                    channels[num].latestVideo.likes = data.items[0].statistics ? data.items[0].statistics.likeCount : NaN;
+                    channels[num].latestVideo.dislikes = data.items[0].statistics ? data.items[0].statistics.dislikeCount : NaN;
 
                     var channelsSave = JSON.parse(localStorage.getItem("channels"));
                     channelsSave[num] = channels[num];

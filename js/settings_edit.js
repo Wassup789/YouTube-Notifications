@@ -895,10 +895,10 @@ function getChannelVideos(publishedBefore){
                                 description:	data.items[i].snippet.description,
                                 timestamp:		Date.parse(data.items[i].snippet.publishedAt)/1000,
                                 thumbnail:		data.items[i].snippet.thumbnails.default.url,
-                                likes:			data.items[i].statistics.likeCount,
-                                dislikes:		data.items[i].statistics.dislikeCount,
-                                views:			data.items[i].statistics.viewCount,
-                                duration:		convertISO8601Duration(data.items[i].contentDetails.duration)
+                                likes:			data.items[i].statistics ? data.items[i].statistics.likeCount : NaN,
+                                dislikes:		data.items[i].statistics ? data.items[i].statistics.dislikeCount : NaN,
+                                views:			data.items[i].statistics ? data.items[i].statistics.viewCount : NaN,
+                                duration:		convertISO8601Duration(data.items[i].contentDetails ? data.items[i].contentDetails.duration : 0)
                             };
                             output.push(outputAdd);
 
