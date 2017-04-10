@@ -1,7 +1,8 @@
 Changelog
 =====
-## v1.2.2.X (04-XX-2017)
+## v1.2.2.1 (04-10-2017)
  * Fixed a bug where the data would not update because of a YouTube Data API error
+ * Changed default sort order to be by video upload date
 
 ## v1.2.2.0 (02-08-2017)
  * Added custom playlist support

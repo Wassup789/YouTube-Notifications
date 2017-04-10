@@ -23,7 +23,7 @@ This code is licensed under the MIT License.
 
 [![ChromeWebStore](https://raw.githubusercontent.com/Wassup789/Youtube-Notifications/master/img/chromewebstore.png)](https://chrome.google.com/webstore/detail/youtube-notifications/cilgbgkmanbbecbjihnbpeaoodmgchom)
 
-**Latest Version:** ***v1.2.1.0***
+**Latest Version:** ***v1.2.2.1***
 
 **Release Archive:**
 
