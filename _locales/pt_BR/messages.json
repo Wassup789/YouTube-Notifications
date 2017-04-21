@@ -13,7 +13,7 @@
 	},
 	"settings_headerTabs1": {
 		"description": "The first tab text: Newest Uploads",
-		"message": "Uploads mais recentes"
+		"message": "Envios mais recentes"
 	},
 	"settings_headerTabs2": {
 		"description": "The second tab text: Edit Settings",
@@ -49,7 +49,7 @@
 	},
 	"settings_editSettings_ttsVoice": {
 		"description": "The label for the text-to-speech selector",
-		"message": "Text-To-Speech voice"
+		"message": "Voz do texto para voz"
 	},
 	"settings_editSettings_addButtons": {
 		"description": "The label for the enable add buttons checkbox",
