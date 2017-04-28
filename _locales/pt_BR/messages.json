@@ -1,0 +1,474 @@
+{
+	"appName": {
+		"description": "App name.",
+		"message": "YouTube Notifications"
+	},
+	"appDesc": {
+		"description": "App description.",
+		"message": "Receba notificações quando os usuários selecionados do YouTube façam upload de um novo vídeo."
+	},
+	"settings_newVersion": {
+		"description": "The button displayed when there is a new version",
+		"message": "Nova versão!"
+	},
+	"settings_headerTabs1": {
+		"description": "The first tab text: Newest Uploads",
+		"message": "Envios mais recentes"
+	},
+	"settings_headerTabs2": {
+		"description": "The second tab text: Edit Settings",
+		"message": "Editar configurações"
+	},
+	"settings_videoList_more": {
+		"description": "The button to load more information in the popup: Load More",
+		"message": "Carregar mais"
+	},
+	"settings_noChannels_header": {
+		"description": "The channels list, content header text if no channels are found",
+		"message": "Nenhum canal encontrado"
+	},
+	"settings_noChannels_subheader": {
+		"description": "The channels list, content subheader text if no channels are found",
+		"message": "Importar assinaturas"
+	},
+	"settings_editSettings_useNotifications": {
+		"description": "The label for the enable notifications checkbox",
+		"message": "Usar notificacões"
+	},
+	"settings_editSettings_notificationVolume": {
+		"description": "The label for the notification volume slider",
+		"message": "Volume da notificação"
+	},
+	"settings_editSettings_notificationTest": {
+		"description": "The label for the notification test button",
+		"message": "Testar"
+	},
+	"settings_editSettings_tts": {
+		"description": "The label for the enable text-to-speech checkbox",
+		"message": "Utilizar texto para voz"
+	},
+	"settings_editSettings_ttsVoice": {
+		"description": "The label for the text-to-speech selector",
+		"message": "Voz do texto para voz"
+	},
+	"settings_editSettings_addButtons": {
+		"description": "The label for the enable add buttons checkbox",
+		"message": "Habilitar adicionar botões no YouTube"
+	},
+	"settings_editSettings_addButtonsSubs": {
+		"description": "The label for the view subscriptions button",
+		"message": "Ver assinaturas"
+	},
+	"settings_editSettings_manualRefresh": {
+		"description": "The label for the manual refresh button",
+		"message": "Atualização manual"
+	},
+	"settings_editSettings_importSubscription": {
+		"description": "The label for the import subscription button",
+		"message": "Importar assinaturas"
+	},
+	"settings_editSettings_importSubscriptionChange": {
+		"description": "The label for the change user subscription button",
+		"message": "Alterar usuário"
+	},
+	"settings_editSettings_notificationSound": {
+		"description": "The label for the notification sounds label",
+		"message": "Som de alerta"
+	},
+	"settings_editSettings_uploadSound": {
+		"description": "The label for the upload sound button",
+		"message": "Enviar som"
+	},
+	"settings_editSettings_notificationCustomizer": {
+		"description": "The label for the notification customizer button",
+		"message": "Personalizar notificação"
+	},
+	"settings_vertSettings_viewChangelog": {
+		"description": "The label for the view changelog button",
+		"message": "Ver Changelog"
+	},
+	"settings_vertSettings_help": {
+		"description": "The label for the help button",
+		"message": "Ajuda"
+	},
+	"settings_vertSettings_channelAlignment": {
+		"description": "The label for the edit layout button",
+		"message": "Editar layout"
+	},
+	"settings_vertSettings_channelAlignment2": {
+		"description": "The label for the edit layout finish button",
+		"message": "Salvar alterações"
+	},
+	"settings_vertSettings_sortMode": {
+		"description": "The label for the sort mode button",
+		"message": "Modo de classificação"
+	},
+	"settings_vertSettings_sortMode_custom": {
+		"description": "The label for the sort mode: custom",
+		"message": "Definido pelo usuário"
+	},
+	"settings_vertSettings_sortMode_latestUpload": {
+		"description": "The label for the sort mode: latestUpload",
+		"message": "Upload mais recente"
+	},
+	"settings_vertSettings_sortMode_abc": {
+		"description": "The label for the sort mode: abc",
+		"message": "Ordem alfabética"
+	},
+	"settings_addChannel_title": {
+		"description": "The label for the title of the add channel popup",
+		"message": "Adicionar Canais & Playlists"
+	},
+	"settings_addChannel_placeholder": {
+		"description": "The placeholder label for the add channel textbox",
+		"message": "Nome, ID ou URL"
+	},
+	"settings_addChannel_add": {
+		"description": "The label for the add channel's add button",
+		"message": "Adicionar"
+	},
+	"settings_addChannel_addMore": {
+		"description": "The label for the add channel's add more button",
+		"message": "Adicionar mais"
+	},
+	"settings_changelog_title": {
+		"description": "The label for the title of the changelog popup",
+		"message": "Changelog"
+	},
+	"settings_changelog_close": {
+		"description": "The label for the changelog's close button",
+		"message": "Fechar"
+	},
+	"settings_importChannels_title": {
+		"description": "The label for the title of the import channels popup",
+		"message": "Importar canais"
+	},
+	"settings_importChannels_cancel": {
+		"description": "The label for the import channel's cancel button",
+		"message": "Cancelar"
+	},
+	"settings_importChannels_import": {
+		"description": "The label for the import channel's import button",
+		"message": "Importar"
+	},
+	"settings_importChannels_check": {
+		"description": "The label for the import channel's check all button",
+		"message": "Marcar todos"
+	},
+	"settings_importChannels_uncheck": {
+		"description": "The label for the import channel's uncheck all button",
+		"message": "desmarcar todos"
+	},
+	"settings_importChannels_titlePrefix": {
+		"description": "The prefix for the import channel popup's title",
+		"message": "Importando"
+	},
+	"settings_importChannels_titleSuffix": {
+		"description": "The suffix for the import channel popup's title",
+		"message": "total de canais"
+	},
+	"settings_importChannels_contentOverRecommended": {
+		"description": "The label for the import channel popup's content for over recommended amount of channels",
+		"message": "Isso excede a quantidade recomendada."
+	},
+	"settings_importChannels_contentDuplicate": {
+		"description": "The label for the import channel popup's content for duplicate channels",
+		"message": "Canais duplicados não serão adicionados."
+	},
+	"settings_importChannels_contentStatisticsTitle": {
+		"description": "The title label for the import channel popup's content for statistics",
+		"message": "A cada 5 minutos, isso resultará em..."
+	},
+	"settings_importChannels_contentStatisticsRequests": {
+		"description": "The suffix for the import channel popup's content for statistics requests",
+		"message": "solicitações"
+	},
+	"settings_importChannels_contentStatisticsDownloads": {
+		"description": "The suffix for the import channel popup's content for statistics downloads",
+		"message": "de downloads"
+	},
+	"settings_importChannelsSelection_title": {
+		"description": "The title of the import channel selection popup",
+		"message": "Selecionar canais para importar"
+	},
+	"settings_searchPlaceholder": {
+		"description": "The label for the search input",
+		"message": "Pesquisar..."
+	},
+	"settings_addMissingChannel": {
+		"description": "The label for the empty channels subheader",
+		"message": "Adicionar canal"
+	},
+	"settings_remove": {
+		"description": "The label for the removalToast button",
+		"message": "Remover"
+	},
+	"settingsJs_updating": {
+		"description": "",
+		"message": "Atualizando..."
+	},
+	"settingsJs_saved": {
+		"description": "",
+		"message": "Salvo"
+	},
+	"settingsJs_userRemoveChannel": {
+		"description": "",
+		"message": "Canal do YouTube removido: "
+	},
+	"settingsJs_addChannelsFailed": {
+		"description": "",
+		"message": "Não foi possível adicionar quaisquer canais introduzidos"
+	},
+	"settingsJs_pleaseWait": {
+		"description": "",
+		"message": "Por favor, aguarde..."
+	},
+	"settingsJs_pleaseWaitWhile": {
+		"description": "",
+		"message": "Por favor aguarde, isso pode demorar um pouco..."
+	},
+	"settingsJs_notificationSound_default": {
+		"description": "",
+		"message": "Padrão"
+	},
+	"settingsJs_uploading": {
+		"description": "",
+		"message": "Enviando..."
+	},
+	"settingsJs_uploadComplete": {
+		"description": "",
+		"message": "Envio completo"
+	},
+	"settingsJs_removalPrompt": {
+		"description": "",
+		"message": "Você tem certeza que deseja remover "
+	},
+	"settingsJs_noPlaylistsFound": {
+		"description": "",
+		"message": "Nenhuma playlists encontrada "
+	},
+	"common_published": {
+		"description": "First letter is capitalized",
+		"message": "Publicado"
+	},
+	"common_subscribers": {
+		"description": "",
+		"message": "assinantes"
+	},
+	"common_views": {
+		"description": "",
+		"message": "visualizações"
+	},
+	"common_likes": {
+		"description": "",
+		"message": "curtidas"
+	},
+	"common_dislikes": {
+		"description": "",
+		"message": "descurtidas"
+	},
+	"common_ago": {
+		"description": "Ex: Published 12 hours ago",
+		"message": "atrás"
+	},
+	"common_publishedOn": {
+		"description": "Ex: Published on January 1st",
+		"message": "Publicado em"
+	},
+	"common_by": {
+		"description": "Ex: Video created by",
+		"message": "por"
+	},
+	"common_version": {
+		"description": "First letter is capitalized",
+		"message": "Versão"
+	},
+	"common_dateDay": {
+		"description": "",
+		"message": "dia"
+	},
+	"common_dateDays": {
+		"description": "",
+		"message": "dias"
+	},
+	"common_dateHour": {
+		"description": "",
+		"message": "hora"
+	},
+	"common_dateHours": {
+		"description": "",
+		"message": "horas"
+	},
+	"common_dateMinute": {
+		"description": "",
+		"message": "minuto"
+	},
+	"common_dateMinutes": {
+		"description": "",
+		"message": "minutos"
+	},
+	"common_dateSecond": {
+		"description": "",
+		"message": "segundo"
+	},
+	"common_dateSeconds": {
+		"description": "",
+		"message": "segundos"
+	},
+	"common_playlistBy": {
+		"description": "",
+		"message": "Playlist por"
+	},
+	"background_notificationWatch": {
+		"description": "",
+		"message": "Reproduzir vídeo"
+	},
+	"background_notificationClose": {
+		"description": "",
+		"message": "Dispensar"
+	},
+	"background_notificationWatchLater": {
+		"description": "",
+		"message": "Assistir depois"
+	},
+	"background_notificationAddPotplayer": {
+		"description": "",
+		"message": "Adicionar ao PotPlayer"
+	},
+	"background_notificationPlayPotplayer": {
+		"description": "",
+		"message": "Tocar com o PotPlayer"
+	},
+	"background_notificationAddPlaylistPrefix": {
+		"description": "",
+		"message": "Adicionar a "
+	},
+	"background_notificationAddPlaylistPlaceholder": {
+		"description": "",
+		"message": "Playlist"
+	},
+	"background_notificationRetry": {
+		"description": "",
+		"message": "Tentar novamente"
+	},
+	"background_notificationLogCheck": {
+		"description": "",
+		"message": "Verificando usuário do Youtube: "
+	},
+	"background_notificationLogNew": {
+		"description": "",
+		"message": "Encontrado novo vídeo do Youtube para: "
+	},
+	"background_snackbarNoNewVideos": {
+		"description": "",
+		"message": "Não foram encontrados novos vídeos"
+	},
+	"background_connectSuccess": {
+		"description": "",
+		"message": "Conectado aos servidores do YouTube"
+	},
+	"background_connectFailed": {
+		"description": "",
+		"message": "Não foi possível conectar aos servidores do YouTube"
+	},
+	"background_updateChannelsInit": {
+		"description": "",
+		"message": "Atualizando canais do Youtube"
+	},
+	"background_updateChannelsComplete": {
+		"description": "",
+		"message": "Finalizada a atualização de canais do Youtube"
+	},
+	"background_updateChannelsFailed": {
+		"description": "",
+		"message": "Não foi possível atualizar os canais do Youtube"
+	},
+	"background_updateChannelsFailedChannelPrefix": {
+		"description": "",
+		"message": "Canal do Youtube: "
+	},
+	"background_updateChannelsFailedChannelSuffix": {
+		"description": "",
+		"message": " não foi possível verificar"
+	},
+	"background_addChannelInit": {
+		"description": "",
+		"message": "Adicionando canal: "
+	},
+	"background_addChannelFailed": {
+		"description": "",
+		"message": "Não foi possível adicionar canal: "
+	},
+	"background_removeChannel": {
+		"description": "",
+		"message": "Removendo canal: "
+	},
+	"background_removedChannel": {
+		"description": "",
+		"message": "Canal removido: "
+	},
+	"background_importFailed": {
+		"description": "",
+		"message": "Falha na importação, por favor tente novamente..."
+	},
+	"background_playlistVideoAddSuccess": {
+		"description": "",
+		"message": "Vídeo adicionado para "
+	},
+	"background_playlistVideoAddSuccessInfix": {
+		"description": "",
+		"message": " foi adicionado para a "
+	},
+	"background_playlistVideoAddSuffix": {
+		"description": "",
+		"message": " playlist"
+	},
+	"background_playlistVideoAddExist": {
+		"description": "",
+		"message": "Vídeo já existe em "
+	},
+	"background_playlistVideoAddExistInfix": {
+		"description": "",
+		"message": " já existe na "
+	},
+	"background_playlistVideoAddFailure": {
+		"description": "",
+		"message": "Incapaz de adicionar a playlist"
+	},
+	"contentScript_addChannel": {
+		"description": "The add to YouTube Notifications button on YouTube",
+		"message": "Adicionar ao YouTube Notifications"
+	},
+	"contentScript_channelAdded": {
+		"description": "The add to YouTube Notifications button on YouTube when clicked",
+		"message": "Adicionado ao YouTube Notifications"
+	},
+	"contentScript_removeChannel": {
+		"description": "The remove from YouTube Notifications button on YouTube displayed after the channel is added",
+		"message": "Remover do YouTube Notifications"
+	},
+	"notificationCustomizer_buttons_title": {
+		"description": "The title for the notification customizer button card",
+		"message": "Botões disponíveis"
+	},
+	"notificationCustomizer_headerTitle": {
+        "description": "The title for the notification customizer header",
+        "message": "Arraste e solte os botões da lista para a notificação à direita."
+    },
+	"notificationCustomizer_headerSubtitle": {
+        "description": "The subtitle for the notification customizer header",
+        "message": "Os botões de notificação estão limitados a dois botões.."
+    },
+	"notificationCustomizer_buttonSave": {
+        "description": "The text for the paper-button save in the notification customizer page",
+        "message": "Salvar"
+    },
+	"notificationCustomizer_separatorGeneral": {
+        "description": "The text for the general separator in the notification customizer page",
+        "message": "Geral"
+    },
+	"notificationCustomizer_separatorPotplayer": {
+        "description": "The text for the general separator in the notification customizer page",
+        "message": "PotPlayer"
+    }
+}
