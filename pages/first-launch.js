@@ -52,8 +52,9 @@ $(function(){
 				margin: 0
 			}, 1200);
 			$("#header-title img").transition({
-				height: "35px"
+				height: "27px"
 			}, 1200);
+            $("#header-title img").attr("src", "../img/yt_logo.svg");
 			$("#header-title span").transition({
 				marginLeft: "5px",
 				fontSize: "28px"

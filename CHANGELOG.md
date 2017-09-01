@@ -1,5 +1,9 @@
 Changelog
 =====
+## v1.2.3.0 (08-31-2017)
+ * Added support and updated resources for the new YouTube layout
+ * Added pt_BR translations (Thanks @frnogueira)
+
 ## v1.2.2.1 (04-10-2017)
  * Fixed a bug where the data would not update because of a YouTube Data API error
  * Changed default sort order to be by video upload date
