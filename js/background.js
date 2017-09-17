@@ -1024,12 +1024,15 @@ function rndStr(len){
 }
 
 /**
- *  Creates a notification
+ *  Creates a notification if enabled
  *
  *  @param {string} ntID A random string used to identify the notification later
  *  @param {object} options Notification options (see: https://developer.chrome.com/apps/notifications#type-NotificationOptions)
  */
 function notify(ntID, options){
+    if(!JSON.parse(localStorage.getItem("settings")).notifications.enabled)
+        return;
+    
     if(typeof options.buttons[0].title === "undefined") {
         if(typeof options.buttons[1].title === "undefined")
             options.buttons = [];
