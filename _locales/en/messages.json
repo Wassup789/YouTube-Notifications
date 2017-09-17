@@ -83,6 +83,10 @@
 		"description": "The label for the notification customizer button",
 		"message": "Notification Customizer"
 	},
+	"settings_editSettings_sync": {
+		"description": "The label for the sync button",
+		"message": "Synchronize with YouTube"
+	},
 	"settings_vertSettings_viewChangelog": {
 		"description": "The label for the view changelog button",
 		"message": "View Changelog"

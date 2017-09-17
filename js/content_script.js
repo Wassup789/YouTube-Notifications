@@ -25,6 +25,23 @@ $(function(){
             }, 1000);
         }
     });
+    chrome.runtime.sendMessage({type: "watchNotificationButton"}, function(response){
+        if(response){
+            $(document).on("click", "ytd-toggle-button-renderer", function(){
+                var status = $(this).find("button").attr("aria-pressed") === "true",
+                    channelId = $(this).parents("ytd-subscribe-button-renderer").find("[data-channel-external-id]").attr("data-channel-external-id");
+
+                if(typeof channelId === "undefined")
+                    return console.error("YTN: Failed to retrieve channel ID");
+
+                console.log(channelId);
+                if(status)
+                    chrome.runtime.sendMessage({type: "addYoutubeChannel", contentScript: true, name: channelId, refresh: true});
+                else
+                    chrome.runtime.sendMessage({type: "removeYoutube", num: 1, contentScript: true, name: channelId, refresh: true});
+            });
+        }
+    });
 
     chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
         switch (request.type) {

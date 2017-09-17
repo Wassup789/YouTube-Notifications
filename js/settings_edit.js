@@ -31,7 +31,6 @@ wyns.apiKey = chrome.extension.getBackgroundPage().wyn.apiKey,
         "playlist_by": getCommonString("playlistBy")
     },
     wyns.previousLastListItem;
-wyns.importData;
 wyns.databaseRequest;
 wyns.database;
 wyns.currentRemovalId = -1;
@@ -98,9 +97,6 @@ window.addEventListener("WebComponentsReady", function(){
                 case "createToast":
                     createToast(request.message);
                     break;
-                case "importData":
-                    displayImportData(request.message);
-                    break;
             }
         });
 
@@ -120,43 +116,11 @@ window.addEventListener("WebComponentsReady", function(){
         initSearch();// This includes the listener for search
         configureSettings();
 
-        checkImportToken();
-
         setTimeout(function() {// Timeout 500 since script prediction is difficult
             $("#launch_screen").fadeOut("fast");
         }, 500);
     });
 });
-
-var timesFailed = 0;
-/**
- * Check's if the user is logged in
- */
-function checkImportToken(){
-    chrome.identity.getAuthToken({
-            interactive: false,
-            scopes: [
-                "https://www.googleapis.com/auth/youtube.readonly"
-            ]
-        },
-        function(current_token) {
-            var error = chrome.runtime.lastError;
-            if(error && error.message == "OAuth2 not granted or revoked." && timesFailed < 4){
-                setTimeout(function(){checkImportToken()}, 100);
-                timesFailed++;
-                return;
-            }
-
-            if (error) {
-                $("#settings_import").removeClass("double");
-                $("#settings_import_changeUser").hide();
-            }else {
-                $("#settings_import").addClass("double");
-                $("#settings_import_changeUser").show();
-            }
-        }
-    );
-}
 
 /**
  *  Sets the appropriate text to all html tags with the attribute 'i18n'
@@ -499,92 +463,15 @@ function registerListeners(){
         settings.updated.enabled = false;
         localStorage.setItem("settings", JSON.stringify(settings));
     }
-    $("#import_channels-close-button").on("click", function(){
-        $("#overlay").click();
-    });
-    $("#import_channels-import-button").on("click", function(){
-        $("#overlay").click();
-        createToast(wyns.strings.please_wait_while);
-        chrome.extension.sendMessage({type: "importUserApproved", data: wyns.importData});
-    });
     $("#popup_videoList_more").on("click", function(){
         getChannelVideos(publishedBeforeDate);
-    });
-    $("#settings_addbtn_viewsubs").on("click", function(){
-        chrome.tabs.create({url: "https://www.youtube.com/subscription_manager"});
     });
     $("#settings_notificationCustomizer").on("click", function(){
         chrome.tabs.create({url: "chrome-extension://" + chrome.runtime.id + "/pages/edit-notification.html"});
     });
-    $("#settings_import").on("click", function(){
-        requestImportToken();
+    $("#emptyChannelsList_subheader, #settings_addbtn_viewsubs").on("click", function(){
+        chrome.tabs.create({url: "https://www.youtube.com/feed/channels"});
     });
-    $("#settings_import_changeUser").on("click", function(){
-        changeImportOAuthToken();
-    });
-    $("#emptyChannelsList_subheader").on("click", function(){
-        switch($("#emptyChannelsList").attr("data-type")) {
-            case "0":
-                setPage(1);
-                requestImportToken();
-                break;
-            case "1":
-                var value = $("#search-input").val();
-                if(value != ""){
-                    createToast("Adding channel...");
-
-                    var playlist = getUrlVar("list", value);
-
-                    if(playlist != null)
-                        chrome.extension.sendMessage({type: "addYoutubePlaylist", name: playlist});
-                    else
-                        chrome.extension.sendMessage({type: "addYoutubeChannel", name: value});
-
-                    $("#search-input").val("");
-                    $("#toolbar .label-is-hidden").removeClass("label-is-hidden");
-                    updateSearch();
-                }
-                break;
-        }
-    });
-
-    //Start of import channel selection
-    $("body").on("click", "#paper_card-importChannelsSelection paper-item", function(){
-        if($(this).find("paper-checkbox")[0].checked) {
-            $(this).find("paper-checkbox")[0].checked = false;
-            wyns.importData[$(this).index()-1].enabled = false;// -1 because of the master row
-        }else {
-            $(this).find("paper-checkbox")[0].checked = true;
-            wyns.importData[$(this).index()-1].enabled = true;// -1 because of the master row
-        }
-    });
-    $("#import_channels_selection-close-button").on("click", function(){
-        $("#overlay").click();
-    });
-    $("#import_channels_selection-check-button").on("click", function() {
-        if ($(this).attr("data-toggle") == "true") {
-            $(this).attr("data-toggle", false);
-            $(this).text(chrome.i18n.getMessage("settings_importChannels_check"));
-            $("#paper_card-importChannelsSelection paper-item:not(#masterImportChannelRow) paper-checkbox").each(function(){
-                this.checked = false;
-            });
-            for(var i = 0; i < wyns.importData.length; i++)
-                wyns.importData[i].enabled = false;
-        }else{
-            $(this).attr("data-toggle", true);
-            $(this).text(chrome.i18n.getMessage("settings_importChannels_uncheck"));
-            $("#paper_card-importChannelsSelection paper-item:not(#masterImportChannelRow) paper-checkbox").each(function(){
-                this.checked = true;
-            });
-            for(var i = 0; i < wyns.importData.length; i++)
-                wyns.importData[i].enabled = true;
-        }
-    });
-    $("#import_channels_selection-import-button").on("click", function() {
-        $("#overlay").click();
-        showImportPopup();
-    });
-
     //Start of sort mode
     $("#menu_sortMode_custom").on("click", function(){
         var settings = JSON.parse(localStorage.getItem("settings"));
@@ -690,52 +577,50 @@ function disableButtons(bool){
  */
 function configureSettings(){
     var settings = JSON.parse(localStorage.getItem("settings"));
-    if(settings.notifications.enabled){
-        $("#settings_notifications_toggle")[0].active = true;
-    }else{
-        $("#settings_notifications_toggle")[0].active = false;
-    }
+
     $("#settings_notifications_toggle").on("change", function(){
         var value = $(this)[0].checked,
             settings = JSON.parse(localStorage.getItem("settings"));
         settings.notifications.enabled = value;
         localStorage.setItem("settings", JSON.stringify(settings));
         createToast(wyns.strings.saved);
-    });
+    })[0].active = settings.notifications.enabled;
 
-    $("#settings_notifications_volume").val(settings.notifications.volume);
     $("#settings_notifications_volume").on("change", function(){
         var settings = JSON.parse(localStorage.getItem("settings"));
         settings.notifications.volume = $("#settings_notifications_volume").val();
         localStorage.setItem("settings", JSON.stringify(settings));
         createToast(wyns.strings.saved);
-    });
+    }).val(settings.notifications.volume);
 
-
-    if(settings.tts.enabled){
-        $("#settings_tts_toggle")[0].active = true;
-    }else{
-        $("#settings_tts_toggle")[0].active = false;
-    }
     $("#settings_tts_toggle").on("change", function(){
         var settings = JSON.parse(localStorage.getItem("settings"));
         settings.tts.enabled = $(this)[0].checked;
         localStorage.setItem("settings", JSON.stringify(settings));
         createToast(wyns.strings.saved);
-    });
+    })[0].active = settings.tts.enabled;
 
-
-    if(settings.addBtn.enabled){
-        $("#settings_addbtn_toggle")[0].active = true;
-    }else{
-        $("#settings_addbtn_toggle")[0].active = false;
-    }
     $("#settings_addbtn_toggle").on("change", function(){
         var settings = JSON.parse(localStorage.getItem("settings"));
         settings.addBtn.enabled = $(this)[0].checked;
         localStorage.setItem("settings", JSON.stringify(settings));
         createToast(wyns.strings.saved);
-    });
+    })[0].active = settings.addBtn.enabled;
+
+    $("#settings_sync_toggle").on("change", function(){
+        var settings = JSON.parse(localStorage.getItem("settings"));
+        settings.sync.enabled = $(this)[0].checked;
+        localStorage.setItem("settings", JSON.stringify(settings));
+        checkAddBtn();
+        createToast(wyns.strings.saved);
+    })[0].active = settings.sync.enabled;
+    checkAddBtn();
+
+    function checkAddBtn(){
+        var settings = JSON.parse(localStorage.getItem("settings"));
+        $("#settings_addbtn_toggle")[0].disabled = settings.sync.enabled;
+        $("#add_channels-fab")[0].style.display = settings.sync.enabled ? "none" : "flex";
+    }
 
     launchSpeechSynthesis();
 }
@@ -1044,133 +929,6 @@ function updateSearchExact() {
 function showFloatingCard(elemId) {
     $(elemId).attr("data-toggle", "true");
     $("#overlay").attr("data-target", "#" + $(elemId).attr("id")).show();
-}
-
-/**
- *  Requests the user to approve the OAuth request
- */
-function requestImportToken() {
-    createToast(wyns.strings.please_wait);
-
-    chrome.identity.getAuthToken({
-            interactive: true,
-            scopes: [
-                "https://www.googleapis.com/auth/youtube.readonly"
-            ]
-        },
-        function(token){
-            if(chrome.runtime.lastError){
-                createToast("Error: " + chrome.runtime.lastError.message);
-            }else{
-                chrome.extension.sendMessage({type: "onReceiveImportToken"});
-            }
-        }
-    );
-}
-
-/**
- *  Displays the correct information for the import channels popup
- */
-function showImportPopup() {
-    var size = 0;
-
-    for(var i = 0; i < wyns.importData.length; i++)
-        if(wyns.importData[i].enabled)
-            size++;
-
-    if(size == 0)
-        return;
-
-    $("#settings_import_changeUser").show();
-    $("#settings_import").addClass("double");
-
-    if(size > 50)
-        $("#import_channels-overRecommended").show();
-    else
-        $("#import_channels-overRecommended").hide();
-
-    $("#import_channels-contentTitle").children("span.num").text(size);
-    $("#import_channels-requests").text("~" + size);
-
-    var downloadSize = 0.00275 * size;
-    if(downloadSize < 0.1)
-        $("#import_channels-downloadsSuffix").text("KB");
-    else
-        $("#import_channels-downloadsSuffix").text("MB");
-    $("#import_channels-downloads").text("~" + Math.round(0.00275 * size * 1000) / 1000);
-
-    showFloatingCard("#paper_card-importChannelsVerify");
-}
-
-/**
- *
- */
-function displayImportData(data) {
-    wyns.importData = data;
-
-    checkImportToken();
-
-    data.sort(function(a, b) {
-        var text1 = a.title.toLowerCase(),
-            text2 = b.title.toLowerCase();
-        return (text1 < text2) ? -1 : (text1 > text2) ? 1 : 0;
-    });
-
-    // Using this instead of jQuery since Polymer doesn't work well with jQuery
-    var element = $Poly($("#importChannelsSelection-container paper-listbox")[0]);
-    while(element.firstChild)
-        element.removeChild(element.firstChild);
-
-    for(var i = 0; i < data.length; i++) {
-        if(data[i].thumbnail.startsWith("//"))
-            data[i].thumbnail = "https:" + data[i].thumbnail;
-
-        var paperItem = document.createElement("paper-item");
-        $(paperItem).attr("data-id", i);
-        $(paperItem).attr("title", data[i].title);
-        $Poly($("#importChannelsSelection-container paper-listbox")[0]).appendChild(paperItem);
-        $Poly(paperItem).innerHtml = ("<img class=\"import_channels_selectionRow-img\"><span class=\"import_channels_selectionRow-title\"></span>");
-
-        var img = document.createElement("img");
-        img.src = data[i].thumbnail;
-        img.classList = "import_channels_selectionRow-img";
-        $Poly(paperItem).appendChild(img);
-
-        var span = document.createElement("span");
-        span.innerHTML = data[i].title;
-        span.classList = "import_channels_selectionRow-title";
-        $Poly(paperItem).appendChild(span);
-
-        var paperCheckbox = document.createElement("paper-checkbox");
-        paperCheckbox.classList = "noninteractable";
-        $Poly(paperItem).appendChild(paperCheckbox);
-    }
-    if(data.length == 0)
-        $("#import_channels_noChannelsFound").show();
-    else
-        $("#import_channels_noChannelsFound").hide();
-
-    showFloatingCard("#paper_card-importChannelsSelection")
-}
-
-/**
- *  Change user token
- */
-function changeImportOAuthToken() {
-    createToast(wyns.strings.please_wait);
-    chrome.identity.getAuthToken({
-            interactive: true,
-            scopes: [
-                "https://www.googleapis.com/auth/youtube.readonly"
-            ]
-        },
-        function(current_token) {
-            if (!chrome.runtime.lastError) {
-                chrome.identity.removeCachedAuthToken({ token: current_token });
-            }
-            requestImportToken();
-        }
-    );
 }
 
 /**

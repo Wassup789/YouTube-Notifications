@@ -115,14 +115,6 @@
                 paper-input-container iron-icon {cursor: pointer;}
 
                 /* Specific Styling */
-                #paper_card-importChannelsSelection paper-item {
-                    --paper-item-selected: {
-                        font-weight: 400;
-                        background: transparent;
-                    };
-                    --paper-item-focused: {background: transparent;};
-                    --paper-item-focused-before: {background: transparent;};
-                }
 
                 paper-card .card-content {font-size: 13px;}
 
@@ -301,32 +293,26 @@
                                         </paper-dropdown-menu>
                                     </div>
                                 </div>
-                                <div id="addBtn_notifications" class="settingRow">
+                                <div class="settingRow">
+                                    <div class="settingColumn">
+                                        <span class="label" i18n="settings_editSettings_sync"></span>
+                                        <paper-toggle-button id="settings_sync_toggle"></paper-toggle-button>
+                                    </div>
                                     <div class="settingColumn">
                                         <span class="label" i18n="settings_editSettings_addButtons"></span>
                                         <paper-toggle-button id="settings_addbtn_toggle"></paper-toggle-button>
                                     </div>
-                                    <div class="settingColumn">
-                                        <paper-button id="settings_addbtn_viewsubs" raised>
-                                            <iron-icon icon="av:subscriptions"></iron-icon>
-                                            <span i18n="settings_editSettings_addButtonsSubs"></span>
-                                        </paper-button>
-                                    </div>
+                                </div>
+                                <div id="addBtn_notifications" class="settingRow">
+                                    <paper-button id="settings_addbtn_viewsubs" raised>
+                                        <iron-icon icon="av:subscriptions"></iron-icon>
+                                        <span i18n="settings_editSettings_addButtonsSubs"></span>
+                                    </paper-button>
                                 </div>
                                 <div class="settingRow">
                                     <paper-button id="settings_notificationCustomizer" raised>
                                         <iron-icon icon="editor:mode-edit"></iron-icon>
                                         <span i18n="settings_editSettings_notificationCustomizer"></span>
-                                    </paper-button>
-                                </div>
-                                <div class="settingRow">
-                                    <paper-button id="settings_import" raised>
-                                        <iron-icon icon="communication:import-export"></iron-icon>
-                                        <span i18n="settings_editSettings_importSubscription"></span>
-                                    </paper-button>
-                                    <paper-button id="settings_import_changeUser" raised>
-                                        <iron-icon icon="icons:account-circle"></iron-icon>
-                                        <span i18n="settings_editSettings_importSubscriptionChange"></span>
                                     </paper-button>
                                 </div>
                                 <div class="settingRow">
@@ -359,49 +345,6 @@
                     </div>
                     <div class="card-actions">
                         <paper-button id="changelog-close-button" i18n="settings_changelog_close"></paper-button>
-                    </div>
-                </paper-card>
-                <paper-card id="paper_card-importChannelsSelection" class="floating" data-toggle="false" i18n="settings_importChannels_title" image="img/welcome_card.jpg">
-                    <div class="card-content">
-                        <div id="import_channels_selection-contentTitle">
-                            <span i18n="settings_importChannelsSelection_title"></span>
-                        </div>
-                        <div id="import_channels_noChannelsFound">
-                            <iron-icon icon="social:notifications-off"></iron-icon>
-                            <span i18n="settings_noChannels_header"></span>
-                        </div>
-                        <div id="importChannelsSelection-container">
-                            <paper-listbox>
-                                <paper-item id="masterImportChannelRow" style="display: none;">
-                                    <img class="import_channels_selectionRow-img">
-                                    <span class="import_channels_selectionRow-title"></span>
-                                    <paper-checkbox></paper-checkbox>
-                                </paper-item>
-                            </paper-listbox>
-                        </div>
-                    </div>
-                    <div class="card-actions">
-                        <paper-button id="import_channels_selection-check-button" data-toggle="false" i18n="settings_importChannels_check"></paper-button>
-                        <paper-button id="import_channels_selection-close-button" i18n="settings_importChannels_cancel"></paper-button>
-                        <paper-button id="import_channels_selection-import-button" i18n="settings_importChannels_import"></paper-button>
-                    </div>
-                </paper-card>
-                <paper-card id="paper_card-importChannelsVerify" class="floating" data-toggle="false" i18n="settings_changelog_title" image="img/welcome_card.jpg">
-                    <div class="card-content">
-                        <div id="import_channels-contentTitle" class="content-header">
-                            <span i18n="settings_importChannels_titlePrefix"></span> <span class="num"></span> <span i18n="settings_importChannels_titleSuffix"></span>
-                        </div>
-                        <div id="import_channels-overRecommended" i18n="settings_importChannels_contentOverRecommended"></div>
-                        <span id="import_channels-duplicateInfo" i18n="settings_importChannels_contentDuplicate"></span>
-                        <div id="import_channels-statisticsTitle" i18n="settings_importChannels_contentStatisticsTitle"></div>
-                        <ul>
-                            <li><span id="import_channels-requests"></span> <span i18n="settings_importChannels_contentStatisticsRequests"></span></li>
-                            <li><span id="import_channels-downloads"></span><span id="import_channels-downloadsSuffix"></span> <span i18n="settings_importChannels_contentStatisticsDownloads"></span></li>
-                        </ul>
-                    </div>
-                    <div class="card-actions">
-                        <paper-button id="import_channels-close-button" i18n="settings_importChannels_cancel"></paper-button>
-                        <paper-button id="import_channels-import-button" i18n="settings_importChannels_import"></paper-button>
                     </div>
                 </paper-card>
                 <span id="version"></span>

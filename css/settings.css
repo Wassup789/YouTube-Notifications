@@ -49,7 +49,7 @@ paper-toolbar paper-tabs {
     align-self: flex-end;
 }
 #header_img {
-    height: 24px;
+    height: 22px;
     margin-top: -4px;
 }
 #page-latestUploads #main_card,
@@ -340,12 +340,15 @@ paper-toolbar paper-tabs {
 #settings_notifications_volume {
     width: 90px;
 }
-#settings_refresh, #settings_import, #settings_notificationCustomizer {
+#settings_refresh, #settings_import, #settings_notificationCustomizer, #settings_addbtn_viewsubs {
     width: 100%;
     background: #8BC34A;
 }
 #settings_notificationCustomizer {
     background: #6C6AEC;
+}
+#settings_addbtn_viewsubs {
+    background-color: #f44336;
 }
 #settings_import.double, #settings_import_changeUser {
     width: 50%;

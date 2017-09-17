@@ -223,6 +223,9 @@ if(localStorage.getItem("settings") == null)
             enabled: true,
             volume: 100
         },
+        sync: {
+            enabled: true
+        },
         tts: {
             enabled: false,
             type: 1
@@ -251,6 +254,12 @@ function fixSettingsStructure(){
         settings.notifications = {
             enabled: true,
             volume: 100
+        };
+        localStorage.setItem("settings", JSON.stringify(settings));
+    }
+    if(typeof settings.sync === "undefined" || settings.sync.enabled === "undefined"){
+        settings.sync = {
+            enabled: true
         };
         localStorage.setItem("settings", JSON.stringify(settings));
     }
@@ -383,6 +392,7 @@ $(function(){
                 sendResponse(checkYoutube(request.name));
                 break;
             case "addYoutubeChannel":
+                console.log(request);
                 if(request.contentScript)
                     addYoutubeChannel(request.name, true, ADD_TYPE_CHANNELID);
                 else
@@ -405,13 +415,11 @@ $(function(){
                 break;
             case "showAddButton":
                 var settings = JSON.parse(localStorage.getItem("settings"));
-                sendResponse(settings.addBtn.enabled);
+                sendResponse(settings.addBtn.enabled && !settings.sync.enabled);
                 break;
-            case "onReceiveImportToken":
-                sendResponse(onReceiveImportToken());
-                break;
-            case "importUserApproved":
-                sendResponse(onImportApproved(request.data));
+            case "watchNotificationButton":
+                var settings = JSON.parse(localStorage.getItem("settings"));
+                sendResponse(settings.sync.enabled);
                 break;
             case "updateNotificationSound":
                 sendResponse(updateNotificationSound());
@@ -501,8 +509,10 @@ function updateChannelsInfo(runBatch){
                         channelsSave[i] = channels[i];
                         localStorage.setItem("channels", JSON.stringify(channelsSave));
                     }
-                    if(runBatch)
+                    if(runBatch) {
+                        syncWithYoutube();
                         checkYoutubeBatch();
+                    }
                 }
             });
         }
@@ -527,6 +537,9 @@ function checkYoutubeStatus(){
                 setInterval(function(){
                     checkYoutubeBatch();
                 }, 1000*60*5);
+                setInterval(function(){
+                    syncWithYoutube();
+                }, 1000*60*30);
             },
             403: function() {
                 var apiKeyIndex = Math.floor(Math.random() * wyn.apiKeys.length);
@@ -567,6 +580,9 @@ function checkYoutubeStatus(){
                 setInterval(function(){
                     checkYoutubeBatch();
                 }, 1000*60*5);
+                setInterval(function(){
+                    syncWithYoutube();
+                }, 1000*60*30);
             }else{
                 wyn.isConnected = false;
                 chrome.extension.sendMessage({type: "createToast", message: wyn.strings.connect_failed});
@@ -1007,6 +1023,93 @@ function checkYoutubeBatch(){
         }, 100*i, i);
     }
 }
+
+/**
+ * Syncs the channels with YouTube if enabled
+ */
+function syncWithYoutube(){
+    var settings = JSON.parse(localStorage.getItem("settings"));
+    if(settings.sync.enabled){
+        $.ajax({
+            dataType: "text",
+            url: "https://www.youtube.com/feed/channels",
+            error: function(){
+                console.error("Failed to synchronize channels with YouTube");
+                resolve();
+            },
+            success: function(data){
+                var parser = new DOMParser(),
+                    scripts = parser.parseFromString(data, "text/html").getElementsByTagName("script");
+                for(let i = 0; i < scripts.length; i++){
+                    if(scripts[i].innerHTML.indexOf("window[\"ytInitialData\"]") > -1 && scripts[i].innerHTML.indexOf("\"channelId\"") > -1){
+                        eval(scripts[i].innerHTML);
+                        if(typeof window.ytInitialData === "object" &&
+                            typeof window.ytInitialData.contents === "object" &&
+                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer === "object" &&
+                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs === "object" && window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs instanceof Array && window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs.length > 0 &&
+                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0] === "object" &&
+                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer === "object" &&
+                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content === "object" &&
+                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer === "object" &&
+                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents === "object" && window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents instanceof Array && window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents.length > 0 &&
+                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0] === "object" &&
+                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer === "object" &&
+                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents === "object" && window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents instanceof Array && window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents.length > 0 &&
+                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents[0] === "object" &&
+                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents[0].shelfRenderer === "object" &&
+                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents[0].shelfRenderer.content === "object" &&
+                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents[0].shelfRenderer.content.expandedShelfContentsRenderer === "object" &&
+                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents[0].shelfRenderer.content.expandedShelfContentsRenderer.items === "object" && window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents[0].shelfRenderer.content.expandedShelfContentsRenderer.items instanceof Array){
+
+                            var channels = JSON.parse(localStorage.getItem("channels")),
+                                channelsToAdd = [],
+                                items = window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents[0].shelfRenderer.content.expandedShelfContentsRenderer.items;
+                            for(var channel of channels){
+                                channel._exists = false;
+                            }
+                            mainItemLoop:
+                            for(var item of items){
+                                if(typeof item === "object" &&
+                                    typeof item.channelRenderer === "object" &&
+                                    typeof item.channelRenderer.channelId === "string" &&
+                                    typeof item.channelRenderer.subscribeButton === "object" &&
+                                    typeof item.channelRenderer.subscribeButton.subscribeButtonRenderer === "object" &&
+                                    typeof item.channelRenderer.subscribeButton.subscribeButtonRenderer.notificationPreferenceToggleButton === "object" &&
+                                    typeof item.channelRenderer.subscribeButton.subscribeButtonRenderer.notificationPreferenceToggleButton.toggleButtonRenderer === "object" &&
+                                    typeof item.channelRenderer.subscribeButton.subscribeButtonRenderer.notificationPreferenceToggleButton.toggleButtonRenderer.isToggled === "boolean"){
+                                    var channelId = item.channelRenderer.channelId,
+                                        enabled = item.channelRenderer.subscribeButton.subscribeButtonRenderer.notificationPreferenceToggleButton.toggleButtonRenderer.isToggled;
+                                    if(enabled){
+                                        for(var channel of channels){
+                                            if(channel.id === channelId) {
+                                                channel._exists = true;
+                                                continue mainItemLoop;
+                                            }
+                                        }
+                                        channelsToAdd.push(channelId);
+                                    }
+                                }
+                            }
+                            for(var j = channels.length-1; j > -1; j--){
+                                if(!channels[j]._exists) {
+                                    channels.splice(j, 1);
+                                    continue;
+                                }
+
+                                delete channels[j]._exists;
+                            }
+                            localStorage.setItem("channels", JSON.stringify(channels));
+                            for(var channelId of channelsToAdd){
+                                addYoutubeChannel(channelId, false, ADD_TYPE_CHANNELID);
+                            }
+                        }else
+                            console.error("Failed to synchronize channels with YouTube");
+                    }
+                }
+            }
+        })
+    }
+}
 wyn.forceRefresh = function(){checkYoutubeBatch()};
 
 /**
@@ -1242,111 +1345,6 @@ wyn.resetChannels = function(){
     }
     localStorage.setItem("channels", JSON.stringify(channels));
 };
-
-/**
- *  Ran when the subscription import has been approved
- */
-function onReceiveImportToken() {
-    chrome.identity.getAuthToken({
-        interactive: true,
-            scopes: [
-                "https://www.googleapis.com/auth/youtube.readonly"
-            ]
-        }, function(access_token) {
-            if(chrome.runtime.lastError)
-                return;
-
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", "https://www.googleapis.com/youtube/v3/subscriptions?part=snippet&maxResults=50&mine=true");
-            xhr.setRequestHeader("Authorization", "Bearer " + access_token);
-            xhr.onload = function(){
-                var data = JSON.parse(this.response);
-                if(data.error)
-                    chrome.extension.sendMessage({type: "createToast", message: wyn.strings.import_failed + " \"" + data.error.message + ": " + data.error.errors[0].reason +  "\""});
-                else {
-                    var output = [];
-                    for(var i = 0; i < data.items.length; i++) {
-                        output.push({
-                            enabled: false,
-                            title: data.items[i].snippet.title,
-                            channelId: data.items[i].snippet.resourceId.channelId,
-                            thumbnail: data.items[i].snippet.thumbnails.default.url
-                        })
-                    }
-
-                    if(data.items.length == 50 && data.items.length != data.pageInfo.totalResults)
-                        onReceiveImportTokenContinued(access_token, data.nextPageToken, output);
-                    else
-                        onReceiveImportTokenPost(output);
-                }
-            };
-            xhr.send();
-        }
-    );
-}
-
-/**
- * Ran when the subscription import has been approved (contd.)
- *
- * @param access_token
- * @param nextPageToken
- * @param output
- */
-function onReceiveImportTokenContinued(access_token, nextPageToken, output) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", "https://www.googleapis.com/youtube/v3/subscriptions?part=snippet&maxResults=50&mine=true&pageToken=" + nextPageToken);
-    xhr.setRequestHeader("Authorization", "Bearer " + access_token);
-    xhr.onload = function(){
-        var data = JSON.parse(this.response);
-        if(data.error)
-            chrome.extension.sendMessage({type: "createToast", message: wyn.strings.import_failed + " \"" + data.error.message + "\""});
-        else {
-            for(var i = 0; i < data.items.length; i++) {
-                output.push({
-                    enabled: false,
-                    title: data.items[i].snippet.title,
-                    channelId: data.items[i].snippet.resourceId.channelId,
-                    thumbnail: data.items[i].snippet.thumbnails.default.url
-                })
-            }
-
-            if(data.items.length == 50 && typeof data.nextPageToken !== "undefined")
-                onReceiveImportTokenContinued(access_token, data.nextPageToken, output);
-            else
-                onReceiveImportTokenPost(output);
-        }
-    };
-    xhr.send();
-}
-
-function onReceiveImportTokenPost(output) {
-    chrome.extension.sendMessage({type: "importData", message: output});
-}
-
-/**
- *  Ran when the import channels dialog was approved by the user
- */
-function onImportApproved(data){
-    for(var i = 0; i < data.length; i++){
-        // Following value is determined if the user checked the channel
-        if(!data[i].enabled)
-            continue;
-
-        // Loop through existing channels for duplicates
-        var duplicate = false,
-            channels = JSON.parse(localStorage.getItem("channels"));
-        for(var j = 0; j < channels.length; j++){
-            if(channels[j].id == data[i].channelId){
-                duplicate = true;
-                break;
-            }
-        }
-        // If no duplicates, add
-        if(!duplicate)
-            addYoutubeChannel(data[i].channelId, false, ADD_TYPE_CHANNELID);
-    }
-}
-
 /**
  *  Requests the user to approve the extended OAuth request
  */

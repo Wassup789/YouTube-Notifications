@@ -39,5 +39,6 @@
       "https://www.googleapis.com/auth/youtube.readonly",
 	  "https://www.googleapis.com/auth/youtube.force-ssl"
     ]
-  }
+  },
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
 }
