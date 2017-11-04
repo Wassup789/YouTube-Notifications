@@ -10,35 +10,35 @@ function getString(name) {
     return chrome.i18n.getMessage("contentScript_" + name);
 }
 
-$(function(){
+window.onload = function(){
     chrome.runtime.sendMessage({type: "showAddButton"}, function(response){
-        if(response){
-            if(!(document.querySelector("ytd-app") !== null))
-                launchLegacy();
-            else
-                launch();
-            setInterval(function(){
-                if(!(document.querySelector("ytd-app") !== null))
+        if(response && !(document.querySelector("ytd-app") !== null))
+            $(function(){launchLegacy();});
+        launch(response);
+
+        setInterval(function() {
+            if (response && !(document.querySelector("ytd-app") !== null)){
+                if (window.$)
                     launchLegacy();
-                else
-                    launch();
-            }, 1000);
-        }
+            }
+            launch(response);
+        }, 1000);
     });
+
     chrome.runtime.sendMessage({type: "watchNotificationButton"}, function(response){
         if(response){
-            $(document).on("click", "ytd-toggle-button-renderer", function(){
-                var status = $(this).find("button").attr("aria-pressed") === "true",
-                    channelId = $(this).parents("ytd-subscribe-button-renderer").find("[data-channel-external-id]").attr("data-channel-external-id");
+            $(function(){
+                $(document).on("click", "#notification-button", function(){
+                    if(!this.hasAttribute("data-channelId"))
+                        return;
+                    var status = $(this).find("button").attr("aria-pressed") === "true",
+                        channelId = this.getAttribute("data-channelId");
 
-                if(typeof channelId === "undefined")
-                    return console.error("YTN: Failed to retrieve channel ID");
-
-                console.log(channelId);
-                if(status)
-                    chrome.runtime.sendMessage({type: "addYoutubeChannel", contentScript: true, name: channelId, refresh: true});
-                else
-                    chrome.runtime.sendMessage({type: "removeYoutube", num: 1, contentScript: true, name: channelId, refresh: true});
+                    if(status)
+                        chrome.runtime.sendMessage({type: "addYoutubeChannel", contentScript: true, name: channelId, refresh: true});
+                    else
+                        chrome.runtime.sendMessage({type: "removeYoutube", num: 1, contentScript: true, name: channelId, refresh: true});
+                });
             });
         }
     });
@@ -50,7 +50,9 @@ $(function(){
                 break;
         }
     });
+};
 
+$(function(){
     //Legacy
     if(!(document.querySelector("ytd-app") !== null)){
         $(document).on("click", "#ytn-btn, .ytn-btn", function(){
@@ -111,49 +113,52 @@ function onMessageResponse(type, id){
     });
 }
 
-function launch(){
+function launch(showAddButtons){
     var Polymer = {dom: function(a){return {appendChild: function(a){}}}};// Create a fake Polymer function since it won't be executed here
-    function ytn_injectionCode(){
-        var subscribeButton = document.querySelectorAll("#subscribe-button");
-        subscribeButton.forEach(function(e){
-            if(e.querySelector(":scope > paper-button") !== null)
-                return;
-            e.style.display = "flex";
-            e.style.flexDirection = "row";
-            e.style.alignItems = "center";
+    function ytn_injectionCode(showAddButtons){
+        if(showAddButtons) {
+            var subscribeButtons = document.querySelectorAll("#subscribe-button");
+            subscribeButtons.forEach(function (e) {
+                if (e.querySelector(":scope > paper-button") !== null)
+                    return;
+                e.style.display = "flex";
+                e.style.flexDirection = "row";
+                e.style.alignItems = "center";
 
-            var idElem = e.querySelector("[data-channel-external-id]");
-            if(!idElem) return;
-            var id = idElem.getAttribute("data-channel-external-id");
-            if(e.querySelector("ytd-subscribe-button-renderer") !== null) {
-                var dataHost = e.querySelector("ytd-subscribe-button-renderer");
-                if (typeof dataHost.__data__ !== "undefined" &&
-                    typeof dataHost.__data__.data !== "undefined" &&
-                    typeof dataHost.__data__.data.channelId !== "undefined") {
-                    id = dataHost.__data__.data.channelId;
+                var id = "";
+                try {
+                    id = e.querySelector("ytd-subscribe-button-renderer").__data__.data.channelId;
+                } catch (e) {
+                    window.ytn_errors.push(e);
+                    if (window.ytn_errors.length > 10)
+                        window.ytn_errors.shift();
+                    return;
                 }
+
+                var paperButton = document.createElement("paper-button");
+                paperButton.classList = "ytn-btn ytd-subscribe-button-renderer";
+                paperButton.setAttribute("data-channelId", id);
+                paperButton.setAttribute("init", false);
+                paperButton.style.display = "none";
+
+                var span = document.createElement("span");
+                paperButton.appendChild(span);
+
+                Polymer.dom(e).appendChild(paperButton);
+            });
+        }
+
+        var notificationButtons = document.querySelectorAll("#notification-button");
+        notificationButtons.forEach(function(e){
+            try {
+                e.setAttribute("data-channelId", e.dataHost.__data__.data.channelId);
+            }catch(e){
+                window.ytn_errors.push(e);
+                if(window.ytn_errors.length > 10)
+                    window.ytn_errors.shift();
             }
-
-            var paperButton = document.createElement("paper-button");
-            paperButton.classList = "ytn-btn ytd-subscribe-button-renderer";
-            paperButton.setAttribute("data-channelId", id);
-            paperButton.setAttribute("init", false);
-            paperButton.style.display = "none";
-
-            var span = document.createElement("span");
-            paperButton.appendChild(span);
-
-            Polymer.dom(e).appendChild(paperButton);
         });
     }
-    var code = ytn_injectionCode.toString() + "ytn_injectionCode();";
-    if(document.querySelector("[ytn-script]") !== null)
-        document.querySelector("[ytn-script]").remove();
-
-    var script = document.createElement("script");
-    script.setAttribute("ytn-script", true);
-    script.innerHTML = code;
-    document.head.appendChild(script);
 
     document.querySelectorAll(".ytn-btn[init='false']").forEach(function (e) {
         var channelId = e.getAttribute("data-channelId");
@@ -171,6 +176,15 @@ function launch(){
             e.removeAttribute("init");
         });
     });
+
+    if(document.querySelector("[ytn-script]") !== null)
+        return;
+    var code = "window.ytn_errors = [];" + ytn_injectionCode.toString() + "setInterval(function(){ytn_injectionCode(" + showAddButtons + ");}, 1000);";
+
+    var script = document.createElement("script");
+    script.setAttribute("ytn-script", "");
+    script.innerHTML = code;
+    document.head.appendChild(script);
 }
 
 function launchLegacy(){
