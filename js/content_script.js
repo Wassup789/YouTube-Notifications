@@ -112,29 +112,41 @@ function onMessageResponse(type, id){
 }
 
 function launch(){
-    var code = 'var subscribeButton = document.querySelectorAll("#subscribe-button");\
-    subscribeButton.forEach(function(e){\
-        if(e.querySelector(":scope > paper-button") !== null)\
-            return;\
-        e.style.display = "flex";\
-        e.style.flexDirection = "row";\
-        e.style.alignItems = "center";\
-\
-        var idElem = e.querySelector("[data-channel-external-id]");\
-        if(!idElem) return;\
-        var id = idElem.getAttribute("data-channel-external-id");\
-\
-        var paperButton = document.createElement("paper-button");\
-        paperButton.classList = "ytn-btn ytd-subscribe-button-renderer";\
-        paperButton.setAttribute("data-channelId", id);\
-        paperButton.setAttribute("init", false);\
-        paperButton.style.display = "none";\
-\
-        var span = document.createElement("span");\
-        paperButton.appendChild(span);\
-\
-        Polymer.dom(e).appendChild(paperButton);\
-    });';
+    var Polymer = {dom: function(a){return {appendChild: function(a){}}}};// Create a fake Polymer function since it won't be executed here
+    function ytn_injectionCode(){
+        var subscribeButton = document.querySelectorAll("#subscribe-button");
+        subscribeButton.forEach(function(e){
+            if(e.querySelector(":scope > paper-button") !== null)
+                return;
+            e.style.display = "flex";
+            e.style.flexDirection = "row";
+            e.style.alignItems = "center";
+
+            var idElem = e.querySelector("[data-channel-external-id]");
+            if(!idElem) return;
+            var id = idElem.getAttribute("data-channel-external-id");
+            if(e.querySelector("ytd-subscribe-button-renderer") !== null) {
+                var dataHost = e.querySelector("ytd-subscribe-button-renderer");
+                if (typeof dataHost.__data__ !== "undefined" &&
+                    typeof dataHost.__data__.data !== "undefined" &&
+                    typeof dataHost.__data__.data.channelId !== "undefined") {
+                    id = dataHost.__data__.data.channelId;
+                }
+            }
+
+            var paperButton = document.createElement("paper-button");
+            paperButton.classList = "ytn-btn ytd-subscribe-button-renderer";
+            paperButton.setAttribute("data-channelId", id);
+            paperButton.setAttribute("init", false);
+            paperButton.style.display = "none";
+
+            var span = document.createElement("span");
+            paperButton.appendChild(span);
+
+            Polymer.dom(e).appendChild(paperButton);
+        });
+    }
+    var code = ytn_injectionCode.toString() + "ytn_injectionCode();";
     if(document.querySelector("[ytn-script]") !== null)
         document.querySelector("[ytn-script]").remove();
 
