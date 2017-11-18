@@ -259,7 +259,7 @@ function fixSettingsStructure(){
     }
     if(typeof settings.sync === "undefined" || settings.sync.enabled === "undefined"){
         settings.sync = {
-            enabled: true
+            enabled: false
         };
         localStorage.setItem("settings", JSON.stringify(settings));
     }
@@ -1030,12 +1030,12 @@ function checkYoutubeBatch(){
 function syncWithYoutube(){
     var settings = JSON.parse(localStorage.getItem("settings"));
     if(settings.sync.enabled){
+        console.log("Synchronizing channels with YouTube");
         $.ajax({
             dataType: "text",
             url: "https://www.youtube.com/feed/channels",
             error: function(){
                 console.error("Failed to synchronize channels with YouTube");
-                resolve();
             },
             success: function(data){
                 var parser = new DOMParser(),
@@ -1043,24 +1043,7 @@ function syncWithYoutube(){
                 for(let i = 0; i < scripts.length; i++){
                     if(scripts[i].innerHTML.indexOf("window[\"ytInitialData\"]") > -1 && scripts[i].innerHTML.indexOf("\"channelId\"") > -1){
                         eval(scripts[i].innerHTML);
-                        if(typeof window.ytInitialData === "object" &&
-                            typeof window.ytInitialData.contents === "object" &&
-                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer === "object" &&
-                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs === "object" && window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs instanceof Array && window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs.length > 0 &&
-                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0] === "object" &&
-                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer === "object" &&
-                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content === "object" &&
-                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer === "object" &&
-                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents === "object" && window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents instanceof Array && window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents.length > 0 &&
-                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0] === "object" &&
-                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer === "object" &&
-                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents === "object" && window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents instanceof Array && window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents.length > 0 &&
-                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents[0] === "object" &&
-                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents[0].shelfRenderer === "object" &&
-                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents[0].shelfRenderer.content === "object" &&
-                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents[0].shelfRenderer.content.expandedShelfContentsRenderer === "object" &&
-                            typeof window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents[0].shelfRenderer.content.expandedShelfContentsRenderer.items === "object" && window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents[0].shelfRenderer.content.expandedShelfContentsRenderer.items instanceof Array){
-
+                        try {
                             var channels = JSON.parse(localStorage.getItem("channels")),
                                 channelsToAdd = [],
                                 items = window.ytInitialData.contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents[0].shelfRenderer.content.expandedShelfContentsRenderer.items;
@@ -1069,14 +1052,7 @@ function syncWithYoutube(){
                             }
                             mainItemLoop:
                             for(var item of items){
-                                if(typeof item === "object" &&
-                                    typeof item.channelRenderer === "object" &&
-                                    typeof item.channelRenderer.channelId === "string" &&
-                                    typeof item.channelRenderer.subscribeButton === "object" &&
-                                    typeof item.channelRenderer.subscribeButton.subscribeButtonRenderer === "object" &&
-                                    typeof item.channelRenderer.subscribeButton.subscribeButtonRenderer.notificationPreferenceToggleButton === "object" &&
-                                    typeof item.channelRenderer.subscribeButton.subscribeButtonRenderer.notificationPreferenceToggleButton.toggleButtonRenderer === "object" &&
-                                    typeof item.channelRenderer.subscribeButton.subscribeButtonRenderer.notificationPreferenceToggleButton.toggleButtonRenderer.isToggled === "boolean"){
+                                try {
                                     var channelId = item.channelRenderer.channelId,
                                         enabled = item.channelRenderer.subscribeButton.subscribeButtonRenderer.notificationPreferenceToggleButton.toggleButtonRenderer.isToggled;
                                     if(enabled){
@@ -1088,6 +1064,8 @@ function syncWithYoutube(){
                                         }
                                         channelsToAdd.push(channelId);
                                     }
+                                }catch(e){
+                                    console.error("Failed to fetch channel information from YouTube");
                                 }
                             }
                             for(var j = channels.length-1; j > -1; j--){
@@ -1102,10 +1080,14 @@ function syncWithYoutube(){
                             for(var channelId of channelsToAdd){
                                 addYoutubeChannel(channelId, false, ADD_TYPE_CHANNELID);
                             }
-                        }else
+                            console.log("Finished synchronizing channels with YouTube");
+                            return;
+                        }catch(e) {
                             console.error("Failed to synchronize channels with YouTube");
+                        }
                     }
                 }
+                console.error("Failed to synchronize channels with YouTube");
             }
         })
     }
