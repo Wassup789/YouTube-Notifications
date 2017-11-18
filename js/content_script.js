@@ -31,7 +31,7 @@ window.onload = function(){
                 $(document).on("click", "#notification-button", function(){
                     if(!this.hasAttribute("data-channelId"))
                         return;
-                    var status = $(this).find("button").attr("aria-pressed") === "true",
+                    var status = $(this).find("yt-icon-button").attr("aria-pressed") === "true",
                         channelId = this.getAttribute("data-channelId");
 
                     if(status)
@@ -89,7 +89,6 @@ $(function(){
             }
         });
     }
-
 });
 function onMessageResponse(type, id){
     awaitingResponse.forEach(function(item, i) {
@@ -193,7 +192,7 @@ function launchLegacy(){
         return;
     }
     
-    var elem = '<button class="yt-uix-button yt-uix-button-size-default yt-uix-button-has-icon no-icon-markup hover-enabled ytn-btn" type="button" style="margin-left: 5px;float: initial;">\
+    var elemContent = '<button class="yt-uix-button yt-uix-button-size-default yt-uix-button-has-icon no-icon-markup hover-enabled ytn-btn" type="button" style="margin-left: 5px;float: initial;">\
             <span class="yt-uix-button-content">\
                 <span class="subscribe-label" aria-label="' + getString("addChannel") + '">' + getString("addChannel") + '</span>\
                 <span class="subscribed-label" aria-label="' + getString("channelAdded") + '">' + getString("channelAdded") + '</span>\
@@ -202,7 +201,7 @@ function launchLegacy(){
         </button>';
     
     if(slashes.indexOf("subscription_manager") > -1 && $(".ytn-btn").length == 0){// If is on page: https://www.youtube.com/subscription_manager
-        var elems = $(elem).insertBefore(".yt-uix-overlay");
+        var elems = $(elemContent).insertBefore(".yt-uix-overlay");
         for(var i = 0; i < elems.length; i++){
             var channelId = $($(".yt-uix-overlay")[i]).parent().children(".yt-uix-button").attr("data-channel-external-id");
             $(elems[i]).attr("data-channelId", channelId);
@@ -213,33 +212,35 @@ function launchLegacy(){
                     $(elems[response.index]).addClass("yt-uix-button-subscribe-branded").removeClass("yt-uix-button-subscribed-branded");
             });
         }
-    }else if($(".ytn-btn").length < 1){// For everything else
+    }else{// For everything else
         $(".yt-uix-overlay").each(function(){
-            var $this = $(this);
-            if(
-                $this.hasClass("channel-settings-overlay") ||
-                $this.hasClass("featured-content-picker-overlay") ||
-                $this.hasClass("settings-dialog-container") ||
-                $(".about-metadata-container").find(this).length > 0 ||
-                $this.parent().hasClass("channel-header-flagging-menu-container") ||
+            var $this = $(this),
+                elem = null;
+            if($this.is(".channel-settings-overlay, .featured-content-picker-overlay, .settings-dialog-container") ||
+                $this.parents(".about-metadata-container, .channel-header-flagging-menu-container").length > 0 ||
                 $this.parents(".primary-header-actions").find(".ytn-btn").length > 0)
                 return;
             else{
+                elem = $(elemContent);
                 if($this.parents(".primary-header-actions").length > 0){
-                    var elem2 = elem.replace("float: initial", "float: right");
-                    $this.parents(".primary-header-actions").prepend(elem2);
+                    elem[0].style.float = "right";
+                    $this.parents(".primary-header-actions").prepend(elem);
                 }else
-                    $(elem).insertBefore($this);
+                    elem.insertBefore($this);
             }
+
+            if(elem == null)
+                return true;
+
+            var channelId = $(".yt-uix-button.yt-uix-subscription-button").attr("data-channel-external-id");
+            elem.attr("data-channelId", channelId);
+            chrome.runtime.sendMessage({type: "doesYoutubeExist", id: channelId}, function(response){
+                if(response.status)
+                    elem.removeClass("yt-uix-button-subscribe-branded").addClass("yt-uix-button-subscribed-branded");
+                else
+                    elem.addClass("yt-uix-button-subscribe-branded").removeClass("yt-uix-button-subscribed-branded");
+            });
         });
 
-        var channelId = $(".yt-uix-button.yt-uix-subscription-button").attr("data-channel-external-id");
-        $(".ytn-btn").attr("data-channelId", channelId);
-        chrome.runtime.sendMessage({type: "doesYoutubeExist", id: channelId}, function(response){
-            if(response.status)
-                $(".ytn-btn").removeClass("yt-uix-button-subscribe-branded").addClass("yt-uix-button-subscribed-branded");
-            else
-                $(".ytn-btn").addClass("yt-uix-button-subscribe-branded").removeClass("yt-uix-button-subscribed-branded");
-        });
     }
 }

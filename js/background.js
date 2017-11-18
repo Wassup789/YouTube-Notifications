@@ -427,6 +427,9 @@ $(function(){
             case "onSettingsOpen":
                 sendResponse(resetChannelsHasNewVideo(true));
                 break;
+            case "syncWithYoutube":
+                sendResponse(syncWithYoutube());
+                break;
         }
     });
 

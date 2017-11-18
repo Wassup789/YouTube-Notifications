@@ -85,7 +85,7 @@
 	},
 	"settings_editSettings_sync": {
 		"description": "The label for the sync button",
-		"message": "Synchronize with YouTube"
+		"message": "Synchronize with YouTube's bell"
 	},
 	"settings_vertSettings_viewChangelog": {
 		"description": "The label for the view changelog button",

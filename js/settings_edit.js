@@ -384,7 +384,10 @@ function registerListeners(){
     });
 
     $("#settings_refresh").on("click", function(){
+        var settings = JSON.parse(localStorage.getItem("settings"));
         chrome.extension.sendMessage({type: "checkYoutubeBatch"});
+        if(settings.sync.enabled)
+            chrome.extension.sendMessage({type: "syncWithYoutube"});
         createToast(wyns.strings.updating);
     });
 
@@ -613,6 +616,9 @@ function configureSettings(){
         localStorage.setItem("settings", JSON.stringify(settings));
         checkAddBtn();
         createToast(wyns.strings.saved);
+
+        if(settings.sync.enabled)
+            chrome.extension.sendMessage({type: "syncWithYoutube"});
     })[0].active = settings.sync.enabled;
     checkAddBtn();
 

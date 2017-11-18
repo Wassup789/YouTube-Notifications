@@ -1,6 +1,6 @@
 Changelog
 =====
-## v1.2.4.0 (2017-11-17)
+## v1.2.4.1 (2017-11-17)
  * Added synchronization with YouTube's notification bell
    * New installs will have this feature automatically enabled
    * Current users must enable it from the settings
