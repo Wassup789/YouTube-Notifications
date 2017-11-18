@@ -215,19 +215,21 @@ function launchLegacy(){
         }
     }else if($(".ytn-btn").length < 1){// For everything else
         $(".yt-uix-overlay").each(function(){
+            var $this = $(this);
             if(
-                $(this).hasClass("channel-settings-overlay") ||
-                $(this).hasClass("featured-content-picker-overlay") ||
-                $(this).hasClass("settings-dialog-container") ||
+                $this.hasClass("channel-settings-overlay") ||
+                $this.hasClass("featured-content-picker-overlay") ||
+                $this.hasClass("settings-dialog-container") ||
                 $(".about-metadata-container").find(this).length > 0 ||
-                $(this).parent().hasClass("channel-header-flagging-menu-container"))
+                $this.parent().hasClass("channel-header-flagging-menu-container") ||
+                $this.parents(".primary-header-actions").find(".ytn-btn").length > 0)
                 return;
             else{
-                if($(".primary-header-actions").find(this).length > 0){
+                if($this.parents(".primary-header-actions").length > 0){
                     var elem2 = elem.replace("float: initial", "float: right");
-                    $(".primary-header-actions").prepend(elem2);
+                    $this.parents(".primary-header-actions").prepend(elem2);
                 }else
-                    $(elem).insertBefore($(this));
+                    $(elem).insertBefore($this);
             }
         });
 
