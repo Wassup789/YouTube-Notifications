@@ -53,7 +53,7 @@
 	},
 	"settings_editSettings_addButtons": {
 		"description": "The label for the enable add buttons checkbox",
-		"message": "Enable add buttons on YouTube"
+		"message": "Add buttons on YouTube"
 	},
 	"settings_editSettings_addButtonsSubs": {
 		"description": "The label for the view subscriptions button",

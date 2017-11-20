@@ -361,7 +361,8 @@ chrome.runtime.onInstalled.addListener(function(details){
         wyn.firstLaunch();
     }else if(details.reason == "update"){
         var thisVersion = chrome.runtime.getManifest().version;
-        if(details.previousVersion != thisVersion){
+        // Ignore for same base version
+        if(details.previousVersion != thisVersion && extractBaseVersion(thisVersion) != extractBaseVersion(details.previousVersion)){
             console.log("Updated from " + details.previousVersion + " to " + thisVersion);
             chrome.browserAction.setBadgeText({text: "new"});
 
@@ -1543,4 +1544,16 @@ function resetChannelHasNewVideo(num, updateSettingsBadge) {
 
     if(updateSettingsBadge)
         updateBadge();
+}
+
+/**
+ * Extracts the base version of the extension
+ * Ex: 1.2.3.4 -> 1.2.3
+ *
+ * @param version The version of the extension
+ */
+function extractBaseVersion(version){
+    var arr = version.split(".");
+    arr.pop();
+    return arr.join(".");
 }

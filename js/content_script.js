@@ -212,13 +212,14 @@ function launchLegacy(){
                     $(elems[response.index]).addClass("yt-uix-button-subscribe-branded").removeClass("yt-uix-button-subscribed-branded");
             });
         }
-    }else{// For everything else
+    }else if(slashes.indexOf("subscription_manager") < 0){// For everything else
         $(".yt-uix-overlay").each(function(){
             var $this = $(this),
                 elem = null;
             if($this.is(".channel-settings-overlay, .featured-content-picker-overlay, .settings-dialog-container") ||
                 $this.parents(".about-metadata-container, .channel-header-flagging-menu-container").length > 0 ||
-                $this.parents(".primary-header-actions").find(".ytn-btn").length > 0)
+                $this.parents(".primary-header-actions").find(".ytn-btn").length > 0 ||
+                $this.parent().find(".ytn-btn").length > 0)
                 return;
             else{
                 elem = $(elemContent);
