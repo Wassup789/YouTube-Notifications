@@ -90,7 +90,6 @@ paper-toolbar paper-tabs {
 .channelColumn:nth-child(5) {
     vertical-align: top;
     z-index: 0;
-    cursor: pointer;
 }
 .channel_img {
     width: 50px;
@@ -605,4 +604,11 @@ paper-card .content-header {
 
 paper-menu-button iron-dropdown ::-webkit-scrollbar {
     display: none;
+}
+
+body[data-sync="true"] .channel_remove_btn {
+    opacity: 0.5;
+    filter: grayscale(0.6);
+    pointer-events: none;
+    cursor: default;
 }

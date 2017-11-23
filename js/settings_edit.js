@@ -619,7 +619,10 @@ function configureSettings(){
 
         if(settings.sync.enabled)
             chrome.extension.sendMessage({type: "syncWithYoutube"});
+        $("body").attr("data-sync", settings.sync.enabled); 
     })[0].active = settings.sync.enabled;
+    $("body").attr("data-sync", settings.sync.enabled); 
+    
     checkAddBtn();
 
     function checkAddBtn(){
