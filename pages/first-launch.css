@@ -74,7 +74,7 @@ a:hover {
 	vertical-align: middle;
 }
 #add-channel-1 {
-	height: 750px;
+	width: 640px;
 }
 #content-1-rightnext, #content-2-rightnext, #content-3-rightnext, #content-4-rightnext, #content-5-rightnext {
 	cursor: pointer;
@@ -96,12 +96,16 @@ a:hover {
 	font-size: 24px;
 	white-space: nowrap;
 	margin-bottom: 5px;
+    color: #3a3a3a;
 }
 .content-subheader a {
 	color: #9C0000;
 }
 .content-subheader a:hover {
 	color: #F00;
+}
+#content-2 .content-subheader:last-child {
+    margin-top: 10px;
 }
 iframe {
 	border: none;

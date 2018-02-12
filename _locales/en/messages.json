@@ -29,7 +29,7 @@
 	},
 	"settings_noChannels_subheader": {
 		"description": "The channels list, content subheader text if no channels are found",
-		"message": "Import subscriptions"
+		"message": "Add channels by clicking the bell"
 	},
 	"settings_editSettings_useNotifications": {
 		"description": "The label for the enable notifications checkbox",
