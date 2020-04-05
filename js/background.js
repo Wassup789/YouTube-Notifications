@@ -55,11 +55,7 @@ var wyn = {};
         "info_by": getCommonString("by"),
     },
     wyn.apiKeys = [
-        "AIzaSyA8W5tYDVst9tnMpnV56OSjMvHSD70T7oU",
-        "AIzaSyBAtN5QYKFQnk9Rgjjn6FrTl48UsS2mm34",
-        "AIzaSyDA1LJAP5d9tUQAn_liibpCsdtgAgqOB20",
-        "AIzaSyBi6pSx4oym_xjxmswbIT-4eQyUW9t27G8",
-        "AIzaSyBo6e-Ea_nIaf6dEd4NMJo4x5IXYd64nUw",
+        "AIzaSyA8W5tYDVst9tnMpnV56OSjMvHSD70T7oU" // CHANGE THIS API KEY TO YOUR OWN
     ];
     var apiKeyIndex = Math.floor(Math.random() * wyn.apiKeys.length);
     console.log("Using API Key #" + (apiKeyIndex + 1));
@@ -1058,7 +1054,7 @@ function syncWithYoutube(){
                             for(var item of items){
                                 try {
                                     var channelId = item.channelRenderer.channelId,
-                                        enabled = item.channelRenderer.subscribeButton.subscribeButtonRenderer.notificationPreferenceToggleButton.toggleButtonRenderer.isToggled;
+                                        enabled = item.channelRenderer.subscribeButton.subscribeButtonRenderer.notificationPreferenceButton.subscriptionNotificationToggleButtonRenderer.currentStateId == 2;
                                     if(enabled){
                                         for(var channel of channels){
                                             if(channel.id === channelId) {

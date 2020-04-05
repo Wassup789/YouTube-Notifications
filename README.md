@@ -1,3 +1,12 @@
+# **THIS EXTENSION IS NO LONGER ACTIVELY UPDATED** #
+Due to issues with obtaining a sufficient quota limit and the introduction of the YouTube 'bell' feature, there are **no plans to actively update this extension**. Features of this extension may be broken as YouTube updates their website/API.
+
+Commits made to the extension on GitHub may not be available in the distributed release on the Chrome web store.
+
+If you would like to fork or run your own version of this extension you may look at [INSTALL.md][Install.md] for installation instructions.
+
+[Install.md]: https://github.com/Wassup789/Youtube-Notifications/blob/master/INSTALL.md
+
 # YouTube Notifications #
 
 Get updates from your favorite YouTube users using this Chrome Extension. This extension uses the YouTube Data API Version 3.0 for it's data.
@@ -23,7 +32,7 @@ This code is licensed under the MIT License.
 
 [![ChromeWebStore](https://raw.githubusercontent.com/Wassup789/Youtube-Notifications/master/img/chromewebstore.png)](https://chrome.google.com/webstore/detail/youtube-notifications/cilgbgkmanbbecbjihnbpeaoodmgchom)
 
-**Latest Version:** ***v1.2.2.1***
+**Latest Version:** ***v1.2.5.0***
 
 **Release Archive:**
 

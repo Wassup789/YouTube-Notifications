@@ -6,7 +6,7 @@
   },
   "name": "__MSG_appName__",
   "description": "__MSG_appDesc__",
-  "version": "1.2.4.2",
+  "version": "1.2.5.0",
   "permissions": [
     "notifications",
 	"unlimitedStorage",
